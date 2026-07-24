@@ -1,0 +1,17 @@
+<% content_for :title, "日記一覧" %>
+
+<h1>キャスト日記一覧</h1>
+
+<table class="admin-table">
+  <thead><tr><th>キャスト</th><th>タイトル</th><th>状態</th><th>公開日時</th></tr></thead>
+  <tbody>
+    <% @diary_entries.each do |entry| %>
+      <tr>
+        <td><%= entry.cast.name %></td>
+        <td><%= link_to entry.title, shop_admin_diary_entry_path(entry) %></td>
+        <td><%= entry.status %></td>
+        <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,29 @@
+<% content_for :title, "店舗管理" %>
+
+<h1>店舗管理</h1>
+<%= link_to "新規店舗登録", new_admin_shop_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>店舗名</th><th>エリア</th><th>ジャンル</th><th>プラン</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @shops.each do |shop| %>
+      <tr>
+        <td><%= link_to shop.name, admin_shop_path(shop) %></td>
+        <td><%= shop.area.name %></td>
+        <td><%= shop.genre.name %></td>
+        <td><%= shop.plan.name %></td>
+        <td><span class="badge <%= "muted" unless shop.approved? %>"><%= shop.status %></span></td>
+        <td>
+          <%= link_to "編集", edit_admin_shop_path(shop) %>
+          <% if shop.pending? %>
+            <%= button_to "承認", approve_admin_shop_path(shop), method: :patch %>
+          <% end %>
+          <% unless shop.suspended? %>
+            <%= button_to "停止", suspend_admin_shop_path(shop), method: :patch %>
+          <% end %>
+          <%= button_to "削除", admin_shop_path(shop), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,16 @@
+<% content_for :title, "ランキング | Ume Heaven" %>
+
+<h1>店舗ランキング</h1>
+<p>閲覧数 x プラン優先度 のスコアで並び替えています。</p>
+
+<ol>
+  <% @shops.each do |shop| %>
+    <li class="card">
+      <%= link_to shop.name, shop_path(shop) %>
+      <span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span>
+      <div>閲覧数: <%= shop.view_count %> / プラン: <%= shop.plan.name %></div>
+    </li>
+  <% end %>
+</ol>
+
+<%= paginate @shops %>

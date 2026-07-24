@@ -1,0 +1,29 @@
+<% content_for :title, "店舗一覧 | Ume Heaven" %>
+
+<h1>店舗一覧</h1>
+
+<form class="form" method="get">
+  <label>エリア</label>
+  <select name="area_id">
+    <option value="">すべて</option>
+    <% Area.all.each do |area| %>
+      <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+    <% end %>
+  </select>
+  <label>ジャンル</label>
+  <select name="genre_id">
+    <option value="">すべて</option>
+    <% Genre.all.each do |genre| %>
+      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <button type="submit" class="btn">絞り込む</button>
+</form>
+
+<div class="grid">
+  <% @shops.each do |shop| %>
+    <%= render "shop_card", shop: shop %>
+  <% end %>
+</div>
+
+<%= paginate @shops %>

@@ -1,0 +1,21 @@
+<% content_for :title, "日記一覧 | キャストマイページ" %>
+
+<h1>日記一覧</h1>
+<%= link_to "新規投稿", new_cast_diary_entry_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>タイトル</th><th>状態</th><th>公開日時</th><th></th></tr></thead>
+  <tbody>
+    <% @diary_entries.each do |entry| %>
+      <tr>
+        <td><%= link_to entry.title, cast_diary_entry_path(entry) %></td>
+        <td><%= entry.status %></td>
+        <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
+        <td>
+          <%= link_to "編集", edit_cast_diary_entry_path(entry) %>
+          <%= button_to "削除", cast_diary_entry_path(entry), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

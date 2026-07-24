@@ -1,0 +1,12 @@
+<div class="card shop-card">
+  <%= link_to shop_path(shop) do %>
+    <% if shop.photos.attached? %>
+      <%= image_tag shop.photos.first %>
+    <% else %>
+      <div style="height:160px;background:#eee;border-radius:6px;"></div>
+    <% end %>
+    <h3><%= shop.name %></h3>
+  <% end %>
+  <div><span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span></div>
+  <p><%= truncate(shop.catch_copy.to_s, length: 40) %></p>
+</div>

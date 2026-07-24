@@ -1,0 +1,14 @@
+<% content_for :title, @shop.name %>
+
+<h1><%= @shop.name %></h1>
+<p>状態: <%= @shop.status %> / エリア: <%= @shop.area.name %> / ジャンル: <%= @shop.genre.name %> / プラン: <%= @shop.plan.name %></p>
+<p>閲覧数: <%= @shop.view_count %></p>
+<p><%= simple_format @shop.description.to_s %></p>
+
+<h2>在籍キャスト</h2>
+<% @shop.casts.each do |cast| %>
+  <p><%= cast.name %> (<%= cast.status %>)</p>
+<% end %>
+
+<%= link_to "編集", edit_admin_shop_path(@shop), class: "btn" %>
+<%= link_to "一覧に戻る", admin_shops_path, class: "btn secondary" %>

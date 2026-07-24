@@ -1,0 +1,22 @@
+<% content_for :title, "出勤予定 | キャストマイページ" %>
+
+<h1>出勤予定</h1>
+<%= link_to "新規登録", new_cast_shift_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>日付</th><th>時間</th><th>備考</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @shifts.each do |shift| %>
+      <tr>
+        <td><%= shift.work_date %></td>
+        <td><%= shift.start_time.strftime("%H:%M") %> - <%= shift.end_time.strftime("%H:%M") %></td>
+        <td><%= shift.note %></td>
+        <td><%= shift.status %></td>
+        <td>
+          <%= link_to "編集", edit_cast_shift_path(shift) %>
+          <%= button_to "削除", cast_shift_path(shift), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

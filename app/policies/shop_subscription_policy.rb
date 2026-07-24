@@ -1,0 +1,2 @@
+class ShopSubscriptionPolicy < PlatformAdminPolicy
+end

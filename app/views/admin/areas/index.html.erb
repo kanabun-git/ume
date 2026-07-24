@@ -1,0 +1,21 @@
+<% content_for :title, "エリア管理" %>
+
+<h1>エリア管理</h1>
+<%= link_to "新規エリア登録", new_admin_area_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>名前</th><th>親エリア</th><th>並び順</th><th></th></tr></thead>
+  <tbody>
+    <% @areas.each do |area| %>
+      <tr>
+        <td><%= area.name %></td>
+        <td><%= area.parent&.name %></td>
+        <td><%= area.position %></td>
+        <td>
+          <%= link_to "編集", edit_admin_area_path(area) %>
+          <%= button_to "削除", admin_area_path(area), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

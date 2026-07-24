@@ -1,0 +1,7 @@
+<% content_for :title, "契約詳細" %>
+<h1><%= @shop_subscription.shop.name %> の契約</h1>
+<p>プラン: <%= @shop_subscription.plan.name %></p>
+<p>期間: <%= @shop_subscription.started_on %> 〜 <%= @shop_subscription.ended_on %></p>
+<p>状態: <%= @shop_subscription.status %></p>
+<%= link_to "編集", edit_admin_shop_subscription_path(@shop_subscription), class: "btn" %>
+<%= link_to "一覧に戻る", admin_shop_subscriptions_path, class: "btn secondary" %>

@@ -1,0 +1,18 @@
+<% content_for :title, @cast.name %>
+
+<h1><%= @cast.name %></h1>
+<p>年齢: <%= @cast.age %> / 状態: <%= @cast.status %></p>
+<p>ログインアカウント: <%= @cast.user&.email || "未発行" %></p>
+
+<h2>日記</h2>
+<% @cast.diary_entries.each do |entry| %>
+  <p><%= entry.title %> (<%= entry.status %>)</p>
+<% end %>
+
+<h2>出勤予定</h2>
+<% @cast.upcoming_shifts.each do |shift| %>
+  <p><%= shift.work_date %> <%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></p>
+<% end %>
+
+<%= link_to "編集", edit_shop_admin_cast_path(@cast), class: "btn" %>
+<%= link_to "一覧に戻る", shop_admin_casts_path, class: "btn secondary" %>

@@ -1,0 +1,4 @@
+<% content_for :title, @genre.name %>
+<h1><%= @genre.name %></h1>
+<%= link_to "編集", edit_admin_genre_path(@genre), class: "btn" %>
+<%= link_to "一覧に戻る", admin_genres_path, class: "btn secondary" %>

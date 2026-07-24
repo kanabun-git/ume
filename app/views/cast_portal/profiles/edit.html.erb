@@ -1,0 +1,49 @@
+<% content_for :title, "プロフィール編集 | キャストマイページ" %>
+
+<h1>プロフィール編集</h1>
+
+<% if @cast.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% @cast.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @cast, url: cast_profile_path, method: :patch, local: true, class: "form" do |f| %>
+  <p>氏名・年齢・在籍店舗は店舗管理者のみ変更できます。</p>
+
+  <label>キャッチコピー</label>
+  <%= f.text_field :catch_copy %>
+
+  <label>自己紹介</label>
+  <%= f.text_area :description %>
+
+  <label>身長(cm)</label>
+  <%= f.number_field :height %>
+
+  <label>バスト</label>
+  <%= f.number_field :bust %>
+
+  <label>カップ</label>
+  <%= f.text_field :cup %>
+
+  <label>ウエスト</label>
+  <%= f.number_field :waist %>
+
+  <label>ヒップ</label>
+  <%= f.number_field :hip %>
+
+  <label>写真を追加</label>
+  <%= f.file_field :photos, multiple: true %>
+
+  <% if @cast.photos.attached? %>
+    <div class="grid">
+      <% @cast.photos.each do |photo| %>
+        <%= image_tag photo, style: "max-width:120px;" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= f.submit "更新する", class: "btn" %>
+<% end %>

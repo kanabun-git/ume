@@ -1,0 +1,26 @@
+<% if shift.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% shift.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: shift, url: url, local: true, class: "form" do |f| %>
+  <label>出勤日</label>
+  <%= f.date_field :work_date %>
+
+  <label>開始時刻</label>
+  <%= f.time_field :start_time %>
+
+  <label>終了時刻</label>
+  <%= f.time_field :end_time %>
+
+  <label>備考</label>
+  <%= f.text_field :note %>
+
+  <label>状態</label>
+  <%= f.select :status, Shift.statuses.keys.map { |s| [s == "scheduled" ? "予定" : "キャンセル", s] } %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

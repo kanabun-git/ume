@@ -1,0 +1,26 @@
+<% if shop_subscription.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% shop_subscription.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: shop_subscription, url: url, local: true, class: "form" do |f| %>
+  <label>店舗</label>
+  <%= f.collection_select :shop_id, Shop.all, :id, :name %>
+
+  <label>プラン</label>
+  <%= f.collection_select :plan_id, Plan.all, :id, :name %>
+
+  <label>開始日</label>
+  <%= f.date_field :started_on %>
+
+  <label>終了日</label>
+  <%= f.date_field :ended_on %>
+
+  <label>状態</label>
+  <%= f.select :status, ShopSubscription.statuses.keys.map { |s| [s == "active" ? "契約中" : "解約", s] } %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

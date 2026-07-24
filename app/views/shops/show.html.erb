@@ -1,0 +1,37 @@
+<% content_for :title, "#{@shop.name} | Ume Heaven" %>
+
+<h1><%= @shop.name %></h1>
+<p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
+<p><%= @shop.catch_copy %></p>
+
+<div class="grid">
+  <% @shop.photos.each do |photo| %>
+    <%= image_tag photo, style: "width:100%;border-radius:6px;" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>店舗情報</h2>
+  <p><%= simple_format @shop.description.to_s %></p>
+  <p>住所: <%= @shop.address %></p>
+  <p>電話番号: <%= @shop.phone %></p>
+  <p>営業時間: <%= @shop.business_hours %></p>
+  <p>平均評価: <%= @shop.average_rating || "-" %> / 5</p>
+</div>
+
+<h2>在籍キャスト</h2>
+<div class="grid">
+  <% @casts.each do |cast| %>
+    <%= render "casts/cast_card", cast: cast %>
+  <% end %>
+</div>
+
+<h2>口コミ</h2>
+<%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
+<% @reviews.each do |review| %>
+  <div class="card">
+    <p class="stars">評価: <%= review.rating %> / 5</p>
+    <p><%= review.body %></p>
+    <p><small><%= review.reviewer_name %> - <%= review.created_at.strftime("%Y-%m-%d") %></small></p>
+  </div>
+<% end %>

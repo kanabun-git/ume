@@ -1,0 +1,18 @@
+<% content_for :title, "口コミ一覧" %>
+
+<h1>口コミ一覧</h1>
+
+<table class="admin-table">
+  <thead><tr><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th></tr></thead>
+  <tbody>
+    <% @reviews.each do |review| %>
+      <tr>
+        <td><%= review.reviewer_name %></td>
+        <td><%= review.rating %></td>
+        <td><%= truncate(review.body, length: 60) %></td>
+        <td><%= review.status %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<p><small>口コミの承認・却下は運営者のみ行えます。</small></p>

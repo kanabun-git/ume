@@ -1,0 +1,43 @@
+<% content_for :title, "#{@cast.name} | #{@shop.name} | Ume Heaven" %>
+
+<h1><%= @cast.alias_name.presence || @cast.name %></h1>
+<p><%= link_to @shop.name, shop_path(@shop) %></p>
+
+<div class="grid">
+  <% @cast.photos.each do |photo| %>
+    <%= image_tag photo, style: "width:100%;border-radius:6px;" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <p><%= @cast.catch_copy %></p>
+  <p>年齢: <%= @cast.age %> / 身長: <%= @cast.height %>cm</p>
+  <p>スリーサイズ: B<%= @cast.bust %>(<%= @cast.cup %>) W<%= @cast.waist %> H<%= @cast.hip %></p>
+  <p><%= simple_format @cast.description.to_s %></p>
+</div>
+
+<h2>出勤予定</h2>
+<table class="admin-table">
+  <thead><tr><th>日付</th><th>時間</th><th>備考</th></tr></thead>
+  <tbody>
+    <% @upcoming_shifts.each do |shift| %>
+      <tr>
+        <td><%= shift.work_date %></td>
+        <td><%= shift.start_time.strftime("%H:%M") %> - <%= shift.end_time.strftime("%H:%M") %></td>
+        <td><%= shift.note %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>日記</h2>
+<% @diary_entries.each do |entry| %>
+  <div class="card">
+    <h3><%= entry.title %></h3>
+    <p><small><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
+    <% entry.images.each do |img| %>
+      <%= image_tag img, style: "max-width:200px;" %>
+    <% end %>
+    <p><%= simple_format entry.body %></p>
+  </div>
+<% end %>

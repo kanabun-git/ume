@@ -1,0 +1,25 @@
+<% content_for :title, "ダッシュボード | キャストマイページ" %>
+
+<h1>こんにちは、<%= @cast&.name || current_user.name %>さん</h1>
+
+<% if @cast.nil? %>
+  <div class="card">
+    <p>プロフィールがまだ店舗管理者によって登録されていません。</p>
+  </div>
+<% else %>
+  <div class="card">
+    <h2>最近の日記</h2>
+    <% @recent_diary_entries.each do |entry| %>
+      <p><%= link_to entry.title, cast_diary_entry_path(entry) %> - <%= entry.status %></p>
+    <% end %>
+    <%= link_to "日記を書く", new_cast_diary_entry_path, class: "btn" %>
+  </div>
+
+  <div class="card">
+    <h2>今後の出勤予定</h2>
+    <% @upcoming_shifts.each do |shift| %>
+      <p><%= shift.work_date %> <%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></p>
+    <% end %>
+    <%= link_to "出勤予定を登録する", new_cast_shift_path, class: "btn" %>
+  </div>
+<% end %>

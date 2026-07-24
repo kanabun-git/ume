@@ -1,0 +1,7 @@
+<% content_for :title, @diary_entry.title %>
+
+<h1><%= @diary_entry.title %></h1>
+<p><%= @diary_entry.cast.name %> / <%= @diary_entry.status %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></p>
+<p><%= simple_format @diary_entry.body %></p>
+
+<%= link_to "一覧に戻る", shop_admin_diary_entries_path, class: "btn secondary" %>

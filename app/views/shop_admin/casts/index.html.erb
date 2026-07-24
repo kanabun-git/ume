@@ -1,0 +1,22 @@
+<% content_for :title, "在籍キャスト管理" %>
+
+<h1>在籍キャスト管理</h1>
+<%= link_to "新規キャスト登録", new_shop_admin_cast_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>名前</th><th>年齢</th><th>状態</th><th>ログインアカウント</th><th></th></tr></thead>
+  <tbody>
+    <% @casts.each do |cast| %>
+      <tr>
+        <td><%= link_to cast.name, shop_admin_cast_path(cast) %></td>
+        <td><%= cast.age %></td>
+        <td><%= cast.status %></td>
+        <td><%= cast.user&.email || "未発行" %></td>
+        <td>
+          <%= link_to "編集", edit_shop_admin_cast_path(cast) %>
+          <%= button_to "削除", shop_admin_cast_path(cast), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

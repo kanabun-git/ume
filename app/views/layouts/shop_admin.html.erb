@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "店舗管理画面 | Ume Heaven" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <div class="admin-shell">
+      <div class="sidebar">
+        <div class="brand">店舗管理画面</div>
+        <%= link_to "ダッシュボード", shop_admin_root_path %>
+        <%= link_to "店舗情報編集", edit_shop_admin_shop_path %>
+        <%= link_to "在籍キャスト", shop_admin_casts_path %>
+        <%= link_to "日記一覧", shop_admin_diary_entries_path %>
+        <%= link_to "口コミ", shop_admin_reviews_path %>
+        <%= link_to "サイトを見る", root_path %>
+        <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
+      </div>
+      <div class="content">
+        <% if notice %><div class="notice"><%= notice %></div><% end %>
+        <% if alert %><div class="alert"><%= alert %></div><% end %>
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

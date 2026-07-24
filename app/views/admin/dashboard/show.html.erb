@@ -1,0 +1,13 @@
+<% content_for :title, "運営ダッシュボード" %>
+
+<h1>運営ダッシュボード</h1>
+
+<div class="grid">
+  <div class="card"><h2><%= @shops_count %></h2><p>登録店舗数</p></div>
+  <div class="card"><h2><%= @pending_shops_count %></h2><p>承認待ち店舗</p></div>
+  <div class="card"><h2><%= @casts_count %></h2><p>登録キャスト数</p></div>
+  <div class="card"><h2><%= @pending_reviews_count %></h2><p>モデレーション待ち口コミ</p></div>
+</div>
+
+<%= link_to "承認待ち店舗を確認", admin_shops_path, class: "btn" %>
+<%= link_to "口コミモデレーションへ", admin_reviews_path, class: "btn" %>

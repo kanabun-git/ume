@@ -1,0 +1,40 @@
+<% content_for :title, "Ume Heaven | エリア・ジャンルからお店を探す" %>
+
+<h1>エリアから探す</h1>
+<div class="grid">
+  <% @areas.each do |area| %>
+    <div class="card">
+      <h3><%= link_to area.name, area_path(area) %></h3>
+      <% area.children.each do |child| %>
+        <div><%= link_to child.name, area_path(child) %></div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<h1>ジャンルから探す</h1>
+<div class="grid">
+  <% @genres.each do |genre| %>
+    <div class="card">
+      <%= link_to genre.name, genre_path(genre) %>
+    </div>
+  <% end %>
+</div>
+
+<h1>ランキング上位店舗</h1>
+<div class="grid">
+  <% @ranked_shops.each do |shop| %>
+    <%= render "shops/shop_card", shop: shop %>
+  <% end %>
+</div>
+
+<h1>新着日記</h1>
+<div class="grid">
+  <% @latest_diary_entries.each do |entry| %>
+    <div class="card">
+      <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
+      <p><%= entry.cast.name %> (<%= entry.cast.shop.name %>)</p>
+      <p><%= truncate(entry.body, length: 60) %></p>
+    </div>
+  <% end %>
+</div>

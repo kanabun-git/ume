@@ -1,0 +1,2 @@
+class AreaPolicy < PlatformAdminPolicy
+end

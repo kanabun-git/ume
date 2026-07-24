@@ -1,0 +1,23 @@
+<% content_for :title, "契約管理" %>
+
+<h1>契約管理</h1>
+<%= link_to "新規契約登録", new_admin_shop_subscription_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>店舗</th><th>プラン</th><th>開始日</th><th>終了日</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @shop_subscriptions.each do |sub| %>
+      <tr>
+        <td><%= sub.shop.name %></td>
+        <td><%= sub.plan.name %></td>
+        <td><%= sub.started_on %></td>
+        <td><%= sub.ended_on %></td>
+        <td><%= sub.status %></td>
+        <td>
+          <%= link_to "編集", edit_admin_shop_subscription_path(sub) %>
+          <%= button_to "削除", admin_shop_subscription_path(sub), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

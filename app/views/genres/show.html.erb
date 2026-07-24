@@ -1,0 +1,11 @@
+<% content_for :title, "#{@genre.name} の店舗一覧 | Ume Heaven" %>
+
+<h1><%= @genre.name %> の店舗一覧</h1>
+
+<div class="grid">
+  <% @shops.each do |shop| %>
+    <%= render "shops/shop_card", shop: shop %>
+  <% end %>
+</div>
+
+<%= paginate @shops %>

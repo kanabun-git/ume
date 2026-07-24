@@ -1,0 +1,9 @@
+<% content_for :title, @area.name %>
+<h1><%= @area.name %></h1>
+<p>親エリア: <%= @area.parent&.name || "なし(都道府県)" %></p>
+<h2>子エリア</h2>
+<% @area.children.each do |child| %>
+  <p><%= child.name %></p>
+<% end %>
+<%= link_to "編集", edit_admin_area_path(@area), class: "btn" %>
+<%= link_to "一覧に戻る", admin_areas_path, class: "btn secondary" %>

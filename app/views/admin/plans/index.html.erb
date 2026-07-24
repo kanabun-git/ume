@@ -1,0 +1,21 @@
+<% content_for :title, "プラン管理" %>
+
+<h1>プラン管理</h1>
+<%= link_to "新規プラン登録", new_admin_plan_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>名前</th><th>月額料金</th><th>優先度</th><th></th></tr></thead>
+  <tbody>
+    <% @plans.each do |plan| %>
+      <tr>
+        <td><%= plan.name %></td>
+        <td><%= number_to_currency(plan.monthly_fee, unit: "¥", precision: 0) %></td>
+        <td><%= plan.priority_weight %></td>
+        <td>
+          <%= link_to "編集", edit_admin_plan_path(plan) %>
+          <%= button_to "削除", admin_plan_path(plan), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

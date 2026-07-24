@@ -1,0 +1,25 @@
+<% content_for :title, "口コミモデレーション" %>
+
+<h1>口コミモデレーション</h1>
+
+<table class="admin-table">
+  <thead><tr><th>店舗</th><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @reviews.each do |review| %>
+      <tr>
+        <td><%= review.shop.name %></td>
+        <td><%= review.reviewer_name %></td>
+        <td><%= review.rating %></td>
+        <td><%= truncate(review.body, length: 50) %></td>
+        <td><%= review.status %></td>
+        <td>
+          <% if review.pending? %>
+            <%= button_to "承認", approve_admin_review_path(review), method: :patch %>
+            <%= button_to "却下", reject_admin_review_path(review), method: :patch %>
+          <% end %>
+          <%= button_to "削除", admin_review_path(review), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,6 @@
+<% content_for :title, @plan.name %>
+<h1><%= @plan.name %></h1>
+<p>月額料金: <%= number_to_currency(@plan.monthly_fee, unit: "¥", precision: 0) %></p>
+<p>優先度(ランキング倍率): <%= @plan.priority_weight %></p>
+<%= link_to "編集", edit_admin_plan_path(@plan), class: "btn" %>
+<%= link_to "一覧に戻る", admin_plans_path, class: "btn secondary" %>

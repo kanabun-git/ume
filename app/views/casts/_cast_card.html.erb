@@ -1,0 +1,11 @@
+<div class="card cast-card">
+  <%= link_to cast_path(cast) do %>
+    <% if cast.photos.attached? %>
+      <%= image_tag cast.photos.first %>
+    <% else %>
+      <div style="height:160px;background:#eee;border-radius:6px;"></div>
+    <% end %>
+    <h3><%= cast.alias_name.presence || cast.name %> (<%= cast.age %>)</h3>
+  <% end %>
+  <p><%= truncate(cast.catch_copy.to_s, length: 30) %></p>
+</div>

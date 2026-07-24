@@ -1,0 +1,13 @@
+<% content_for :title, @diary_entry.title %>
+
+<h1><%= @diary_entry.title %></h1>
+<p><small><%= @diary_entry.status %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
+<div class="grid">
+  <% @diary_entry.images.each do |img| %>
+    <%= image_tag img, style: "max-width:200px;" %>
+  <% end %>
+</div>
+<p><%= simple_format @diary_entry.body %></p>
+
+<%= link_to "編集", edit_cast_diary_entry_path(@diary_entry), class: "btn" %>
+<%= link_to "一覧に戻る", cast_diary_entries_path, class: "btn secondary" %>

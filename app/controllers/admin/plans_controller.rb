@@ -1,0 +1,55 @@
+module Admin
+  class PlansController < BaseController
+    before_action :set_plan, only: [:show, :edit, :update, :destroy]
+
+    def index
+      @plans = policy_scope(::Plan)
+    end
+
+    def show
+    end
+
+    def new
+      @plan = ::Plan.new
+      authorize @plan
+    end
+
+    def create
+      @plan = ::Plan.new(plan_params)
+      authorize @plan
+
+      if @plan.save
+        redirect_to admin_plans_path, notice: "プランを登録しました。"
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+
+    def edit
+    end
+
+    def update
+      if @plan.update(plan_params)
+        redirect_to admin_plans_path, notice: "プランを更新しました。"
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      @plan.destroy
+      redirect_to admin_plans_path, notice: "プランを削除しました。"
+    end
+
+    private
+
+    def set_plan
+      @plan = ::Plan.find(params[:id])
+      authorize @plan
+    end
+
+    def plan_params
+      params.require(:plan).permit(:name, :monthly_fee, :priority_weight, :position)
+    end
+  end
+end

@@ -1,0 +1,16 @@
+{
+  "name": "Ume Heaven (fuzoku_zero)",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Ume Heaven (Rails)",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:HOME}/.rbenv/shims:${containerEnv:HOME}/.rbenv/bin:${containerEnv:PATH}"
+  }
+}

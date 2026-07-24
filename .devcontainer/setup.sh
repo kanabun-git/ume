@@ -5,6 +5,15 @@
 # Codespace finishes booting.
 set -euxo pipefail
 
+# Keep sudo's cached credentials alive for the whole script. Ruby compiles
+# from source below and can take several minutes — long enough for sudo's
+# default timestamp to expire, after which a later `sudo` call blocks
+# forever on a password prompt nobody can answer. Grab the credential now
+# (while still within the fresh post-boot window) and refresh it every 60s
+# in the background until this script exits.
+sudo -v
+( while true; do sleep 60; sudo -n true 2>/dev/null || exit; kill -0 "$$" 2>/dev/null || exit; done & )
+
 # Prevent apt / needrestart from opening interactive prompts, which would
 # otherwise hang this script forever waiting for keyboard input that never
 # comes (a very common devcontainer gotcha on Debian-based images).

@@ -5,10 +5,18 @@
 # Codespace finishes booting.
 set -euxo pipefail
 
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends \
+# Prevent apt / needrestart from opening interactive prompts, which would
+# otherwise hang this script forever waiting for keyboard input that never
+# comes (a very common devcontainer gotcha on Debian-based images).
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+export NEEDRESTART_SUSPEND=1
+
+sudo -E apt-get update < /dev/null
+sudo -E apt-get install -y --no-install-recommends \
+  -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
   git build-essential libssl-dev libreadline-dev zlib1g-dev \
-  libyaml-dev libffi-dev libgdbm-dev postgresql postgresql-contrib libpq-dev
+  libyaml-dev libffi-dev libgdbm-dev postgresql postgresql-contrib libpq-dev < /dev/null
 
 if [ ! -d "$HOME/.rbenv" ]; then
   git clone https://github.com/rbenv/rbenv.git "$HOME/.rbenv"

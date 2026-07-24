@@ -12,5 +12,10 @@
   },
   "remoteEnv": {
     "PATH": "${containerEnv:HOME}/.rbenv/shims:${containerEnv:HOME}/.rbenv/bin:${containerEnv:PATH}"
+  },
+  "containerEnv": {
+    "DEBIAN_FRONTEND": "noninteractive",
+    "NEEDRESTART_MODE": "a",
+    "NEEDRESTART_SUSPEND": "1"
   }
 }

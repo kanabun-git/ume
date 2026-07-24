@@ -1,5 +1,5 @@
 <% content_for :title, "口コミ詳細" %>
 <h1><%= @review.shop.name %> への口コミ</h1>
-<p>投稿者: <%= @review.reviewer_name %> / 評価: <%= @review.rating %> / 状態: <%= @review.status %></p>
+<p>投稿者: <%= @review.reviewer_name %> / 評価: <%= @review.rating %> / 状態: <%= status_label(@review) %></p>
 <p><%= @review.body %></p>
 <%= link_to "一覧に戻る", admin_reviews_path, class: "btn secondary" %>

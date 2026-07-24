@@ -10,7 +10,7 @@
         <td><%= review.reviewer_name %></td>
         <td><%= review.rating %></td>
         <td><%= truncate(review.body, length: 60) %></td>
-        <td><%= review.status %></td>
+        <td><%= status_label(review) %></td>
       </tr>
     <% end %>
   </tbody>

@@ -11,7 +11,7 @@
         <td><%= shift.work_date %></td>
         <td><%= shift.start_time.strftime("%H:%M") %> - <%= shift.end_time.strftime("%H:%M") %></td>
         <td><%= shift.note %></td>
-        <td><%= shift.status %></td>
+        <td><%= status_label(shift) %></td>
         <td>
           <%= link_to "編集", edit_cast_shift_path(shift) %>
           <%= button_to "削除", cast_shift_path(shift), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>

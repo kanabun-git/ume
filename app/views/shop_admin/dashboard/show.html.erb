@@ -1,12 +1,12 @@
 <% content_for :title, "ダッシュボード | 店舗管理画面" %>
 
 <h1><%= @shop.name %> 管理ダッシュボード</h1>
-<p>ステータス: <span class="badge <%= "muted" unless @shop.approved? %>"><%= @shop.status %></span></p>
+<p>ステータス: <span class="badge <%= "muted" unless @shop.approved? %>"><%= status_label(@shop) %></span></p>
 
 <div class="card">
   <h2>在籍キャスト (<%= @shop.casts.count %>名)</h2>
   <% @casts.each do |cast| %>
-    <p><%= link_to cast.name, shop_admin_cast_path(cast) %> - <%= cast.status %></p>
+    <p><%= link_to cast.name, shop_admin_cast_path(cast) %> - <%= status_label(cast) %></p>
   <% end %>
   <%= link_to "キャスト管理へ", shop_admin_casts_path, class: "btn" %>
 </div>
@@ -14,7 +14,7 @@
 <div class="card">
   <h2>最近の口コミ</h2>
   <% @recent_reviews.each do |review| %>
-    <p>評価<%= review.rating %> - <%= truncate(review.body, length: 40) %> (<%= review.status %>)</p>
+    <p>評価<%= review.rating %> - <%= truncate(review.body, length: 40) %> (<%= status_label(review) %>)</p>
   <% end %>
   <%= link_to "口コミ一覧へ", shop_admin_reviews_path, class: "btn" %>
 </div>

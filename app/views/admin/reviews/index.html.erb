@@ -11,7 +11,7 @@
         <td><%= review.reviewer_name %></td>
         <td><%= review.rating %></td>
         <td><%= truncate(review.body, length: 50) %></td>
-        <td><%= review.status %></td>
+        <td><%= status_label(review) %></td>
         <td>
           <% if review.pending? %>
             <%= button_to "承認", approve_admin_review_path(review), method: :patch %>

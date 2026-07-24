@@ -12,7 +12,7 @@
         <td><%= shop.area.name %></td>
         <td><%= shop.genre.name %></td>
         <td><%= shop.plan.name %></td>
-        <td><span class="badge <%= "muted" unless shop.approved? %>"><%= shop.status %></span></td>
+        <td><span class="badge <%= "muted" unless shop.approved? %>"><%= status_label(shop) %></span></td>
         <td>
           <%= link_to "編集", edit_admin_shop_path(shop) %>
           <% if shop.pending? %>

@@ -36,6 +36,8 @@ gem "image_processing", "~> 1.2"
 
 # Authentication
 gem "devise"
+# Japanese (and other) locale translations for Devise's default views/flash messages
+gem "devise-i18n"
 # Role-based authorization
 gem "pundit"
 # Pagination

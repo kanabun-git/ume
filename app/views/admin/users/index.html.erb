@@ -10,7 +10,7 @@
       <tr>
         <td><%= user.name %></td>
         <td><%= user.email %></td>
-        <td><%= user.role %></td>
+        <td><%= role_label(user) %></td>
         <td><%= user.shop&.name %></td>
         <td>
           <%= link_to "編集", edit_admin_user_path(user) %>

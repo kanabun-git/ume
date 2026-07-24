@@ -10,7 +10,7 @@
       <tr>
         <td><%= link_to cast.name, shop_admin_cast_path(cast) %></td>
         <td><%= cast.age %></td>
-        <td><%= cast.status %></td>
+        <td><%= status_label(cast) %></td>
         <td><%= cast.user&.email || "未発行" %></td>
         <td>
           <%= link_to "編集", edit_shop_admin_cast_path(cast) %>

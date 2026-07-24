@@ -10,7 +10,7 @@
   <div class="card">
     <h2>最近の日記</h2>
     <% @recent_diary_entries.each do |entry| %>
-      <p><%= link_to entry.title, cast_diary_entry_path(entry) %> - <%= entry.status %></p>
+      <p><%= link_to entry.title, cast_diary_entry_path(entry) %> - <%= status_label(entry) %></p>
     <% end %>
     <%= link_to "日記を書く", new_cast_diary_entry_path, class: "btn" %>
   </div>

@@ -1,12 +1,12 @@
 <% content_for :title, @cast.name %>
 
 <h1><%= @cast.name %></h1>
-<p>年齢: <%= @cast.age %> / 状態: <%= @cast.status %></p>
+<p>年齢: <%= @cast.age %> / 状態: <%= status_label(@cast) %></p>
 <p>ログインアカウント: <%= @cast.user&.email || "未発行" %></p>
 
 <h2>日記</h2>
 <% @cast.diary_entries.each do |entry| %>
-  <p><%= entry.title %> (<%= entry.status %>)</p>
+  <p><%= entry.title %> (<%= status_label(entry) %>)</p>
 <% end %>
 
 <h2>出勤予定</h2>

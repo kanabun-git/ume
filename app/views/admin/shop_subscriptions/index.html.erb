@@ -12,7 +12,7 @@
         <td><%= sub.plan.name %></td>
         <td><%= sub.started_on %></td>
         <td><%= sub.ended_on %></td>
-        <td><%= sub.status %></td>
+        <td><%= status_label(sub) %></td>
         <td>
           <%= link_to "編集", edit_admin_shop_subscription_path(sub) %>
           <%= button_to "削除", admin_shop_subscription_path(sub), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>

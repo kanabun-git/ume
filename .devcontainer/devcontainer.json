@@ -11,7 +11,7 @@
     }
   },
   "remoteEnv": {
-    "PATH": "${containerEnv:HOME}/.rbenv/shims:${containerEnv:HOME}/.rbenv/bin:${containerEnv:PATH}"
+    "PATH": "/home/vscode/.rbenv/shims:/home/vscode/.rbenv/bin:${containerEnv:PATH}"
   },
   "containerEnv": {
     "DEBIAN_FRONTEND": "noninteractive",

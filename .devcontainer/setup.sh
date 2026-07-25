@@ -57,6 +57,17 @@ fi
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
 
+# Make rbenv/ruby available in every future terminal too — the devcontainer's
+# remoteEnv PATH doesn't reliably reach every kind of shell VS Code/Codespaces
+# opens, but every interactive bash shell sources ~/.bashrc.
+if ! grep -q 'rbenv init' "$HOME/.bashrc" 2>/dev/null; then
+  {
+    echo ''
+    echo 'export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"'
+    echo 'eval "$(rbenv init -)"'
+  } >> "$HOME/.bashrc"
+fi
+
 RUBY_VERSION="$(cat .ruby-version | sed 's/ruby-//')"
 rbenv install -s "$RUBY_VERSION"
 rbenv global "$RUBY_VERSION"

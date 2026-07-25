@@ -25,7 +25,19 @@ sudo -E apt-get install -y --no-install-recommends \
   libyaml-dev libffi-dev libgdbm-dev postgresql postgresql-contrib libpq-dev < /dev/null
 
 sudo service postgresql start
-sudo -u postgres psql -c "ALTER ROLE \"$(whoami)\" SUPERUSER LOGIN;"
+
+# `sudo -u postgres ...` (switching to a *different* target user) prompts
+# for a password on this image even though plain `sudo <cmd>` (root, the
+# default target) does not — this sudoers setup only grants NOPASSWD for
+# root. Route through a root shell instead: `sudo bash -c '...'` hits the
+# passwordless root rule, and `su postgres` inside it needs no further
+# sudo authorization because we're already root at that point.
+CURRENT_USER="$(whoami)"
+cat > /tmp/init_pg_role.sql <<SQL
+ALTER ROLE "${CURRENT_USER}" SUPERUSER LOGIN;
+SQL
+chmod 644 /tmp/init_pg_role.sql
+sudo bash -c 'su postgres -c "psql -v ON_ERROR_STOP=1 -f /tmp/init_pg_role.sql"'
 # -------------------------------------------------------------------------
 
 if [ ! -d "$HOME/.rbenv" ]; then

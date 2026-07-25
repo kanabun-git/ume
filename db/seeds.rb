@@ -2,18 +2,30 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-tokyo = Area.find_or_create_by!(slug: "tokyo") { |a| a.name = "東京都"; a.region = "関東"; a.position = 1 }
-shinjuku = Area.find_or_create_by!(slug: "shinjuku") { |a| a.name = "新宿"; a.parent = tokyo; a.position = 1 }
-ikebukuro = Area.find_or_create_by!(slug: "ikebukuro") { |a| a.name = "池袋"; a.parent = tokyo; a.position = 2 }
+# Areas use find_or_initialize + update! (not find_or_create_by!) so that
+# re-running db:seed backfills attributes (like `region`, added after the
+# first release) onto rows that already existed from an earlier seed run.
+tokyo = Area.find_or_initialize_by(slug: "tokyo")
+tokyo.update!(name: "東京都", region: "関東", position: 1)
+shinjuku = Area.find_or_initialize_by(slug: "shinjuku")
+shinjuku.update!(name: "新宿", parent: tokyo, position: 1)
+ikebukuro = Area.find_or_initialize_by(slug: "ikebukuro")
+ikebukuro.update!(name: "池袋", parent: tokyo, position: 2)
 
-kanagawa = Area.find_or_create_by!(slug: "kanagawa") { |a| a.name = "神奈川県"; a.region = "関東"; a.position = 2 }
-yokohama = Area.find_or_create_by!(slug: "yokohama") { |a| a.name = "横浜"; a.parent = kanagawa; a.position = 1 }
+kanagawa = Area.find_or_initialize_by(slug: "kanagawa")
+kanagawa.update!(name: "神奈川県", region: "関東", position: 2)
+yokohama = Area.find_or_initialize_by(slug: "yokohama")
+yokohama.update!(name: "横浜", parent: kanagawa, position: 1)
 
-aichi = Area.find_or_create_by!(slug: "aichi") { |a| a.name = "愛知県"; a.region = "中部"; a.position = 3 }
-nagoya = Area.find_or_create_by!(slug: "nagoya") { |a| a.name = "名古屋"; a.parent = aichi; a.position = 1 }
+aichi = Area.find_or_initialize_by(slug: "aichi")
+aichi.update!(name: "愛知県", region: "中部", position: 3)
+nagoya = Area.find_or_initialize_by(slug: "nagoya")
+nagoya.update!(name: "名古屋", parent: aichi, position: 1)
 
-osaka = Area.find_or_create_by!(slug: "osaka") { |a| a.name = "大阪府"; a.region = "関西"; a.position = 4 }
-namba = Area.find_or_create_by!(slug: "namba") { |a| a.name = "難波"; a.parent = osaka; a.position = 1 }
+osaka = Area.find_or_initialize_by(slug: "osaka")
+osaka.update!(name: "大阪府", region: "関西", position: 4)
+namba = Area.find_or_initialize_by(slug: "namba")
+namba.update!(name: "難波", parent: osaka, position: 1)
 
 deriheru = Genre.find_or_create_by!(slug: "deriheru") { |g| g.name = "デリヘル"; g.position = 1 }
 soap = Genre.find_or_create_by!(slug: "soapland") { |g| g.name = "ソープランド"; g.position = 2 }

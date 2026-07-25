@@ -3,7 +3,7 @@
     <% if cast.photos.attached? %>
       <%= image_tag cast.photos.first %>
     <% else %>
-      <%= image_tag "nowprinting.svg", style: "width:100%;height:160px;object-fit:cover;border-radius:6px;" %>
+      <%= image_tag "nowprinting.svg", style: "width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px;" %>
     <% end %>
     <h3>
       <%= cast.alias_name.presence || cast.name %> (<%= cast.age %>)

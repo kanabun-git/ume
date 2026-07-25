@@ -67,7 +67,7 @@ main { padding: 24px 0 60px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 
-.cast-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #eee; }
+.cast-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; }
 .cast-card h3 { margin: 8px 0 4px; font-size: 1rem; }
 .badge { display: inline-block; background: var(--brand); color: #fff; font-size: .75rem; padding: 2px 8px; border-radius: 10px; }
 .badge.muted { background: var(--muted); }
@@ -237,7 +237,7 @@ form.form textarea { min-height: 120px; }
 .ranking-rank.rank-2 { background: #adb0b5; }
 .ranking-rank.rank-3 { background: #c07a3e; }
 .ranking-thumb { flex: 0 0 auto; }
-.ranking-thumb img, .ranking-thumb-placeholder { width: 88px; height: 66px; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
+.ranking-thumb img, .ranking-thumb-placeholder { width: 88px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
 .ranking-body { flex: 1; min-width: 0; }
 .ranking-body h3 { margin: 0 0 4px; font-size: .95rem; }
 .ranking-body p { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
@@ -261,7 +261,7 @@ form.form textarea { min-height: 120px; }
 
 .girl-main-image img { width: 100%; max-height: 80vh; object-fit: contain; background: #111; border-radius: 8px; display: block; }
 .girl-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.girl-thumbs img { width: 140px; height: 105px; object-fit: cover; border-radius: 6px; cursor: pointer; background: #eee; }
+.girl-thumbs img { width: 140px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; cursor: pointer; background: #eee; }
 .girl-thumbs img:hover { outline: 2px solid var(--brand); }
 
 .obi-block { margin-bottom: 16px; }
@@ -282,7 +282,7 @@ form.form textarea { min-height: 120px; }
 
 .girl-diary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 .girl-diary-thumb { display: block; text-align: center; font-size: .72rem; color: var(--text); }
-.girl-diary-thumb img { width: 140px; max-width: 100%; height: 105px; object-fit: cover; border-radius: 6px; background: #eee; display: block; margin-bottom: 4px; }
+.girl-diary-thumb img { width: 140px; max-width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; display: block; margin-bottom: 4px; }
 @media (max-width: 900px) {
   .girl-diary-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -296,7 +296,7 @@ form.form textarea { min-height: 120px; }
 .weekly-schedule-day { flex: 1 0 150px; min-width: 150px; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg); }
 .weekly-schedule-date { font-weight: bold; font-size: .8rem; text-align: center; margin-bottom: 8px; }
 .weekly-schedule-cast { display: block; text-align: center; margin-bottom: 10px; color: var(--text); }
-.weekly-schedule-cast img { width: 140px; max-width: 100%; height: 105px; object-fit: cover; border-radius: 6px; background: #eee; }
+.weekly-schedule-cast img { width: 140px; max-width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; }
 .weekly-schedule-name { font-size: .75rem; margin-top: 4px; }
 .weekly-schedule-time { font-size: .65rem; color: var(--muted); }
 .weekly-schedule-empty { text-align: center; color: var(--muted); font-size: .8rem; }

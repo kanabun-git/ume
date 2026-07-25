@@ -1,0 +1,23 @@
+<%
+  map_data = image_map_for(region)
+  areas_by_name = (@prefectures_by_region[region] || []).index_by(&:name)
+%>
+<div class="illust-map-block">
+  <h3 class="region-name"><%= region %></h3>
+  <% if map_data[:image] %>
+    <div class="illust-map">
+      <%= image_tag map_data[:image], alt: map_data[:alt], class: "illust-map-img" %>
+      <% map_data[:zones].each do |pref_name, (top, left, width, height)| %>
+        <% area = areas_by_name[pref_name] %>
+        <% zone_style = "top: #{top}%; left: #{left}%; width: #{width}%; height: #{height}%;" %>
+        <% if area %>
+          <%= link_to area_path(area), class: "illust-map-zone active", style: zone_style, title: area.name do %>
+            <span class="sr-only"><%= area.name %></span>
+          <% end %>
+        <% else %>
+          <span class="illust-map-zone inactive" style="<%= zone_style %>" title="<%= pref_name %>(準備中)"></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

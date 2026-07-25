@@ -1,12 +1,73 @@
-<div class="card shop-card">
-  <%= link_to shop_path(shop) do %>
-    <% if shop.photos.attached? %>
-      <%= image_tag shop.photos.first %>
-    <% else %>
-      <div style="height:160px;background:#eee;border-radius:6px;"></div>
-    <% end %>
-    <h3><%= shop.name %></h3>
+<div class="card shop-listing-card">
+  <div class="shop-listing-head">
+    <div>
+      <%= link_to shop_path(shop), class: "shop-listing-name" do %>
+        <%= shop.name %><% if shop.chain_name.present? %><span class="shop-listing-chain">(<%= shop.chain_name %>)</span><% end %>
+      <% end %>
+      <div class="shop-listing-subtitle">
+        <span class="badge"><%= shop.genre.name %></span>
+        <span class="badge muted"><%= shop.area.name %></span>
+      </div>
+    </div>
+    <div class="shop-listing-head-right">
+      <span class="shop-listing-updated"><%= shop.updated_at.strftime("%Y/%m/%d %H:%M") %> 更新</span>
+      <button type="button" class="btn secondary shop-keep-btn">☆ このお店をキープする</button>
+    </div>
+  </div>
+
+  <% if shop.online_reservation? || shop.visit_point_program? || shop.coupon_available? || shop.event_ongoing? %>
+    <div class="shop-badge-row">
+      <% if shop.online_reservation? %><span class="tag-badge">ネット予約</span><% end %>
+      <% if shop.visit_point_program? %><span class="tag-badge">来店ポイント</span><% end %>
+      <% if shop.coupon_available? %><span class="tag-badge">クーポン</span><% end %>
+      <% if shop.event_ongoing? %><span class="tag-badge highlight">イベント開催中</span><% end %>
+    </div>
   <% end %>
-  <div><span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span></div>
-  <p><%= truncate(shop.catch_copy.to_s, length: 40) %></p>
+
+  <div class="shop-listing-body">
+    <div class="shop-listing-photos">
+      <% if shop.photos.attached? %>
+        <% shop.photos.first(4).each do |photo| %>
+          <%= link_to shop_path(shop) do %>
+            <%= image_tag photo %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= link_to shop_path(shop) do %>
+          <div class="shop-listing-photo-placeholder"></div>
+        <% end %>
+      <% end %>
+      <% if shop.recruiting_cast? || shop.recruiting_staff? %>
+        <div class="shop-listing-recruit">
+          <% if shop.recruiting_cast? %><span class="tag-badge recruit">コンパニオン募集</span><% end %>
+          <% if shop.recruiting_staff? %><span class="tag-badge recruit">スタッフ募集</span><% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="shop-listing-info">
+      <dl class="shop-listing-facts">
+        <% if shop.business_hours.present? %>
+          <dt>営業時間</dt><dd><%= shop.business_hours %></dd>
+        <% end %>
+        <% if shop.price_note.present? %>
+          <dt>料金</dt><dd><%= shop.price_note %><% if shop.transportation_fee_note.present? %> / 交通費 <%= shop.transportation_fee_note %><% end %></dd>
+        <% end %>
+        <% if shop.coverage_area_note.present? %>
+          <dt>対応エリア</dt><dd><%= shop.coverage_area_note %></dd>
+        <% end %>
+      </dl>
+
+      <%= link_to "口コミ:#{shop.approved_reviews.count}件", shop_path(shop, anchor: "reviews"), class: "shop-listing-review-link" %>
+
+      <p class="shop-listing-catch"><%= truncate(shop.catch_copy.to_s, length: 60) %></p>
+
+      <% if shop.coupon_available? && shop.coupon_description.present? %>
+        <div class="shop-listing-coupon">
+          <span class="coupon-flag">クーポン</span>
+          <%= truncate(shop.coupon_description, length: 60) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

@@ -42,18 +42,33 @@ platform_admin = User.find_or_create_by!(email: "admin@example.com") do |u|
   u.password_confirmation = "password1234"
 end
 
-shop = Shop.find_or_create_by!(name: "サンプルデリヘル 新宿店") do |s|
-  s.area = shinjuku
-  s.genre = deriheru
-  s.plan = standard_plan
-  s.catch_copy = "新宿No.1デリヘル、業界未経験の新人多数在籍"
-  s.description = "新宿エリアで人気のデリヘル店です。厳選されたキャストが多数在籍しております。"
-  s.address = "東京都新宿区西新宿1-1-1"
-  s.phone = "03-0000-0000"
-  s.business_hours = "10:00 - 翌5:00"
-  s.status = :approved
-  s.view_count = 1200
-end
+shop = Shop.find_or_initialize_by(name: "サンプルデリヘル 新宿店")
+shop.assign_attributes(
+  area: shinjuku,
+  genre: deriheru,
+  plan: standard_plan,
+  chain_name: "UH系列",
+  catch_copy: "新宿No.1デリヘル、業界未経験の新人多数在籍",
+  description: "新宿エリアで人気のデリヘル店です。厳選されたキャストが多数在籍しております。",
+  address: "東京都新宿区西新宿1-1-1",
+  phone: "03-0000-0000",
+  business_hours: "10:00 - 翌5:00",
+  status: :approved,
+  view_count: 1200,
+  price_note: "60分12000円〜",
+  transportation_fee_note: "0〜1000円",
+  coverage_area_note: "新宿駅発着、代々木、高田馬場、中野",
+  online_reservation: true,
+  visit_point_program: true,
+  coupon_available: true,
+  coupon_description: "【ネット予約限定】オキニ探しコース 60分11000円",
+  event_ongoing: true,
+  recruiting_cast: true,
+  recruiting_staff: false,
+  recruiting_message: "未経験大歓迎!日給保証あり、まずはお気軽にご応募ください。",
+  editor_review: "新宿を中心に展開する人気店。厳選されたキャストと丁寧な接客で高い評価を得ている。"
+)
+shop.save!
 
 ShopSubscription.find_or_create_by!(shop: shop, plan: standard_plan) do |sub|
   sub.started_on = 1.month.ago.to_date

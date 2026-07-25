@@ -63,7 +63,12 @@ module Admin
     def shop_params
       params.require(:shop).permit(
         :name, :area_id, :genre_id, :plan_id, :catch_copy, :description,
-        :address, :phone, :business_hours, photos: []
+        :address, :phone, :business_hours, :chain_name, :editor_review,
+        :price_note, :transportation_fee_note, :coverage_area_note,
+        :coupon_description, :recruiting_message,
+        :online_reservation, :visit_point_program, :coupon_available,
+        :event_ongoing, :recruiting_cast, :recruiting_staff,
+        photos: []
       )
     end
   end

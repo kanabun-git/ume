@@ -1,8 +1,17 @@
 <% content_for :title, "#{@shop.name} | FuzokuZero" %>
 
-<h1><%= @shop.name %></h1>
+<h1><%= @shop.name %><% if @shop.chain_name.present? %><span class="shop-listing-chain">(<%= @shop.chain_name %>)</span><% end %></h1>
 <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
 <p><%= @shop.catch_copy %></p>
+
+<% if @shop.online_reservation? || @shop.visit_point_program? || @shop.coupon_available? || @shop.event_ongoing? %>
+  <div class="shop-badge-row">
+    <% if @shop.online_reservation? %><span class="tag-badge">ネット予約</span><% end %>
+    <% if @shop.visit_point_program? %><span class="tag-badge">来店ポイント</span><% end %>
+    <% if @shop.coupon_available? %><span class="tag-badge">クーポン</span><% end %>
+    <% if @shop.event_ongoing? %><span class="tag-badge highlight">イベント開催中</span><% end %>
+  </div>
+<% end %>
 
 <div class="grid">
   <% @shop.photos.each do |photo| %>
@@ -16,8 +25,36 @@
   <p>住所: <%= @shop.address %></p>
   <p>電話番号: <%= @shop.phone %></p>
   <p>営業時間: <%= @shop.business_hours %></p>
+  <% if @shop.price_note.present? %><p>料金: <%= @shop.price_note %></p><% end %>
+  <% if @shop.transportation_fee_note.present? %><p>交通費: <%= @shop.transportation_fee_note %></p><% end %>
+  <% if @shop.coverage_area_note.present? %><p>対応エリア: <%= @shop.coverage_area_note %></p><% end %>
   <p>平均評価: <%= @shop.average_rating || "-" %> / 5</p>
 </div>
+
+<% if @shop.coupon_available? && @shop.coupon_description.present? %>
+  <div class="shop-listing-coupon">
+    <span class="coupon-flag">クーポン</span>
+    <%= simple_format @shop.coupon_description %>
+  </div>
+<% end %>
+
+<% if @shop.editor_review.present? %>
+  <div class="card editor-review-card">
+    <h2>編集部のレビュー</h2>
+    <p><%= simple_format @shop.editor_review %></p>
+  </div>
+<% end %>
+
+<% if @shop.recruiting_cast? || @shop.recruiting_staff? %>
+  <div class="card">
+    <h2>求人情報</h2>
+    <p>
+      <% if @shop.recruiting_cast? %><span class="tag-badge recruit">コンパニオン募集</span><% end %>
+      <% if @shop.recruiting_staff? %><span class="tag-badge recruit">スタッフ募集</span><% end %>
+    </p>
+    <p><%= simple_format @shop.recruiting_message.to_s %></p>
+  </div>
+<% end %>
 
 <h2>在籍キャスト</h2>
 <div class="grid">
@@ -26,7 +63,7 @@
   <% end %>
 </div>
 
-<h2>口コミ</h2>
+<h2 id="reviews">口コミ</h2>
 <%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
 <% @reviews.each do |review| %>
   <div class="card">

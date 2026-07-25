@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_25_021110) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_25_051156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -155,6 +155,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_25_021110) do
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "chain_name"
+    t.string "price_note"
+    t.string "transportation_fee_note"
+    t.string "coverage_area_note"
+    t.text "coupon_description"
+    t.text "recruiting_message"
+    t.text "editor_review"
+    t.boolean "online_reservation", default: false, null: false
+    t.boolean "visit_point_program", default: false, null: false
+    t.boolean "coupon_available", default: false, null: false
+    t.boolean "event_ongoing", default: false, null: false
+    t.boolean "recruiting_cast", default: false, null: false
+    t.boolean "recruiting_staff", default: false, null: false
     t.index ["area_id"], name: "index_shops_on_area_id"
     t.index ["genre_id"], name: "index_shops_on_genre_id"
     t.index ["plan_id"], name: "index_shops_on_plan_id"

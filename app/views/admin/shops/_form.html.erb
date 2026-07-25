@@ -10,6 +10,9 @@
   <label>店舗名</label>
   <%= f.text_field :name %>
 
+  <label>系列名(例: FG系列。任意)</label>
+  <%= f.text_field :chain_name %>
+
   <label>エリア</label>
   <%= f.collection_select :area_id, Area.all, :id, :name %>
 
@@ -33,6 +36,26 @@
 
   <label>営業時間</label>
   <%= f.text_field :business_hours %>
+
+  <label>料金</label>
+  <%= f.text_field :price_note %>
+
+  <label>交通費</label>
+  <%= f.text_field :transportation_fee_note %>
+
+  <label>対応エリア</label>
+  <%= f.text_field :coverage_area_note %>
+
+  <label>編集部レビュー(運営者のみ編集可)</label>
+  <%= f.text_area :editor_review %>
+
+  <label>掲載バッジ</label>
+  <label><%= f.check_box :online_reservation %> ネット予約</label>
+  <label><%= f.check_box :visit_point_program %> 来店ポイント</label>
+  <label><%= f.check_box :coupon_available %> クーポン</label>
+  <label><%= f.check_box :event_ongoing %> イベント開催中</label>
+  <label><%= f.check_box :recruiting_cast %> コンパニオン募集</label>
+  <label><%= f.check_box :recruiting_staff %> スタッフ募集</label>
 
   <label>店舗写真</label>
   <%= f.file_field :photos, multiple: true %>

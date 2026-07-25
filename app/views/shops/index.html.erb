@@ -20,7 +20,7 @@
   <button type="submit" class="btn">絞り込む</button>
 </form>
 
-<div class="grid">
+<div class="shop-listing">
   <% @shops.each do |shop| %>
     <%= render "shop_card", shop: shop %>
   <% end %>

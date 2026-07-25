@@ -22,10 +22,18 @@ module ShopAdmin
       @shop = current_shop
     end
 
-    # Content fields only — status/plan/area/genre changes go through the
-    # platform admin back office (see Admin::ShopsController).
+    # Content fields only — status/plan/area/genre, and editorial fields
+    # (chain_name/editor_review), go through the platform admin back office
+    # (see Admin::ShopsController).
     def shop_params
-      params.require(:shop).permit(:catch_copy, :description, :address, :phone, :business_hours, photos: [])
+      params.require(:shop).permit(
+        :catch_copy, :description, :address, :phone, :business_hours,
+        :price_note, :transportation_fee_note, :coverage_area_note,
+        :coupon_description, :recruiting_message,
+        :online_reservation, :visit_point_program, :coupon_available,
+        :event_ongoing, :recruiting_cast, :recruiting_staff,
+        photos: []
+      )
     end
   end
 end

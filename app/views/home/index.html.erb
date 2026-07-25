@@ -1,40 +1,89 @@
-<% content_for :title, "Ume Heaven | エリア・ジャンルからお店を探す" %>
+<% content_for :title, "Ume Heaven | 全国風俗情報サイト" %>
 
-<h1>エリアから探す</h1>
-<div class="grid">
-  <% @areas.each do |area| %>
-    <div class="card">
-      <h3><%= link_to area.name, area_path(area) %></h3>
-      <% area.children.each do |child| %>
-        <div><%= link_to child.name, area_path(child) %></div>
-      <% end %>
+<div class="hero">
+  <h1 class="hero-title">お店・キャストを探す</h1>
+  <%= form_with url: shops_path, method: :get, local: true, class: "hero-search" do |f| %>
+    <div class="hero-search-row">
+      <div class="hero-search-field">
+        <label>エリア</label>
+        <%= f.select :area_id, options_for_select(@areas.flat_map { |a| [[a.name, a.id]] + a.children.map { |c| ["　" + c.name, c.id] } }), { include_blank: "エリアを選択" } %>
+      </div>
+      <div class="hero-search-field">
+        <label>ジャンル</label>
+        <%= f.select :genre_id, options_from_collection_for_select(@genres, :id, :name), { include_blank: "ジャンルを選択" } %>
+      </div>
+      <button type="submit" class="btn hero-search-btn">この条件で探す</button>
     </div>
   <% end %>
 </div>
 
-<h1>ジャンルから探す</h1>
-<div class="grid">
-  <% @genres.each do |genre| %>
-    <div class="card">
-      <%= link_to genre.name, genre_path(genre) %>
-    </div>
-  <% end %>
-</div>
+<section class="home-section">
+  <div class="home-section-head">
+    <h2>エリアから探す</h2>
+    <%= link_to "エリア一覧を見る >", shops_path, class: "home-section-more" %>
+  </div>
+  <div class="area-grid">
+    <% @areas.each do |area| %>
+      <div class="area-block">
+        <h3><%= link_to area.name, area_path(area) %></h3>
+        <ul class="area-children">
+          <% area.children.each do |child| %>
+            <li><%= link_to child.name, area_path(child) %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</section>
 
-<h1>ランキング上位店舗</h1>
-<div class="grid">
-  <% @ranked_shops.each do |shop| %>
-    <%= render "shops/shop_card", shop: shop %>
-  <% end %>
-</div>
+<section class="home-section">
+  <div class="home-section-head">
+    <h2>ジャンルから探す</h2>
+  </div>
+  <div class="genre-pills">
+    <% @genres.each do |genre| %>
+      <%= link_to genre.name, genre_path(genre), class: "genre-pill" %>
+    <% end %>
+  </div>
+</section>
 
-<h1>新着日記</h1>
-<div class="grid">
-  <% @latest_diary_entries.each do |entry| %>
-    <div class="card">
-      <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
-      <p><%= entry.cast.name %> (<%= entry.cast.shop.name %>)</p>
-      <p><%= truncate(entry.body, length: 60) %></p>
-    </div>
-  <% end %>
-</div>
+<section class="home-section">
+  <div class="home-section-head">
+    <h2>本日の人気店ランキング</h2>
+    <%= link_to "ランキング全体を見る >", rankings_path, class: "home-section-more" %>
+  </div>
+  <ol class="ranking-list">
+    <% @ranked_shops.each_with_index do |shop, i| %>
+      <li class="ranking-item">
+        <span class="ranking-rank rank-<%= i + 1 <= 3 ? i + 1 : "other" %>"><%= i + 1 %></span>
+        <%= link_to shop_path(shop), class: "ranking-thumb" do %>
+          <% if shop.photos.attached? %>
+            <%= image_tag shop.photos.first %>
+          <% else %>
+            <div class="ranking-thumb-placeholder"></div>
+          <% end %>
+        <% end %>
+        <div class="ranking-body">
+          <h3><%= link_to shop.name, shop_path(shop) %></h3>
+          <div><span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span></div>
+          <p><%= truncate(shop.catch_copy.to_s, length: 50) %></p>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+</section>
+
+<section class="home-section">
+  <div class="home-section-head">
+    <h2>新着日記</h2>
+  </div>
+  <div class="grid">
+    <% @latest_diary_entries.each do |entry| %>
+      <div class="card diary-card">
+        <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
+        <p class="diary-meta"><%= entry.cast.name %>(<%= link_to entry.cast.shop.name, shop_path(entry.cast.shop) %>)</p>
+        <p><%= truncate(entry.body, length: 60) %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

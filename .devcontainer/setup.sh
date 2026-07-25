@@ -59,14 +59,19 @@ eval "$(rbenv init -)"
 
 # Make rbenv/ruby available in every future terminal too — the devcontainer's
 # remoteEnv PATH doesn't reliably reach every kind of shell VS Code/Codespaces
-# opens, but every interactive bash shell sources ~/.bashrc.
-if ! grep -q 'rbenv init' "$HOME/.bashrc" 2>/dev/null; then
-  {
-    echo ''
-    echo 'export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"'
-    echo 'eval "$(rbenv init -)"'
-  } >> "$HOME/.bashrc"
-fi
+# opens. Writing to both .bashrc (interactive shells) and .profile (login
+# shells, which Debian's default .bashrc skips entirely for non-interactive
+# invocations via its `case $- in *i*) ;; *) return;; esac` guard) covers
+# every terminal flavor a Codespace might open.
+for rc in "$HOME/.bashrc" "$HOME/.profile"; do
+  if ! grep -q 'rbenv init' "$rc" 2>/dev/null; then
+    {
+      echo ''
+      echo 'export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"'
+      echo 'eval "$(rbenv init -)"'
+    } >> "$rc"
+  fi
+done
 
 RUBY_VERSION="$(cat .ruby-version | sed 's/ruby-//')"
 rbenv install -s "$RUBY_VERSION"

@@ -34,7 +34,16 @@ sudo service postgresql start
 # sudo authorization because we're already root at that point.
 CURRENT_USER="$(whoami)"
 cat > /tmp/init_pg_role.sql <<SQL
-ALTER ROLE "${CURRENT_USER}" SUPERUSER LOGIN;
+DO
+\$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${CURRENT_USER}') THEN
+    CREATE ROLE "${CURRENT_USER}" SUPERUSER LOGIN;
+  ELSE
+    ALTER ROLE "${CURRENT_USER}" SUPERUSER LOGIN;
+  END IF;
+END
+\$\$;
 SQL
 chmod 644 /tmp/init_pg_role.sql
 sudo bash -c 'su postgres -c "psql -v ON_ERROR_STOP=1 -f /tmp/init_pg_role.sql"'

@@ -5,4 +5,10 @@ class Genre < ApplicationRecord
   validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9\-]+\z/, message: "は半角英数字とハイフンのみ使用できます" }
 
   default_scope { order(:position, :name) }
+
+  # Routes look this model up by slug (`param: :slug`); without this,
+  # `genre_path(genre)` would build URLs from the numeric id instead.
+  def to_param
+    slug
+  end
 end

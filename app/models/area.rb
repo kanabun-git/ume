@@ -14,4 +14,10 @@ class Area < ApplicationRecord
   def prefecture?
     parent_id.nil?
   end
+
+  # Routes look this model up by slug (`param: :slug`); without this,
+  # `area_path(area)` would build URLs from the numeric id instead.
+  def to_param
+    slug
+  end
 end

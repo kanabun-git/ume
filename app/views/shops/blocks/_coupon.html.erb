@@ -1,0 +1,8 @@
+<% if shop.coupon_available? && shop.coupon_description.present? %>
+  <div class="shop-listing-coupon">
+    <span class="coupon-flag">クーポン</span>
+    <%= simple_format shop.coupon_description %>
+  </div>
+<% else %>
+  <p>現在配布中のクーポンはありません。</p>
+<% end %>

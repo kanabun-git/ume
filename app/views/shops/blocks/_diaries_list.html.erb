@@ -1,0 +1,17 @@
+<% entries = DiaryEntry.visible.joins(:cast).where(casts: { shop_id: shop.id }).limit(10) %>
+<% if entries.any? %>
+  <div class="girl-diary-grid">
+    <% entries.each do |entry| %>
+      <%= link_to cast_path(entry.cast, anchor: "diary-#{entry.id}"), class: "girl-diary-thumb" do %>
+        <% if entry.images.attached? %>
+          <%= image_tag entry.images.first %>
+        <% else %>
+          <%= image_tag "nowprinting.svg" %>
+        <% end %>
+        <span><%= truncate(entry.title, length: 16) %></span>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p>まだ日記の投稿がありません。</p>
+<% end %>

@@ -1,0 +1,10 @@
+<% trial_casts = shop.casts.visible.trial %>
+<% if trial_casts.any? %>
+  <div class="grid">
+    <% trial_casts.each do |cast| %>
+      <%= render "casts/cast_card", cast: cast %>
+    <% end %>
+  </div>
+<% else %>
+  <p>現在、体験入店中のキャストはいません。</p>
+<% end %>

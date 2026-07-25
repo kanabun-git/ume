@@ -1,0 +1,3 @@
+<% content_for :title, "ブロックを編集" %>
+<h1>ブロックを編集(<%= @block.label %>)</h1>
+<%= render "form", block: @block, url: shop_admin_shop_page_block_path(@block) %>

@@ -34,6 +34,21 @@
   <label>ヒップ</label>
   <%= f.number_field :hip %>
 
+  <label>星座</label>
+  <%= f.text_field :zodiac_sign %>
+
+  <label>血液型</label>
+  <%= f.text_field :blood_type %>
+
+  <label>アピールコメント</label>
+  <%= f.text_area :appeal_comment %>
+
+  <label>セールスポイント</label>
+  <%= f.text_area :selling_points %>
+
+  <label>女の子に質問(自由記載のQ&amp;A)</label>
+  <%= f.text_area :qa_message %>
+
   <label>写真を追加</label>
   <%= f.file_field :photos, multiple: true %>
 

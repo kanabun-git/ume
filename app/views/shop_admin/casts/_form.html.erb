@@ -37,6 +37,12 @@
   <label>在籍状態</label>
   <%= f.select :status, Cast.statuses.keys.map { |s| [s == "active" ? "在籍中" : "退店", s] } %>
 
+  <label><%= f.check_box :is_trial %> 体験入店</label>
+  <label><%= f.check_box :manager_recommended %> 店長おすすめ</label>
+
+  <label>店長からのコメント</label>
+  <%= f.text_area :manager_comment %>
+
   <label>写真</label>
   <%= f.file_field :photos, multiple: true %>
 

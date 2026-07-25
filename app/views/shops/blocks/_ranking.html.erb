@@ -1,0 +1,30 @@
+<%
+  ranked_casts = shop.casts.visible
+    .left_joins(:reviews)
+    .where(reviews: { status: [nil, Review.statuses[:approved]] })
+    .group("casts.id")
+    .order(Arel.sql("COUNT(reviews.id) DESC"))
+    .limit(5)
+%>
+<% if ranked_casts.any? %>
+  <ol class="ranking-list">
+    <% ranked_casts.each_with_index do |cast, i| %>
+      <li class="ranking-item">
+        <span class="ranking-rank rank-<%= i + 1 <= 3 ? i + 1 : "other" %>"><%= i + 1 %></span>
+        <%= link_to cast_path(cast), class: "ranking-thumb" do %>
+          <% if cast.photos.attached? %>
+            <%= image_tag cast.photos.first %>
+          <% else %>
+            <%= image_tag "nowprinting.svg" %>
+          <% end %>
+        <% end %>
+        <div class="ranking-body">
+          <h3><%= link_to cast.name, cast_path(cast) %></h3>
+          <p>口コミ<%= cast.reviews.approved.count %>件</p>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <p>ランキング対象のキャストがまだいません。</p>
+<% end %>

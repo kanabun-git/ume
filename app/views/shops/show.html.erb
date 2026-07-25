@@ -13,12 +13,6 @@
   </div>
 <% end %>
 
-<div class="grid">
-  <% @shop.photos.each do |photo| %>
-    <%= image_tag photo, style: "width:100%;border-radius:6px;" %>
-  <% end %>
-</div>
-
 <div class="card">
   <h2>店舗情報</h2>
   <p><%= simple_format @shop.description.to_s %></p>
@@ -30,13 +24,6 @@
   <% if @shop.coverage_area_note.present? %><p>対応エリア: <%= @shop.coverage_area_note %></p><% end %>
   <p>平均評価: <%= @shop.average_rating || "-" %> / 5</p>
 </div>
-
-<% if @shop.coupon_available? && @shop.coupon_description.present? %>
-  <div class="shop-listing-coupon">
-    <span class="coupon-flag">クーポン</span>
-    <%= simple_format @shop.coupon_description %>
-  </div>
-<% end %>
 
 <% if @shop.editor_review.present? %>
   <div class="card editor-review-card">
@@ -53,6 +40,17 @@
       <% if @shop.recruiting_staff? %><span class="tag-badge recruit">スタッフ募集</span><% end %>
     </p>
     <p><%= simple_format @shop.recruiting_message.to_s %></p>
+  </div>
+<% end %>
+
+<%# Blocks below are freely composed/ordered/hidden by the shop admin from
+    /shop_admin/shop_page_blocks — see ShopPageBlock. %>
+<% @shop.shop_page_blocks.visible.each do |block| %>
+  <div class="obi-block">
+    <div class="obi-header"><%= block.label %></div>
+    <div class="obi-body" style="<%= block.background_style %>">
+      <%= render "shops/blocks/#{block.block_type}", shop: @shop, block: block %>
+    </div>
   </div>
 <% end %>
 

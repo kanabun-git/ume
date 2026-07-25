@@ -24,7 +24,11 @@ module CastPortal
     end
 
     def cast_params
-      params.require(:cast).permit(:catch_copy, :description, :height, :bust, :waist, :hip, :cup, photos: [])
+      params.require(:cast).permit(
+        :catch_copy, :description, :height, :bust, :waist, :hip, :cup,
+        :appeal_comment, :selling_points, :qa_message, :zodiac_sign, :blood_type,
+        photos: []
+      )
     end
   end
 end

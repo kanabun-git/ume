@@ -1,0 +1,10 @@
+<% url = block.settings["video_url"].to_s %>
+<% if url.blank? %>
+  <p>動画は未設定です。</p>
+<% elsif url.include?("youtube.com") || url.include?("youtu.be") %>
+  <div class="block-video-wrapper">
+    <iframe src="<%= url %>" frameborder="0" allowfullscreen></iframe>
+  </div>
+<% else %>
+  <video src="<%= url %>" controls style="width:100%;border-radius:6px;"></video>
+<% end %>

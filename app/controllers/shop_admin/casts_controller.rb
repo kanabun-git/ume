@@ -52,7 +52,8 @@ module ShopAdmin
     def cast_params
       params.require(:cast).permit(
         :name, :alias_name, :age, :height, :bust, :waist, :hip, :cup,
-        :catch_copy, :description, :status, photos: [],
+        :catch_copy, :description, :status, :is_trial, :manager_recommended,
+        :manager_comment, photos: [],
         user_attributes: [:email, :password, :password_confirmation]
       )
     end

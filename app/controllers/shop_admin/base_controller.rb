@@ -3,6 +3,7 @@ module ShopAdmin
     before_action :authenticate_user!
     before_action :require_shop_admin_role!
     layout "shop_admin"
+    helper_method :current_shop
 
     private
 

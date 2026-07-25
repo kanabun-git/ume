@@ -1,0 +1,10 @@
+<% recommended = shop.casts.visible.manager_recommended %>
+<% if recommended.any? %>
+  <div class="grid">
+    <% recommended.each do |cast| %>
+      <%= render "casts/cast_card", cast: cast %>
+    <% end %>
+  </div>
+<% else %>
+  <p>店長おすすめのキャストは現在登録されていません。</p>
+<% end %>

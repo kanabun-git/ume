@@ -91,32 +91,55 @@ cast1_user = User.find_or_create_by!(email: "cast1@example.com") do |u|
   u.password_confirmation = "password1234"
 end
 
-cast1 = Cast.find_or_create_by!(shop: shop, name: "ゆい") do |c|
-  c.user = cast1_user
-  c.alias_name = "ゆいちゃん"
-  c.age = 22
-  c.height = 158
-  c.bust = 84
-  c.cup = "D"
-  c.waist = 58
-  c.hip = 86
-  c.catch_copy = "癒し系天然キャラ"
-  c.description = "お客様に癒しをお届けします。よろしくお願いします。"
-  c.status = :active
-end
+cast1 = Cast.find_or_initialize_by(shop: shop, name: "ゆい")
+cast1.assign_attributes(
+  user: cast1_user,
+  alias_name: "ゆいちゃん",
+  age: 22,
+  height: 158,
+  bust: 84,
+  cup: "D",
+  waist: 58,
+  hip: 86,
+  catch_copy: "癒し系天然キャラ",
+  description: "お客様に癒しをお届けします。よろしくお願いします。",
+  status: :active,
+  manager_recommended: true,
+  zodiac_sign: "おうし座",
+  blood_type: "A型",
+  appeal_comment: "皆様に癒しの時間をお届けできるよう頑張ります!",
+  selling_points: "天然な性格と柔らかい物腰が好評です。",
+  qa_message: "お休みの日は? → 読書とカフェ巡りが好きです。"
+)
+cast1.save!
 
-cast2 = Cast.find_or_create_by!(shop: shop, name: "みお") do |c|
-  c.alias_name = "みおちゃん"
-  c.age = 25
-  c.height = 162
-  c.bust = 88
-  c.cup = "E"
-  c.waist = 59
-  c.hip = 88
-  c.catch_copy = "スタイル抜群のお姉さん"
-  c.description = "楽しい時間を一緒に過ごしましょう。"
-  c.status = :active
-end
+cast2 = Cast.find_or_initialize_by(shop: shop, name: "みお")
+cast2.assign_attributes(
+  alias_name: "みおちゃん",
+  age: 25,
+  height: 162,
+  bust: 88,
+  cup: "E",
+  waist: 59,
+  hip: 88,
+  catch_copy: "スタイル抜群のお姉さん",
+  description: "楽しい時間を一緒に過ごしましょう。",
+  status: :active,
+  is_trial: true,
+  zodiac_sign: "さそり座",
+  blood_type: "B型",
+  appeal_comment: "明るく楽しい時間をお約束します!",
+  selling_points: "抜群のスタイルと大人の色気が自慢です。",
+  qa_message: "好きな食べ物は? → 甘いものが大好きです。"
+)
+cast2.save!
+
+# Existing shops created before the block CMS shipped won't have picked up
+# the after_create default blocks; this call is idempotent (no-ops once the
+# shop already has any blocks).
+shop.seed_default_page_blocks
+free_text_block = shop.shop_page_blocks.find_by(block_type: :free_text)
+free_text_block&.update!(settings: { "body" => "当店は新宿エリアで長年愛されるデリヘル店です。スタッフ一同、心を込めておもてなしいたします。" })
 
 DiaryEntry.find_or_create_by!(cast: cast1, title: "本日出勤します！") do |d|
   d.body = "本日20時から出勤します。皆様にお会いできるのを楽しみにしています。"

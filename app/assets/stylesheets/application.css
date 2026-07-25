@@ -248,3 +248,58 @@ form.form textarea { min-height: 120px; }
   .hero-search-row { flex-direction: column; align-items: stretch; }
   .area-children { columns: 1; }
 }
+
+/* --- Girl detail page (女の子詳細) --------------------------------------- */
+
+.girl-detail-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; margin-top: 16px; }
+@media (min-width: 1440px) {
+  .girl-detail-layout { grid-template-columns: 1.8fr 1fr; }
+}
+@media (max-width: 900px) {
+  .girl-detail-layout { grid-template-columns: 1fr; }
+}
+
+.girl-main-image img { width: 100%; max-height: 80vh; object-fit: contain; background: #111; border-radius: 8px; display: block; }
+.girl-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.girl-thumbs img { width: 140px; height: 105px; object-fit: cover; border-radius: 6px; cursor: pointer; background: #eee; }
+.girl-thumbs img:hover { outline: 2px solid var(--brand); }
+
+.obi-block { margin-bottom: 16px; }
+.obi-header { background: var(--brand); color: #fff; font-weight: bold; padding: 8px 14px; border-radius: 6px 6px 0 0; font-size: .95rem; }
+.obi-body { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; padding: 14px; font-size: .9rem; }
+
+.profile-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.profile-table th { text-align: left; width: 90px; color: var(--muted); font-size: .8rem; padding: 4px 0; vertical-align: top; }
+.profile-table td { padding: 4px 0; font-size: .88rem; }
+
+.girl-shift-row { display: flex; gap: 6px; overflow-x: auto; }
+.girl-shift-day {
+  flex: 1 0 72px; min-width: 72px; text-align: center; border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 4px; background: var(--bg);
+}
+.girl-shift-day .date { font-weight: bold; font-size: .78rem; margin-bottom: 4px; }
+.girl-shift-day .time { font-size: .68rem; color: var(--muted); line-height: 1.3; }
+
+.girl-diary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.girl-diary-thumb { display: block; text-align: center; font-size: .72rem; color: var(--text); }
+.girl-diary-thumb img { width: 140px; max-width: 100%; height: 105px; object-fit: cover; border-radius: 6px; background: #eee; display: block; margin-bottom: 4px; }
+@media (max-width: 900px) {
+  .girl-diary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Shop page blocks (Block CMS) --------------------------------------- */
+
+.block-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+.block-photo-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #eee; }
+
+.weekly-schedule-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.weekly-schedule-day { flex: 1 0 150px; min-width: 150px; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg); }
+.weekly-schedule-date { font-weight: bold; font-size: .8rem; text-align: center; margin-bottom: 8px; }
+.weekly-schedule-cast { display: block; text-align: center; margin-bottom: 10px; color: var(--text); }
+.weekly-schedule-cast img { width: 140px; max-width: 100%; height: 105px; object-fit: cover; border-radius: 6px; background: #eee; }
+.weekly-schedule-name { font-size: .75rem; margin-top: 4px; }
+.weekly-schedule-time { font-size: .65rem; color: var(--muted); }
+.weekly-schedule-empty { text-align: center; color: var(--muted); font-size: .8rem; }
+
+.block-video-wrapper { position: relative; width: 100%; padding-top: 56.25%; }
+.block-video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; }

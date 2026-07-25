@@ -37,6 +37,13 @@ Rails.application.routes.draw do
     resources :casts
     resources :diary_entries, only: [:index, :show]
     resources :reviews, only: [:index]
+    resources :shop_page_blocks do
+      member do
+        patch :move_up
+        patch :move_down
+        patch :toggle_visibility
+      end
+    end
   end
 
   # --- Platform admin (運営者) back office ---

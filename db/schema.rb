@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_25_051156) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_25_225354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_25_051156) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_trial", default: false, null: false
+    t.boolean "manager_recommended", default: false, null: false
+    t.text "appeal_comment"
+    t.text "manager_comment"
+    t.text "selling_points"
+    t.text "qa_message"
+    t.string "zodiac_sign"
+    t.string "blood_type"
     t.index ["shop_id"], name: "index_casts_on_shop_id"
     t.index ["user_id"], name: "index_casts_on_user_id", unique: true
   end
@@ -127,6 +135,21 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_25_051156) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cast_id"], name: "index_shifts_on_cast_id"
+  end
+
+  create_table "shop_page_blocks", force: :cascade do |t|
+    t.bigint "shop_id", null: false
+    t.integer "block_type", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "visible", default: true, null: false
+    t.string "title"
+    t.string "background_color"
+    t.decimal "background_opacity", precision: 3, scale: 2, default: "1.0", null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id", "position"], name: "index_shop_page_blocks_on_shop_id_and_position"
+    t.index ["shop_id"], name: "index_shop_page_blocks_on_shop_id"
   end
 
   create_table "shop_subscriptions", force: :cascade do |t|
@@ -199,6 +222,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_25_051156) do
   add_foreign_key "reviews", "casts"
   add_foreign_key "reviews", "shops"
   add_foreign_key "shifts", "casts"
+  add_foreign_key "shop_page_blocks", "shops"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"
   add_foreign_key "shops", "areas"

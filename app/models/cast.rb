@@ -15,6 +15,8 @@ class Cast < ApplicationRecord
   before_validation :assign_login_user_defaults
 
   scope :visible, -> { active }
+  scope :trial, -> { where(is_trial: true) }
+  scope :manager_recommended, -> { where(manager_recommended: true) }
 
   def upcoming_shifts
     shifts.where(status: :scheduled).where("work_date >= ?", Date.current).order(:work_date, :start_time)

@@ -1,0 +1,38 @@
+<% if block.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% block.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: block, url: url, local: true, class: "form" do |f| %>
+  <label>ブロックの種類</label>
+  <%= f.select :block_type, ShopPageBlock::LABELS.map { |type, label| [label, type] }, {}, disabled: block.persisted? %>
+  <% if block.persisted? %>
+    <%= f.hidden_field :block_type %>
+    <p><small>種類は追加後に変更できません。削除して作り直してください。</small></p>
+  <% end %>
+
+  <label>タイトル(空欄の場合は種類ごとの標準タイトルを表示)</label>
+  <%= f.text_field :title %>
+
+  <label>表示する</label>
+  <%= f.check_box :visible %>
+
+  <label>背景色(空欄でデフォルト)</label>
+  <%= f.color_field :background_color, value: block.background_color.presence || "#ffffff" %>
+
+  <label>背景の不透明度(0〜1)</label>
+  <%= f.number_field :background_opacity, min: 0, max: 1, step: 0.05 %>
+
+  <% if block.block_type == "free_text" %>
+    <label>本文</label>
+    <%= text_area_tag "shop_page_block[settings][body]", block.settings["body"] %>
+  <% elsif block.block_type == "movie" %>
+    <label>動画URL(YouTube埋め込みURL、またはmp4の直リンク)</label>
+    <%= text_field_tag "shop_page_block[settings][video_url]", block.settings["video_url"] %>
+  <% end %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

@@ -1,0 +1,24 @@
+<% dates = (Date.current..(Date.current + 6)).to_a %>
+<div class="weekly-schedule-grid">
+  <% dates.each do |date| %>
+    <% shifts_today = Shift.joins(:cast).where(casts: { shop_id: shop.id }, work_date: date, status: :scheduled).order(:start_time) %>
+    <div class="weekly-schedule-day">
+      <div class="weekly-schedule-date"><%= date.strftime("%-m/%-d") %>(<%= %w[日 月 火 水 木 金 土][date.wday] %>)</div>
+      <% if shifts_today.any? %>
+        <% shifts_today.each do |shift| %>
+          <%= link_to cast_path(shift.cast), class: "weekly-schedule-cast" do %>
+            <% if shift.cast.photos.attached? %>
+              <%= image_tag shift.cast.photos.first %>
+            <% else %>
+              <%= image_tag "nowprinting.svg" %>
+            <% end %>
+            <div class="weekly-schedule-name"><%= shift.cast.name %></div>
+            <div class="weekly-schedule-time"><%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></div>
+          <% end %>
+        <% end %>
+      <% else %>
+        <p class="weekly-schedule-empty">-</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

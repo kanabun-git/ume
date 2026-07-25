@@ -1,0 +1,9 @@
+<% if shop.photos.attached? %>
+  <div class="block-photo-grid">
+    <% shop.photos.each do |photo| %>
+      <%= image_tag photo %>
+    <% end %>
+  </div>
+<% else %>
+  <%= image_tag "nowprinting.svg" %>
+<% end %>

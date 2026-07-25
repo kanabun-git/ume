@@ -131,6 +131,25 @@ form.form textarea { min-height: 120px; }
 .home-section-more { font-size: .85rem; color: var(--muted); }
 
 .region-note { color: var(--muted); font-size: .85rem; margin: 0 0 14px; }
+
+/* Original schematic grid "map" — not a traced geographic map, just prefecture
+   tiles placed in a rough compass layout so the region reads at a glance. */
+.region-map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.region-map-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.region-map { display: grid; gap: 6px; margin-top: 4px; }
+.region-map-cell { display: flex; }
+.region-map-pref {
+  flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
+  min-height: 48px; border-radius: 6px; font-size: .82rem; padding: 6px;
+}
+.region-map-pref.active {
+  background: var(--brand); color: #fff; font-weight: bold;
+}
+.region-map-pref.active:hover { background: var(--brand-dark); text-decoration: none; }
+.region-map-pref.inactive {
+  background: #f0ecec; color: #bcb3b3; border: 1px dashed #d8cfcf;
+}
+
 .region-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .region-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
 .region-name {

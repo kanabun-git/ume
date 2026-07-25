@@ -23,6 +23,12 @@
     <%= link_to "エリア一覧を見る >", shops_path, class: "home-section-more" %>
   </div>
   <p class="region-note">現在対応中のエリア: <%= Area::ACTIVE_REGIONS.join(" / ") %>(他のエリアは順次拡大予定です)</p>
+  <div class="region-map-grid">
+    <% Area::ACTIVE_REGIONS.each do |region| %>
+      <%= render "region_map", region: region %>
+    <% end %>
+  </div>
+
   <div class="region-grid">
     <% Area::ACTIVE_REGIONS.each do |region| %>
       <div class="region-block">

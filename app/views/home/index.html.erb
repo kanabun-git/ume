@@ -1,4 +1,4 @@
-<% content_for :title, "Ume Heaven | 全国風俗情報サイト" %>
+<% content_for :title, "FuzokuZero | ゼロから始める風俗体験" %>
 
 <div class="hero">
   <h1 class="hero-title">お店・キャストを探す</h1>
@@ -6,7 +6,7 @@
     <div class="hero-search-row">
       <div class="hero-search-field">
         <label>エリア</label>
-        <%= f.select :area_id, options_for_select(@areas.flat_map { |a| [[a.name, a.id]] + a.children.map { |c| ["　" + c.name, c.id] } }), { include_blank: "エリアを選択" } %>
+        <%= f.select :area_id, grouped_options_for_select(Area::ACTIVE_REGIONS.map { |region| [region, (@prefectures_by_region[region] || []).flat_map { |pref| [[pref.name, pref.id]] + pref.children.map { |c| ["　" + c.name, c.id] } }] }), { include_blank: "エリアを選択" } %>
       </div>
       <div class="hero-search-field">
         <label>ジャンル</label>
@@ -19,18 +19,26 @@
 
 <section class="home-section">
   <div class="home-section-head">
-    <h2>エリアから探す</h2>
+    <h2>マップから探す</h2>
     <%= link_to "エリア一覧を見る >", shops_path, class: "home-section-more" %>
   </div>
-  <div class="area-grid">
-    <% @areas.each do |area| %>
-      <div class="area-block">
-        <h3><%= link_to area.name, area_path(area) %></h3>
-        <ul class="area-children">
-          <% area.children.each do |child| %>
-            <li><%= link_to child.name, area_path(child) %></li>
+  <p class="region-note">現在対応中のエリア: <%= Area::ACTIVE_REGIONS.join(" / ") %>(他のエリアは順次拡大予定です)</p>
+  <div class="region-grid">
+    <% Area::ACTIVE_REGIONS.each do |region| %>
+      <div class="region-block">
+        <h3 class="region-name"><%= region %></h3>
+        <div class="area-grid">
+          <% (@prefectures_by_region[region] || []).each do |area| %>
+            <div class="area-block">
+              <h4><%= link_to area.name, area_path(area) %></h4>
+              <ul class="area-children">
+                <% area.children.each do |child| %>
+                  <li><%= link_to child.name, area_path(child) %></li>
+                <% end %>
+              </ul>
+            </div>
           <% end %>
-        </ul>
+        </div>
       </div>
     <% end %>
   </div>

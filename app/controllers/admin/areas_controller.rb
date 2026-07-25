@@ -49,7 +49,7 @@ module Admin
     end
 
     def area_params
-      params.require(:area).permit(:name, :name_kana, :slug, :parent_id, :position)
+      params.require(:area).permit(:name, :name_kana, :slug, :region, :parent_id, :position)
     end
   end
 end

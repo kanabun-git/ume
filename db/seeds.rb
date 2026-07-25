@@ -2,11 +2,17 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-tokyo = Area.find_or_create_by!(slug: "tokyo") { |a| a.name = "東京都"; a.position = 1 }
+tokyo = Area.find_or_create_by!(slug: "tokyo") { |a| a.name = "東京都"; a.region = "関東"; a.position = 1 }
 shinjuku = Area.find_or_create_by!(slug: "shinjuku") { |a| a.name = "新宿"; a.parent = tokyo; a.position = 1 }
 ikebukuro = Area.find_or_create_by!(slug: "ikebukuro") { |a| a.name = "池袋"; a.parent = tokyo; a.position = 2 }
 
-osaka = Area.find_or_create_by!(slug: "osaka") { |a| a.name = "大阪府"; a.position = 2 }
+kanagawa = Area.find_or_create_by!(slug: "kanagawa") { |a| a.name = "神奈川県"; a.region = "関東"; a.position = 2 }
+yokohama = Area.find_or_create_by!(slug: "yokohama") { |a| a.name = "横浜"; a.parent = kanagawa; a.position = 1 }
+
+aichi = Area.find_or_create_by!(slug: "aichi") { |a| a.name = "愛知県"; a.region = "中部"; a.position = 3 }
+nagoya = Area.find_or_create_by!(slug: "nagoya") { |a| a.name = "名古屋"; a.parent = aichi; a.position = 1 }
+
+osaka = Area.find_or_create_by!(slug: "osaka") { |a| a.name = "大阪府"; a.region = "関西"; a.position = 4 }
 namba = Area.find_or_create_by!(slug: "namba") { |a| a.name = "難波"; a.parent = osaka; a.position = 1 }
 
 deriheru = Genre.find_or_create_by!(slug: "deriheru") { |g| g.name = "デリヘル"; g.position = 1 }

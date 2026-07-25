@@ -1,5 +1,6 @@
 <% content_for :title, @area.name %>
 <h1><%= @area.name %></h1>
+<p>地方: <%= @area.region || "-" %></p>
 <p>親エリア: <%= @area.parent&.name || "なし(都道府県)" %></p>
 <h2>子エリア</h2>
 <% @area.children.each do |child| %>

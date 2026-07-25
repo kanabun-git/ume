@@ -4,11 +4,12 @@
 <%= link_to "新規エリア登録", new_admin_area_path, class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>名前</th><th>親エリア</th><th>並び順</th><th></th></tr></thead>
+  <thead><tr><th>名前</th><th>地方</th><th>親エリア</th><th>並び順</th><th></th></tr></thead>
   <tbody>
     <% @areas.each do |area| %>
       <tr>
         <td><%= area.name %></td>
+        <td><%= area.region %></td>
         <td><%= area.parent&.name %></td>
         <td><%= area.position %></td>
         <td>

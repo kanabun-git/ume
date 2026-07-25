@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Ume Heaven" %></title>
+    <title><%= content_for(:title) || "FuzokuZero" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -19,7 +19,9 @@
   <body>
     <header class="site-header">
       <div class="container">
-        <%= link_to "Ume Heaven", root_path, class: "logo" %>
+        <%= link_to root_path, class: "logo" do %>
+          FuzokuZero <span class="tagline">ゼロから始める風俗体験</span>
+        <% end %>
         <nav>
           <%= link_to "エリアから探す", root_path %>
           <%= link_to "店舗一覧", shops_path %>

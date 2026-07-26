@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_26_011441) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_26_101141) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_26_011441) do
     t.string "region"
     t.index ["parent_id"], name: "index_areas_on_parent_id"
     t.index ["slug"], name: "index_areas_on_slug", unique: true
+  end
+
+  create_table "cast_page_blocks", force: :cascade do |t|
+    t.bigint "cast_id", null: false
+    t.integer "block_type", null: false
+    t.integer "layout_column", default: 0, null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "visible", default: true, null: false
+    t.string "title"
+    t.string "background_color"
+    t.decimal "background_opacity", precision: 3, scale: 2, default: "1.0", null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cast_id", "layout_column", "position"], name: "idx_on_cast_id_layout_column_position_f0031b6f4d"
+    t.index ["cast_id"], name: "index_cast_page_blocks_on_cast_id"
   end
 
   create_table "casts", force: :cascade do |t|
@@ -217,6 +233,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_26_011441) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "areas", "areas", column: "parent_id"
+  add_foreign_key "cast_page_blocks", "casts"
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
   add_foreign_key "diary_entries", "casts"

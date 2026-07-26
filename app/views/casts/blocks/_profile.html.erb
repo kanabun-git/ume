@@ -1,0 +1,9 @@
+<table class="profile-table">
+  <tr><th>名前</th><td><%= cast.alias_name.presence || cast.name %></td></tr>
+  <tr><th>年齢</th><td><%= cast.age %>歳</td></tr>
+  <tr><th>3サイズ</th><td>T<%= cast.height %> ・ B<%= cast.bust %>(<%= cast.cup %>) ・ W<%= cast.waist %> ・ H<%= cast.hip %></td></tr>
+  <% if cast.zodiac_sign.present? %><tr><th>星座</th><td><%= cast.zodiac_sign %></td></tr><% end %>
+  <% if cast.blood_type.present? %><tr><th>血液型</th><td><%= cast.blood_type %></td></tr><% end %>
+</table>
+<p><%= cast.catch_copy %></p>
+<p><%= simple_format cast.description.to_s %></p>

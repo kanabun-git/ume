@@ -7,107 +7,34 @@
 </h1>
 <p><%= link_to @shop.name, shop_path(@shop) %></p>
 
+<%# Blocks below are freely composed/ordered/hidden/styled by the shop admin
+    from /shop_admin/casts/:cast_id/page_blocks — see CastPageBlock. %>
 <div class="girl-detail-layout">
   <div class="girl-detail-main">
-    <div class="girl-main-image">
-      <% if @cast.photos.attached? %>
-        <%= image_tag @cast.photos.first, id: "girl-main-image" %>
-      <% else %>
-        <%= image_tag "nowprinting.svg", id: "girl-main-image" %>
-      <% end %>
-    </div>
-    <% if @cast.photos.attached? && @cast.photos.count > 1 %>
-      <div class="girl-thumbs">
-        <% @cast.photos.each do |photo| %>
-          <%= image_tag photo, onclick: "document.getElementById('girl-main-image').src=this.src" %>
-        <% end %>
-      </div>
-    <% end %>
-
-    <% if @cast.qa_message.present? %>
+    <% @cast.cast_page_blocks.visible.layout_column_main.each do |block| %>
+      <% next if block.block_type == "qa" && @cast.qa_message.blank? %>
+      <% next if block.block_type == "appeal_comment" && @cast.appeal_comment.blank? %>
+      <% next if block.block_type == "selling_points" && @cast.selling_points.blank? %>
+      <% next if block.block_type == "manager_comment" && @cast.manager_comment.blank? %>
+      <% next if block.block_type == "free_text" && block.settings["body"].blank? %>
       <div class="obi-block">
-        <div class="obi-header">女の子に質問</div>
-        <div class="obi-body"><%= simple_format @cast.qa_message %></div>
+        <div class="obi-header"><%= block.label %></div>
+        <div class="obi-body" style="<%= block.background_style %>">
+          <%= render "casts/blocks/#{block.block_type}", cast: @cast, block: block %>
+        </div>
       </div>
     <% end %>
-
-    <% if @cast.appeal_comment.present? %>
-      <div class="obi-block">
-        <div class="obi-header">アピールコメント</div>
-        <div class="obi-body"><%= simple_format @cast.appeal_comment %></div>
-      </div>
-    <% end %>
-
-    <% if @cast.manager_comment.present? %>
-      <div class="obi-block">
-        <div class="obi-header">店長からのコメント</div>
-        <div class="obi-body"><%= simple_format @cast.manager_comment %></div>
-      </div>
-    <% end %>
-
-    <% if @cast.selling_points.present? %>
-      <div class="obi-block">
-        <div class="obi-header">セールスポイント</div>
-        <div class="obi-body"><%= simple_format @cast.selling_points %></div>
-      </div>
-    <% end %>
-
-    <div class="obi-block">
-      <div class="obi-header">投稿!!写メ日記</div>
-      <div class="obi-body">
-        <% if @diary_entries.any? %>
-          <div class="girl-diary-grid">
-            <% @diary_entries.each do |entry| %>
-              <%= link_to cast_path(@cast, anchor: "diary-#{entry.id}"), class: "girl-diary-thumb" do %>
-                <% if entry.images.attached? %>
-                  <%= image_tag entry.images.first %>
-                <% else %>
-                  <%= image_tag "nowprinting.svg" %>
-                <% end %>
-                <span><%= truncate(entry.title, length: 16) %></span>
-              <% end %>
-            <% end %>
-          </div>
-        <% else %>
-          <p>まだ日記の投稿がありません。</p>
-        <% end %>
-      </div>
-    </div>
   </div>
 
   <div class="girl-detail-side">
-    <div class="obi-block">
-      <div class="obi-header">プロフィール</div>
-      <div class="obi-body">
-        <table class="profile-table">
-          <tr><th>名前</th><td><%= @cast.alias_name.presence || @cast.name %></td></tr>
-          <tr><th>年齢</th><td><%= @cast.age %>歳</td></tr>
-          <tr><th>3サイズ</th><td>T<%= @cast.height %> ・ B<%= @cast.bust %>(<%= @cast.cup %>) ・ W<%= @cast.waist %> ・ H<%= @cast.hip %></td></tr>
-          <% if @cast.zodiac_sign.present? %><tr><th>星座</th><td><%= @cast.zodiac_sign %></td></tr><% end %>
-          <% if @cast.blood_type.present? %><tr><th>血液型</th><td><%= @cast.blood_type %></td></tr><% end %>
-        </table>
-        <p><%= @cast.catch_copy %></p>
-        <p><%= simple_format @cast.description.to_s %></p>
+    <% @cast.cast_page_blocks.visible.layout_column_side.each do |block| %>
+      <div class="obi-block">
+        <div class="obi-header"><%= block.label %></div>
+        <div class="obi-body" style="<%= block.background_style %>">
+          <%= render "casts/blocks/#{block.block_type}", cast: @cast, block: block %>
+        </div>
       </div>
-    </div>
-
-    <div class="obi-block">
-      <div class="obi-header">出勤情報</div>
-      <div class="obi-body">
-        <% if @upcoming_shifts.any? %>
-          <div class="girl-shift-row">
-            <% @upcoming_shifts.each do |shift| %>
-              <div class="girl-shift-day">
-                <div class="date"><%= shift.work_date.strftime("%-m/%-d") %>(<%= %w[日 月 火 水 木 金 土][shift.work_date.wday] %>)</div>
-                <div class="time"><%= shift.start_time.strftime("%H:%M") %><br>-<br><%= shift.end_time.strftime("%H:%M") %></div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <p>出勤予定は未定です。</p>
-        <% end %>
-      </div>
-    </div>
+    <% end %>
   </div>
 </div>
 

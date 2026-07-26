@@ -34,7 +34,15 @@ Rails.application.routes.draw do
   namespace :shop_admin do
     root to: "dashboard#show"
     resource :shop, only: [:edit, :update]
-    resources :casts
+    resources :casts do
+      resources :cast_page_blocks, path: "page_blocks" do
+        member do
+          patch :move_up
+          patch :move_down
+          patch :toggle_visibility
+        end
+      end
+    end
     resources :diary_entries, only: [:index, :show]
     resources :reviews, only: [:index]
     resources :shop_page_blocks do

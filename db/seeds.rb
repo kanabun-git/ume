@@ -197,12 +197,14 @@ additional_casts.each do |attrs|
   attach_placeholder_photo(cast, color)
 end
 
-# Existing shops created before the block CMS shipped won't have picked up
-# the after_create default blocks; this call is idempotent (no-ops once the
-# shop already has any blocks).
+# Existing shops/casts created before the block CMS shipped won't have
+# picked up the after_create default blocks; these calls are idempotent
+# (no-op once the record already has any blocks).
 shop.seed_default_page_blocks
 free_text_block = shop.shop_page_blocks.find_by(block_type: :free_text)
 free_text_block&.update!(settings: { "body" => "当店は新宿エリアで長年愛されるデリヘル店です。スタッフ一同、心を込めておもてなしいたします。" })
+
+([cast1, cast2] + additional_casts.map { |attrs| Cast.find_by(shop: shop, name: attrs[:name]) }).each(&:seed_default_page_blocks)
 
 DiaryEntry.find_or_create_by!(cast: cast1, title: "本日出勤します！") do |d|
   d.body = "本日20時から出勤します。皆様にお会いできるのを楽しみにしています。"

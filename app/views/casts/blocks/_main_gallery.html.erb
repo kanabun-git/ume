@@ -1,0 +1,14 @@
+<div class="girl-main-image">
+  <% if cast.photos.attached? %>
+    <%= image_tag cast.photos.first, id: "girl-main-image" %>
+  <% else %>
+    <%= image_tag "nowprinting.svg", id: "girl-main-image" %>
+  <% end %>
+</div>
+<% if cast.photos.attached? && cast.photos.count > 1 %>
+  <div class="girl-thumbs">
+    <% cast.photos.each do |photo| %>
+      <%= image_tag photo, onclick: "document.getElementById('girl-main-image').src=this.src" %>
+    <% end %>
+  </div>
+<% end %>

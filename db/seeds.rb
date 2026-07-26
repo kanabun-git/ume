@@ -224,6 +224,28 @@ Shift.find_or_create_by!(cast: cast2, work_date: Date.tomorrow) do |s|
   s.status = :scheduled
 end
 
+# A fuller shift spread across the week so the "週間出勤予定" block (日付
+# タブ + 横5名グリッド) has enough data to demonstrate tab switching and
+# row wrapping past 5 people.
+all_casts = [cast1, cast2] + additional_casts.map { |attrs| Cast.find_by(shop: shop, name: attrs[:name]) }
+shift_times = [
+  ["12:00", "17:00"], ["12:00", "20:00"], ["13:00", "18:00"], ["14:00", "22:00"],
+  ["15:00", "20:00"], ["16:00", "23:00"], ["17:00", "22:00"], ["18:00", "23:30"],
+  ["19:00", "24:00"], ["20:00", "23:59"],
+]
+[0, 1, 2].each do |day_offset|
+  work_date = Date.current + day_offset
+  casts_today = day_offset.zero? ? all_casts : all_casts.first((all_casts.size * 0.6).round)
+  casts_today.each_with_index do |cast, i|
+    start_time, end_time = shift_times[i % shift_times.size]
+    Shift.find_or_create_by!(cast: cast, work_date: work_date) do |s|
+      s.start_time = start_time
+      s.end_time = end_time
+      s.status = :scheduled
+    end
+  end
+end
+
 Review.find_or_create_by!(shop: shop, cast: cast1, reviewer_name: "利用者A") do |r|
   r.rating = 5
   r.body = "とても丁寧な対応で癒されました。また利用したいです。"

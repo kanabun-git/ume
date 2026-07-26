@@ -1,24 +1,50 @@
 <% dates = (Date.current..(Date.current + 6)).to_a %>
-<div class="weekly-schedule-grid">
-  <% dates.each do |date| %>
-    <% shifts_today = Shift.joins(:cast).where(casts: { shop_id: shop.id }, work_date: date, status: :scheduled).order(:start_time) %>
-    <div class="weekly-schedule-day">
-      <div class="weekly-schedule-date"><%= date.strftime("%-m/%-d") %>(<%= %w[日 月 火 水 木 金 土][date.wday] %>)</div>
+<div class="weekly-schedule-block">
+  <div class="weekly-tabs">
+    <% dates.each_with_index do |date, i| %>
+      <button type="button" class="weekly-tab<%= " active" if i.zero? %>" data-day-index="<%= i %>" onclick="weeklyScheduleShowDay(this, <%= i %>)">
+        <% if i.zero? %>
+          本日<br><span class="weekly-tab-date"><%= date.strftime("%-m/%-d") %></span>
+        <% else %>
+          <%= date.strftime("%-m/%-d") %><br>(<%= %w[日 月 火 水 木 金 土][date.wday] %>)
+        <% end %>
+      </button>
+    <% end %>
+  </div>
+
+  <% dates.each_with_index do |date, i| %>
+    <% shifts_today = Shift.joins(:cast).where(casts: { shop_id: shop.id, status: :active }, work_date: date, status: :scheduled).order(:start_time) %>
+    <div class="weekly-day-grid" data-day-index="<%= i %>"<% unless i.zero? %> style="display:none;"<% end %>>
       <% if shifts_today.any? %>
         <% shifts_today.each do |shift| %>
-          <%= link_to cast_path(shift.cast), class: "weekly-schedule-cast" do %>
+          <%= link_to cast_path(shift.cast), class: "weekly-cast-card" do %>
             <% if shift.cast.photos.attached? %>
               <%= image_tag shift.cast.photos.first %>
             <% else %>
               <%= image_tag "nowprinting.svg" %>
             <% end %>
-            <div class="weekly-schedule-name"><%= shift.cast.name %></div>
-            <div class="weekly-schedule-time"><%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></div>
+            <div class="weekly-cast-overlay">
+              <div class="weekly-cast-time">⏰<%= shift.start_time.strftime("%H:%M") %>〜<%= shift.end_time.strftime("%H:%M") %></div>
+              <div class="weekly-cast-name"><%= shift.cast.alias_name.presence || shift.cast.name %>(<%= shift.cast.age %>歳)</div>
+              <div class="weekly-cast-size">T<%= shift.cast.height %>・<%= shift.cast.bust %>(<%= shift.cast.cup %>)・<%= shift.cast.waist %>・<%= shift.cast.hip %></div>
+            </div>
           <% end %>
         <% end %>
       <% else %>
-        <p class="weekly-schedule-empty">-</p>
+        <p class="weekly-schedule-empty">この日の出勤予定はありません。</p>
       <% end %>
     </div>
   <% end %>
 </div>
+
+<script>
+  function weeklyScheduleShowDay(button, index) {
+    var block = button.closest(".weekly-schedule-block");
+    block.querySelectorAll(".weekly-day-grid").forEach(function(el) {
+      el.style.display = (el.dataset.dayIndex == index) ? "" : "none";
+    });
+    block.querySelectorAll(".weekly-tab").forEach(function(el) {
+      el.classList.toggle("active", el.dataset.dayIndex == index);
+    });
+  }
+</script>

@@ -67,6 +67,16 @@ main { padding: 24px 0 60px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 
+/* Cast card listings are a fixed 5-across on desktop (rather than the
+   auto-fill `.grid`) so 在籍キャスト matches the 週間出勤 grid below it. */
+.cast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+@media (max-width: 900px) {
+  .cast-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+  .cast-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 .cast-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; }
 .cast-card h3 { margin: 8px 0 4px; font-size: 1rem; }
 .badge { display: inline-block; background: var(--brand); color: #fff; font-size: .75rem; padding: 2px 8px; border-radius: 10px; }
@@ -306,7 +316,7 @@ form.form textarea { min-height: 120px; }
 .block-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
 .block-photo-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #eee; }
 
-.weekly-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+.weekly-tabs { display: flex; justify-content: center; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
 .weekly-tab {
   flex: 0 0 auto; min-width: 60px; padding: 8px 10px; border: none; border-radius: 20px;
   background: #f2f2f2; color: var(--text); font-size: .78rem; text-align: center;
@@ -337,3 +347,64 @@ form.form textarea { min-height: 120px; }
 
 .block-video-wrapper { position: relative; width: 100%; padding-top: 56.25%; }
 .block-video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; }
+
+/* --- Site-wide responsive layer ----------------------------------------
+   Kept last so these overrides win over the component rules above. Most
+   components already collapse via their own breakpoints; this section
+   covers the chrome (header nav, admin sidebar) and the elements that
+   otherwise force horizontal page scroll on a phone (wide tables, media). */
+
+/* Never let a stray wide child scroll the whole page sideways. */
+html, body { overflow-x: hidden; }
+img, video, iframe { max-width: 100%; }
+
+/* Wide data tables scroll inside their own box rather than the page. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 900px) {
+  /* Admin screens: sidebar becomes a horizontal strip above the content. */
+  .admin-shell { flex-direction: column; min-height: 0; }
+  .admin-shell .sidebar {
+    width: 100%; padding: 12px 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+  }
+  .admin-shell .sidebar .brand { padding: 0 12px; font-size: 1rem; width: 100%; }
+  .admin-shell .sidebar a { padding: 6px 12px; font-size: .9rem; }
+  .admin-shell .content { padding: 16px; }
+
+  table.admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+@media (max-width: 768px) {
+  /* Header: logo stacks above a wrapping nav instead of overflowing. */
+  header.site-header .container { flex-direction: column; align-items: flex-start; gap: 8px; }
+  header.site-header .logo { font-size: 1.15rem; flex-wrap: wrap; gap: 4px; }
+  header.site-header nav { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  header.site-header nav a { margin-left: 0; font-size: .9rem; }
+
+  main { padding: 16px 0 40px; }
+  .card { padding: 12px; }
+
+  .shop-listing-head-right { text-align: left; }
+  .girl-main-image img { max-height: 60vh; }
+  .obi-body { padding: 12px; }
+}
+
+@media (max-width: 560px) {
+  .container, .flash { padding-left: 12px; padding-right: 12px; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.15rem; }
+  .hero { padding: 20px 16px; }
+  .hero-title { font-size: 1.2rem; }
+
+  /* Photo strip on shop cards: 2-up rather than a fixed 240px block. */
+  .shop-listing-photos { width: 100%; grid-template-columns: repeat(2, 1fr); }
+
+  /* Full-width tap targets for form submits (not the inline buttons that
+     live inside admin table rows, which must stay compact). */
+  form.form .btn { width: 100%; text-align: center; }
+
+  /* Tabs start at the left edge once they overflow, so the first (本日)
+     tab is visible instead of being centered out of view. */
+  .weekly-tabs { justify-content: flex-start; }
+}

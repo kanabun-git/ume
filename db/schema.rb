@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_26_102440) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_26_232945) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,6 +151,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_26_102440) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "ends_next_day", default: false, null: false
     t.index ["cast_id"], name: "index_shifts_on_cast_id"
   end
 
@@ -208,6 +209,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_26_102440) do
     t.boolean "event_ongoing", default: false, null: false
     t.boolean "recruiting_cast", default: false, null: false
     t.boolean "recruiting_staff", default: false, null: false
+    t.integer "time_display_format", default: 0, null: false
     t.index ["area_id"], name: "index_shops_on_area_id"
     t.index ["genre_id"], name: "index_shops_on_genre_id"
     t.index ["plan_id"], name: "index_shops_on_plan_id"

@@ -12,6 +12,14 @@ class Shop < ApplicationRecord
   has_many_attached :photos
 
   enum :status, { pending: 0, approved: 1, suspended: 2 }, default: :pending
+  # How times past midnight are shown on this shop's pages:
+  # standard -> 02:00, extended -> 26:00.
+  enum :time_display_format, { standard: 0, extended: 1 }, default: :standard, prefix: :time_format
+
+  TIME_DISPLAY_FORMAT_LABELS = {
+    "standard" => "24時間表記 (例: 深夜2時 → 02:00)",
+    "extended" => "延長表記 (例: 深夜2時 → 26:00)",
+  }.freeze
 
   validates :name, presence: true
 

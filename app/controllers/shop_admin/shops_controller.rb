@@ -27,7 +27,7 @@ module ShopAdmin
     # (see Admin::ShopsController).
     def shop_params
       params.require(:shop).permit(
-        :catch_copy, :description, :address, :phone, :business_hours,
+        :catch_copy, :description, :address, :phone, :business_hours, :time_display_format,
         :price_note, :transportation_fee_note, :coverage_area_note,
         :coupon_description, :recruiting_message,
         :online_reservation, :visit_point_program, :coupon_available,

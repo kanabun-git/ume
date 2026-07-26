@@ -11,7 +11,7 @@
 
 <h2>出勤予定</h2>
 <% @cast.upcoming_shifts.each do |shift| %>
-  <p><%= shift.work_date %> <%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></p>
+  <p><%= shift.work_date %> <%= shift.formatted_time_range(current_shop.time_display_format) %><% if shift.ends_next_day? %> <span class="tag-badge">翌日まで</span><% end %></p>
 <% end %>
 
 <%= link_to "編集", edit_shop_admin_cast_path(@cast), class: "btn" %>

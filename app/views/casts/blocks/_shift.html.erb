@@ -4,7 +4,7 @@
     <% shifts.each do |shift| %>
       <div class="girl-shift-day">
         <div class="date"><%= shift.work_date.strftime("%-m/%-d") %>(<%= %w[日 月 火 水 木 金 土][shift.work_date.wday] %>)</div>
-        <div class="time"><%= shift.start_time.strftime("%H:%M") %><br>-<br><%= shift.end_time.strftime("%H:%M") %></div>
+        <div class="time"><%= shift.formatted_start_time %><br>-<br><%= shift.formatted_end_time(cast.shop.time_display_format) %></div>
       </div>
     <% end %>
   </div>

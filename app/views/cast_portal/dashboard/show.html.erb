@@ -18,7 +18,7 @@
   <div class="card">
     <h2>今後の出勤予定</h2>
     <% @upcoming_shifts.each do |shift| %>
-      <p><%= shift.work_date %> <%= shift.start_time.strftime("%H:%M") %>-<%= shift.end_time.strftime("%H:%M") %></p>
+      <p><%= shift.work_date %> <%= shift.formatted_time_range %><% if shift.ends_next_day? %> <span class="tag-badge">翌日まで</span><% end %></p>
     <% end %>
     <%= link_to "出勤予定を登録する", new_cast_shift_path, class: "btn" %>
   </div>

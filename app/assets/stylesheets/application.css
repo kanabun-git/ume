@@ -351,6 +351,12 @@ form.form textarea { min-height: 120px; }
 .weekly-cast-time { font-size: .7rem; }
 .weekly-cast-name { font-size: .8rem; font-weight: bold; margin-top: 2px; }
 .weekly-cast-size { font-size: .62rem; opacity: .9; margin-top: 1px; }
+.weekly-cast-catch { font-size: .65rem; opacity: .95; margin-top: 3px; }
+.weekly-cast-badge {
+  position: absolute; top: 6px; left: 6px; z-index: 1;
+  background: #b5204f; color: #fff; font-size: .65rem;
+  padding: 2px 6px; border-radius: 3px;
+}
 .weekly-schedule-empty { text-align: center; color: var(--muted); font-size: .85rem; padding: 20px 0; }
 
 @media (max-width: 900px) {

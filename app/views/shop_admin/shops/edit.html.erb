@@ -28,6 +28,9 @@
   <label>営業時間</label>
   <%= f.text_field :business_hours %>
 
+  <label>時刻の表記方法(出勤時間の表示に適用されます)</label>
+  <%= f.select :time_display_format, Shop::TIME_DISPLAY_FORMAT_LABELS.map { |value, label| [label, value] } %>
+
   <label>料金(例: 50分10000円〜)</label>
   <%= f.text_field :price_note %>
 

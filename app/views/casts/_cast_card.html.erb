@@ -1,14 +1,20 @@
-<div class="card cast-card">
-  <%= link_to cast_path(cast) do %>
-    <% if cast.photos.attached? %>
-      <%= image_tag cast.photos.first %>
-    <% else %>
-      <%= image_tag "nowprinting.svg", style: "width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px;" %>
-    <% end %>
-    <h3>
-      <%= cast.alias_name.presence || cast.name %> (<%= cast.age %>)
-      <% if cast.is_trial? %><span class="tag-badge highlight">体験入店</span><% end %>
-    </h3>
+<%# Same visual treatment as the 週間出勤 cards (weekly-cast-card): a 3:4
+    photo with the name/age/sizes overlaid on a gradient, so cast images are
+    consistent everywhere they appear on the shop detail page. %>
+<%= link_to cast_path(cast), class: "weekly-cast-card" do %>
+  <% if cast.photos.attached? %>
+    <%= image_tag cast.photos.first %>
+  <% else %>
+    <%= image_tag "nowprinting.svg" %>
   <% end %>
-  <p><%= truncate(cast.catch_copy.to_s, length: 30) %></p>
-</div>
+  <% if cast.is_trial? %>
+    <span class="weekly-cast-badge">体験入店</span>
+  <% end %>
+  <div class="weekly-cast-overlay">
+    <div class="weekly-cast-name"><%= cast.alias_name.presence || cast.name %>(<%= cast.age %>歳)</div>
+    <div class="weekly-cast-size">T<%= cast.height %>・<%= cast.bust %>(<%= cast.cup %>)・<%= cast.waist %>・<%= cast.hip %></div>
+    <% if cast.catch_copy.present? %>
+      <div class="weekly-cast-catch"><%= truncate(cast.catch_copy, length: 22) %></div>
+    <% end %>
+  </div>
+<% end %>

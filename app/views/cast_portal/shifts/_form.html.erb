@@ -16,6 +16,8 @@
   <label>終了時刻</label>
   <%= f.time_field :end_time %>
 
+  <label><%= f.check_box :ends_next_day %> 終了時刻が翌日にまたぐ(例: 20:00〜翌2:00)</label>
+
   <label>備考</label>
   <%= f.text_field :note %>
 

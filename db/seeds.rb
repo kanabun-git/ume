@@ -66,6 +66,7 @@ shop.assign_attributes(
   recruiting_cast: true,
   recruiting_staff: false,
   recruiting_message: "未経験大歓迎!日給保証あり、まずはお気軽にご応募ください。",
+  time_display_format: :extended,
   editor_review: "新宿を中心に展開する人気店。厳選されたキャストと丁寧な接客で高い評価を得ている。"
 )
 shop.save!
@@ -212,37 +213,33 @@ DiaryEntry.find_or_create_by!(cast: cast1, title: "本日出勤します！") do
   d.published_at = Time.current
 end
 
-Shift.find_or_create_by!(cast: cast1, work_date: Date.tomorrow) do |s|
-  s.start_time = "18:00"
-  s.end_time = "23:30"
-  s.status = :scheduled
-end
-
-Shift.find_or_create_by!(cast: cast2, work_date: Date.tomorrow) do |s|
-  s.start_time = "20:00"
-  s.end_time = "23:59"
-  s.status = :scheduled
-end
-
 # A fuller shift spread across the week so the "週間出勤予定" block (日付
 # タブ + 横5名グリッド) has enough data to demonstrate tab switching and
-# row wrapping past 5 people.
+# row wrapping past 5 people. The last few entries end after midnight so the
+# 日またぎ handling and the 26:00-style display are exercised too.
 all_casts = [cast1, cast2] + additional_casts.map { |attrs| Cast.find_by(shop: shop, name: attrs[:name]) }
 shift_times = [
-  ["12:00", "17:00"], ["12:00", "20:00"], ["13:00", "18:00"], ["14:00", "22:00"],
-  ["15:00", "20:00"], ["16:00", "23:00"], ["17:00", "22:00"], ["18:00", "23:30"],
-  ["19:00", "24:00"], ["20:00", "23:59"],
+  ["12:00", "17:00", false], ["12:00", "20:00", false], ["13:00", "18:00", false],
+  ["14:00", "22:00", false], ["15:00", "20:00", false], ["16:00", "23:00", false],
+  ["17:00", "22:00", false], ["18:00", "23:30", false],
+  ["19:00", "01:00", true],  ["20:00", "02:00", true],
 ]
 [0, 1, 2].each do |day_offset|
   work_date = Date.current + day_offset
   casts_today = day_offset.zero? ? all_casts : all_casts.first((all_casts.size * 0.6).round)
   casts_today.each_with_index do |cast, i|
-    start_time, end_time = shift_times[i % shift_times.size]
-    Shift.find_or_create_by!(cast: cast, work_date: work_date) do |s|
-      s.start_time = start_time
-      s.end_time = end_time
-      s.status = :scheduled
-    end
+    start_time, end_time, ends_next_day = shift_times[i % shift_times.size]
+    # find_or_initialize + save! (not find_or_create_by!) so re-running
+    # db:seed backfills columns added later, like ends_next_day, onto rows
+    # that already exist from an earlier run.
+    shift = Shift.find_or_initialize_by(cast: cast, work_date: work_date)
+    shift.assign_attributes(
+      start_time: start_time,
+      end_time: end_time,
+      ends_next_day: ends_next_day,
+      status: :scheduled
+    )
+    shift.save!
   end
 end
 

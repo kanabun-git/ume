@@ -46,7 +46,7 @@ module CastPortal
     end
 
     def shift_params
-      params.require(:shift).permit(:work_date, :start_time, :end_time, :note, :status)
+      params.require(:shift).permit(:work_date, :start_time, :end_time, :ends_next_day, :note, :status)
     end
   end
 end

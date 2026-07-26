@@ -24,7 +24,7 @@
               <%= image_tag "nowprinting.svg" %>
             <% end %>
             <div class="weekly-cast-overlay">
-              <div class="weekly-cast-time">⏰<%= shift.start_time.strftime("%H:%M") %>〜<%= shift.end_time.strftime("%H:%M") %></div>
+              <div class="weekly-cast-time">⏰<%= shift.formatted_start_time %>〜<%= shift.formatted_end_time(shop.time_display_format) %></div>
               <div class="weekly-cast-name"><%= shift.cast.alias_name.presence || shift.cast.name %>(<%= shift.cast.age %>歳)</div>
               <div class="weekly-cast-size">T<%= shift.cast.height %>・<%= shift.cast.bust %>(<%= shift.cast.cup %>)・<%= shift.cast.waist %>・<%= shift.cast.hip %></div>
             </div>

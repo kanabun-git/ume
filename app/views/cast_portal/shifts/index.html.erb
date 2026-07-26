@@ -9,7 +9,7 @@
     <% @shifts.each do |shift| %>
       <tr>
         <td><%= shift.work_date %></td>
-        <td><%= shift.start_time.strftime("%H:%M") %> - <%= shift.end_time.strftime("%H:%M") %></td>
+        <td><%= shift.formatted_time_range %><% if shift.ends_next_day? %> <span class="tag-badge">翌日まで</span><% end %></td>
         <td><%= shift.note %></td>
         <td><%= status_label(shift) %></td>
         <td>

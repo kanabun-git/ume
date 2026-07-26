@@ -33,6 +33,8 @@ gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
+# Pure-Ruby PNG generation, used to build seed-data placeholder avatars
+gem "chunky_png"
 
 # Authentication
 gem "devise"

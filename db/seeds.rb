@@ -136,6 +136,67 @@ cast2.assign_attributes(
 )
 cast2.save!
 
+# Simple procedurally-generated placeholder avatars (a plain color gradient)
+# so every sample cast has a "photo" without using any real person's
+# likeness. Rendered as a real PNG (via chunky_png, pure Ruby, no
+# ImageMagick/libvips binary needed) since ActiveStorage does not serve
+# SVG blobs inline by default (they're treated as downloads, a built-in
+# XSS safeguard) and would show up as broken images in <img> tags.
+def placeholder_avatar_png(hex_color)
+  width, height = 300, 400
+  base = ChunkyPNG::Color.from_hex(hex_color)
+  r, g, b = ChunkyPNG::Color.r(base), ChunkyPNG::Color.g(base), ChunkyPNG::Color.b(base)
+  image = ChunkyPNG::Image.new(width, height, base)
+  height.times do |y|
+    shade = 1.0 - (0.25 * (y / height.to_f))
+    row_color = ChunkyPNG::Color.rgb((r * shade).round, (g * shade).round, (b * shade).round)
+    image.line(0, y, width - 1, y, row_color)
+  end
+  image.to_blob
+end
+
+def attach_placeholder_photo(cast, color)
+  return if cast.photos.attached?
+
+  cast.photos.attach(
+    io: StringIO.new(placeholder_avatar_png(color)),
+    filename: "#{cast.name}.png",
+    content_type: "image/png"
+  )
+end
+
+attach_placeholder_photo(cast1, "#e8768f")
+attach_placeholder_photo(cast2, "#c76b9c")
+
+# Additional sample casts (総勢10名になるよう追加) so listing/ranking/pickup
+# UIも実データに近い状態で確認できるようにする。
+additional_casts = [
+  { name: "さくら", alias_name: "さくらちゃん", age: 21, height: 156, bust: 83, cup: "C", waist: 56, hip: 84,
+    catch_copy: "笑顔が可愛いアイドル系", zodiac_sign: "ふたご座", blood_type: "O型", pick_up: true, color: "#e0729a" },
+  { name: "りお", alias_name: "りおちゃん", age: 24, height: 160, bust: 86, cup: "D", waist: 57, hip: 87,
+    catch_copy: "クールビューティー", zodiac_sign: "みずがめ座", blood_type: "AB型", manager_recommended: true, color: "#9a6bc4" },
+  { name: "こはる", alias_name: "こはるちゃん", age: 20, height: 154, bust: 81, cup: "C", waist: 55, hip: 83,
+    catch_copy: "新人!元気いっぱい系", zodiac_sign: "おひつじ座", blood_type: "A型", is_trial: true, color: "#e2a13f" },
+  { name: "あかり", alias_name: "あかりちゃん", age: 27, height: 163, bust: 90, cup: "F", waist: 60, hip: 90,
+    catch_copy: "包容力抜群のお姉さん", zodiac_sign: "しし座", blood_type: "B型", pick_up: true, color: "#c94f4f" },
+  { name: "めい", alias_name: "めいちゃん", age: 23, height: 159, bust: 85, cup: "D", waist: 58, hip: 86,
+    catch_copy: "甘えん坊な妹系", zodiac_sign: "かに座", blood_type: "O型", color: "#4f9bc9" },
+  { name: "りん", alias_name: "りんちゃん", age: 26, height: 161, bust: 87, cup: "E", waist: 59, hip: 88,
+    catch_copy: "上品な清楚系美人", zodiac_sign: "てんびん座", blood_type: "A型", color: "#5fa878" },
+  { name: "かのん", alias_name: "かのんちゃん", age: 22, height: 157, bust: 82, cup: "C", waist: 56, hip: 85,
+    catch_copy: "小悪魔テクニシャン", zodiac_sign: "さそり座", blood_type: "B型", color: "#b06bc9" },
+  { name: "ののか", alias_name: "ののかちゃん", age: 25, height: 158, bust: 89, cup: "F", waist: 58, hip: 89,
+    catch_copy: "グラマラスな人気No.1", zodiac_sign: "やぎ座", blood_type: "O型", pick_up: true, color: "#d97b3f" },
+]
+
+additional_casts.each do |attrs|
+  color = attrs.delete(:color)
+  cast = Cast.find_or_initialize_by(shop: shop, name: attrs[:name])
+  cast.assign_attributes(attrs.merge(status: :active))
+  cast.save!
+  attach_placeholder_photo(cast, color)
+end
+
 # Existing shops created before the block CMS shipped won't have picked up
 # the after_create default blocks; this call is idempotent (no-ops once the
 # shop already has any blocks).

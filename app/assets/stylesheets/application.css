@@ -388,6 +388,12 @@ img, video, iframe { max-width: 100%; }
   .shop-listing-head-right { text-align: left; }
   .girl-main-image img { max-height: 60vh; }
   .obi-body { padding: 12px; }
+
+  /* Section headings (home page): the "…を見る >" link drops below the
+     title instead of being squeezed against it and forcing the title to
+     wrap mid-word. */
+  .home-section-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .home-section { margin-top: 24px; }
 }
 
 @media (max-width: 560px) {
@@ -397,8 +403,19 @@ img, video, iframe { max-width: 100%; }
   .hero { padding: 20px 16px; }
   .hero-title { font-size: 1.2rem; }
 
-  /* Photo strip on shop cards: 2-up rather than a fixed 240px block. */
-  .shop-listing-photos { width: 100%; grid-template-columns: repeat(2, 1fr); }
+  /* Photo strip on shop cards: a compact 4-across thumbnail row rather
+     than a full-width 2x2 block, which otherwise ate ~500px of vertical
+     space before any of the shop's actual details were visible. */
+  .shop-listing-photos { width: 100%; grid-template-columns: repeat(4, 1fr); }
+  .shop-listing-recruit { position: static; margin-top: 4px; grid-column: 1 / -1; }
+
+  /* Detail rows stack label-over-value; the 70px floated label column
+     left too little room for values like the 対応エリア list. */
+  .shop-listing-facts dt { float: none; width: auto; margin-bottom: 0; }
+  .shop-listing-facts dd { margin: 0 0 8px; }
+
+  .shop-listing-name { font-size: 1.1rem; }
+  .shop-listing-coupon { font-size: .85rem; padding: 8px 10px; }
 
   /* Full-width tap targets for form submits (not the inline buttons that
      live inside admin table rows, which must stay compact). */

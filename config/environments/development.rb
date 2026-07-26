@@ -85,4 +85,12 @@ Rails.application.configure do
   # "Blocked hosts" error since they don't match localhost.
   config.hosts << /.*\.app\.github\.dev/
   config.hosts << /.*\.gitpod\.io/
+
+  # Codespaces/VS Code port forwarding can present a request whose Origin
+  # header (e.g. https://localhost:3000, when accessed via the VS Code
+  # Desktop tunnel) doesn't match request.base_url (the public
+  # *.app.github.dev URL the forwarding proxy reports to Rails). Rails'
+  # CSRF Origin check then rejects the otherwise-valid login/form submit
+  # with InvalidAuthenticityToken. Safe to relax in development only.
+  config.action_controller.forgery_protection_origin_check = false
 end

@@ -12,6 +12,7 @@
           <%= link_to cast.name, shop_admin_cast_path(cast) %>
           <% if cast.is_trial? %><span class="tag-badge highlight">体験入店</span><% end %>
           <% if cast.manager_recommended? %><span class="tag-badge">店長おすすめ</span><% end %>
+          <% if cast.pick_up? %><span class="tag-badge">ピックアップ</span><% end %>
         </td>
         <td><%= cast.age %></td>
         <td><%= status_label(cast) %></td>

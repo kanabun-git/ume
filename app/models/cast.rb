@@ -17,6 +17,7 @@ class Cast < ApplicationRecord
   scope :visible, -> { active }
   scope :trial, -> { where(is_trial: true) }
   scope :manager_recommended, -> { where(manager_recommended: true) }
+  scope :pick_up, -> { where(pick_up: true) }
 
   def upcoming_shifts
     shifts.where(status: :scheduled).where("work_date >= ?", Date.current).order(:work_date, :start_time)

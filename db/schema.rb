@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_25_225354) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_26_011441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -79,6 +79,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_25_225354) do
     t.text "qa_message"
     t.string "zodiac_sign"
     t.string "blood_type"
+    t.boolean "pick_up", default: false, null: false
     t.index ["shop_id"], name: "index_casts_on_shop_id"
     t.index ["user_id"], name: "index_casts_on_user_id", unique: true
   end

@@ -95,9 +95,9 @@ main { padding: 24px 0 60px; }
 .tag-badge.recruit { background: #fff8e1; color: #9a6b00; border-color: #e0b23a; }
 
 .shop-listing-body { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
-.shop-listing-photos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; width: 220px; flex: 0 0 auto; }
-.shop-listing-photos img, .shop-listing-photo-placeholder { width: 100%; height: 90px; object-fit: cover; border-radius: 4px; background: #eee; display: block; }
-.shop-listing-recruit { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.shop-listing-photos { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; width: 240px; flex: 0 0 auto; }
+.shop-listing-photos img, .shop-listing-photo-placeholder { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; background: #eee; display: block; }
+.shop-listing-recruit { position: absolute; left: 6px; bottom: 6px; display: flex; gap: 4px; flex-wrap: wrap; }
 
 .shop-listing-info { flex: 1; min-width: 240px; }
 .shop-listing-facts { margin: 0 0 10px; }
@@ -107,11 +107,11 @@ main { padding: 24px 0 60px; }
 .shop-listing-catch { margin: 8px 0 0; font-size: .9rem; color: var(--text); }
 
 .shop-listing-coupon {
-  margin-top: 12px; background: #e9f7ee; border: 1px dashed #58a86e; border-radius: 6px;
-  padding: 10px 12px; font-size: .85rem; color: #1a6b3a;
+  margin-top: 12px; background: #fff0f4; border: 2px solid var(--brand); border-radius: 6px;
+  padding: 10px 14px; font-size: .95rem; font-weight: bold; color: var(--brand-dark);
 }
 .coupon-flag {
-  display: inline-block; background: #2f9e52; color: #fff; font-size: .7rem;
+  display: inline-block; background: var(--brand); color: #fff; font-size: .7rem;
   padding: 2px 8px; border-radius: 3px; margin-right: 8px; font-weight: bold;
 }
 

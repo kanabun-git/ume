@@ -25,11 +25,16 @@
   <% end %>
 
   <div class="shop-listing-body">
+    <% pickup_casts = shop.casts.visible.pick_up.limit(4) %>
     <div class="shop-listing-photos">
-      <% if shop.photos.attached? %>
-        <% shop.photos.first(4).each do |photo| %>
+      <% if pickup_casts.any? %>
+        <% pickup_casts.each do |cast| %>
           <%= link_to shop_path(shop) do %>
-            <%= image_tag photo %>
+            <% if cast.photos.attached? %>
+              <%= image_tag cast.photos.first %>
+            <% else %>
+              <%= image_tag "nowprinting.svg" %>
+            <% end %>
           <% end %>
         <% end %>
       <% else %>

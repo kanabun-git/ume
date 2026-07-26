@@ -41,6 +41,23 @@ module CastPortal
       redirect_to cast_diary_entries_path, notice: "日記を削除しました。"
     end
 
+    # Returns an AI-drafted body for the diary form to fill in. The cast
+    # always reviews/edits before saving — nothing is persisted here.
+    def generate_draft
+      authorize ::DiaryEntry.new(cast: current_cast_profile), :create?
+
+      # `::`-prefixed: inside `module CastPortal` a bare constant would be
+      # looked up as CastPortal::DiaryDraftGenerator and fail.
+      body = ::DiaryDraftGenerator.new(
+        cast: current_cast_profile,
+        instruction: params[:instruction]
+      ).call
+
+      render json: { body: body }
+    rescue ::DiaryDraftGenerator::GenerationError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+
     private
 
     def set_diary_entry

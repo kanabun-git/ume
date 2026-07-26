@@ -161,6 +161,21 @@ form.form textarea { min-height: 120px; }
 .admin-shell .content { flex: 1; padding: 24px; }
 
 .errors { background: #fdecec; border: 1px solid #f5b8c4; color: #b5204f; padding: 10px 14px; border-radius: 4px; margin-bottom: 12px; }
+
+/* AI drafting assistant on the cast's diary form */
+.ai-assist {
+  margin: 16px 0; padding: 14px; border: 1px dashed var(--brand);
+  border-radius: 8px; background: #fff7f9;
+}
+.ai-assist-head { margin-bottom: 8px; }
+.ai-assist-title { font-weight: bold; color: var(--brand-dark); margin-right: 8px; }
+.ai-assist-head small { color: var(--muted); font-size: .8rem; }
+.ai-assist-input {
+  width: 100%; min-height: 60px; padding: 8px; border: 1px solid var(--border);
+  border-radius: 4px; font-size: .95rem; font-family: inherit;
+}
+.ai-assist .btn { margin-top: 8px; }
+.ai-assist-status { display: block; margin-top: 6px; font-size: .85rem; color: var(--muted); }
 .stars { color: #f5a623; }
 
 /* --- Home page --------------------------------------------------------- */

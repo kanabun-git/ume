@@ -26,7 +26,11 @@ Rails.application.routes.draw do
   namespace :cast, module: "cast_portal" do
     root to: "dashboard#show"
     resource :profile, only: [:edit, :update]
-    resources :diary_entries
+    resources :diary_entries do
+      collection do
+        post :generate_draft
+      end
+    end
     resources :shifts
   end
 

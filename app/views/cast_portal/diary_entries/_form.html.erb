@@ -10,8 +10,22 @@
   <label>タイトル</label>
   <%= f.text_field :title %>
 
+  <%# AI drafting assistant: fills the 本文 field below with a draft written
+      in this cast's own style, based on her past entries. The draft is only
+      inserted into the form — she reviews and edits before saving. %>
+  <div class="ai-assist">
+    <div class="ai-assist-head">
+      <span class="ai-assist-title">AIに下書きしてもらう</span>
+      <small>これまでのあなたの日記から口調を学習して、下書きを作成します。</small>
+    </div>
+    <textarea id="ai-instruction" class="ai-assist-input"
+              placeholder="例: 今日の出勤のお礼と、来週の出勤予定のお知らせを書きたい"></textarea>
+    <button type="button" id="ai-generate-btn" class="btn secondary">下書きを作成する</button>
+    <span id="ai-assist-status" class="ai-assist-status"></span>
+  </div>
+
   <label>本文</label>
-  <%= f.text_area :body %>
+  <%= f.text_area :body, id: "diary-body" %>
 
   <label>写真</label>
   <%= f.file_field :images, multiple: true %>
@@ -21,3 +35,47 @@
 
   <%= f.submit "保存する", class: "btn" %>
 <% end %>
+
+<script>
+  (function() {
+    var btn = document.getElementById("ai-generate-btn");
+    var input = document.getElementById("ai-instruction");
+    var body = document.getElementById("diary-body");
+    var status = document.getElementById("ai-assist-status");
+
+    btn.addEventListener("click", function() {
+      var instruction = input.value.trim();
+      if (!instruction) {
+        status.textContent = "どんな日記を書きたいか入力してください。";
+        return;
+      }
+
+      // Generation takes a while; disable the button so a slow response
+      // doesn't turn into several duplicate requests.
+      btn.disabled = true;
+      status.textContent = "作成中です… (30秒ほどかかる場合があります)";
+
+      fetch("<%= generate_draft_cast_diary_entries_path %>", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+        },
+        body: JSON.stringify({ instruction: instruction })
+      })
+        .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+        .then(function(result) {
+          if (result.ok) {
+            body.value = result.data.body;
+            status.textContent = "下書きを作成しました。内容を確認・修正してから保存してください。";
+          } else {
+            status.textContent = result.data.error || "作成に失敗しました。";
+          }
+        })
+        .catch(function() {
+          status.textContent = "通信に失敗しました。もう一度お試しください。";
+        })
+        .finally(function() { btn.disabled = false; });
+    });
+  })();
+</script>

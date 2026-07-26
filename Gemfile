@@ -35,6 +35,8 @@ gem "bootsnap", require: false
 gem "image_processing", "~> 1.2"
 # Pure-Ruby PNG generation, used to build seed-data placeholder avatars
 gem "chunky_png"
+# Claude API client, used by the AI diary-drafting assistant
+gem "anthropic"
 
 # Authentication
 gem "devise"

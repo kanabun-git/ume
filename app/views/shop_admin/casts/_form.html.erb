@@ -44,8 +44,16 @@
   <label>店長からのコメント</label>
   <%= f.text_area :manager_comment %>
 
-  <label>写真</label>
+  <label>写真(複数選択可。女の子詳細ページでメイン画像下にサムネイル表示されます)</label>
   <%= f.file_field :photos, multiple: true %>
+
+  <% if cast.persisted? && cast.photos.attached? %>
+    <div class="grid">
+      <% cast.photos.each do |photo| %>
+        <%= image_tag photo, style: "max-width:120px;" %>
+      <% end %>
+    </div>
+  <% end %>
 
   <% if cast.new_record? %>
     <%= f.fields_for :user do |uf| %>

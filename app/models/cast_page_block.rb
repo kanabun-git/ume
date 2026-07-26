@@ -27,7 +27,7 @@ class CastPageBlock < ApplicationRecord
     "free_text" => "フリーテキスト",
   }.freeze
 
-  belongs_to :cast
+  belongs_to :shop
 
   enum :block_type, BLOCK_TYPES
   enum :layout_column, { main: 0, side: 1 }, prefix: true

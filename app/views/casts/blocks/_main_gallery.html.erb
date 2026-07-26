@@ -1,14 +1,38 @@
-<div class="girl-main-image">
-  <% if cast.photos.attached? %>
-    <%= image_tag cast.photos.first, id: "girl-main-image" %>
-  <% else %>
-    <%= image_tag "nowprinting.svg", id: "girl-main-image" %>
+<% photos = cast.photos.to_a %>
+<div class="girl-main-image-row">
+  <% if photos.size > 1 %>
+    <button type="button" class="girl-gallery-arrow" onclick="girlGalleryMove(-1)" aria-label="前の画像">‹</button>
   <% end %>
-</div>
-<% if cast.photos.attached? && cast.photos.count > 1 %>
-  <div class="girl-thumbs">
-    <% cast.photos.each do |photo| %>
-      <%= image_tag photo, onclick: "document.getElementById('girl-main-image').src=this.src" %>
+  <div class="girl-main-image">
+    <% if photos.any? %>
+      <%= image_tag photos.first, id: "girl-main-image" %>
+    <% else %>
+      <%= image_tag "nowprinting.svg", id: "girl-main-image" %>
     <% end %>
   </div>
+  <% if photos.size > 1 %>
+    <button type="button" class="girl-gallery-arrow" onclick="girlGalleryMove(1)" aria-label="次の画像">›</button>
+  <% end %>
+</div>
+<% if photos.size > 1 %>
+  <div class="girl-thumbs">
+    <% photos.each_with_index do |photo, index| %>
+      <%= image_tag photo, onclick: "girlGallerySet(#{index})" %>
+    <% end %>
+  </div>
+  <script>
+    (function() {
+      var urls = <%= raw photos.map { |p| url_for(p) }.to_json %>;
+      var current = 0;
+      var img = document.getElementById("girl-main-image");
+      window.girlGallerySet = function(index) {
+        current = index;
+        img.src = urls[current];
+      };
+      window.girlGalleryMove = function(delta) {
+        current = (current + delta + urls.length) % urls.length;
+        img.src = urls[current];
+      };
+    })();
+  </script>
 <% end %>

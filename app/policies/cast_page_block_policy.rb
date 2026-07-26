@@ -24,7 +24,7 @@ class CastPageBlockPolicy < ApplicationPolicy
       if user&.platform_admin?
         scope.all
       elsif user&.shop_admin?
-        scope.joins(:cast).where(casts: { shop_id: user.shop_id })
+        scope.where(shop_id: user.shop_id)
       else
         scope.none
       end
@@ -34,6 +34,6 @@ class CastPageBlockPolicy < ApplicationPolicy
   private
 
   def same_shop?
-    user.shop_admin? && record.cast.shop_id == user.shop_id
+    user.shop_admin? && record.shop_id == user.shop_id
   end
 end

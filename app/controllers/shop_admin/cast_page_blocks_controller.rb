@@ -1,24 +1,23 @@
 module ShopAdmin
   class CastPageBlocksController < BaseController
-    before_action :set_cast
     before_action :set_block, only: [:edit, :update, :destroy, :move_up, :move_down, :toggle_visibility]
 
     def index
-      @blocks = policy_scope(::CastPageBlock).where(cast: @cast)
+      @blocks = policy_scope(::CastPageBlock).where(shop: current_shop)
     end
 
     def new
-      @block = @cast.cast_page_blocks.build(background_opacity: 1.0, layout_column: :main)
+      @block = current_shop.cast_page_blocks.build(background_opacity: 1.0, layout_column: :main)
       authorize @block
     end
 
     def create
-      @block = @cast.cast_page_blocks.build(block_params)
-      @block.position = (@cast.cast_page_blocks.where(layout_column: @block.layout_column).maximum(:position) || -1) + 1
+      @block = current_shop.cast_page_blocks.build(block_params)
+      @block.position = (current_shop.cast_page_blocks.where(layout_column: @block.layout_column).maximum(:position) || -1) + 1
       authorize @block
 
       if @block.save
-        redirect_to shop_admin_cast_cast_page_blocks_path(@cast), notice: "ブロックを追加しました。"
+        redirect_to shop_admin_cast_page_blocks_path, notice: "ブロックを追加しました。"
       else
         render :new, status: :unprocessable_entity
       end
@@ -29,7 +28,7 @@ module ShopAdmin
 
     def update
       if @block.update(block_params)
-        redirect_to shop_admin_cast_cast_page_blocks_path(@cast), notice: "ブロックを更新しました。"
+        redirect_to shop_admin_cast_page_blocks_path, notice: "ブロックを更新しました。"
       else
         render :edit, status: :unprocessable_entity
       end
@@ -37,22 +36,22 @@ module ShopAdmin
 
     def destroy
       @block.destroy
-      redirect_to shop_admin_cast_cast_page_blocks_path(@cast), notice: "ブロックを削除しました。"
+      redirect_to shop_admin_cast_page_blocks_path, notice: "ブロックを削除しました。"
     end
 
     def move_up
-      swap_with(@cast.cast_page_blocks.where(layout_column: @block.layout_column).where("position < ?", @block.position).order(position: :desc).first)
-      redirect_to shop_admin_cast_cast_page_blocks_path(@cast)
+      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position < ?", @block.position).order(position: :desc).first)
+      redirect_to shop_admin_cast_page_blocks_path
     end
 
     def move_down
-      swap_with(@cast.cast_page_blocks.where(layout_column: @block.layout_column).where("position > ?", @block.position).order(:position).first)
-      redirect_to shop_admin_cast_cast_page_blocks_path(@cast)
+      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position > ?", @block.position).order(:position).first)
+      redirect_to shop_admin_cast_page_blocks_path
     end
 
     def toggle_visibility
       @block.update!(visible: !@block.visible)
-      redirect_to shop_admin_cast_cast_page_blocks_path(@cast)
+      redirect_to shop_admin_cast_page_blocks_path
     end
 
     private
@@ -67,12 +66,8 @@ module ShopAdmin
       end
     end
 
-    def set_cast
-      @cast = current_shop.casts.find(params[:cast_id])
-    end
-
     def set_block
-      @block = @cast.cast_page_blocks.find(params[:id])
+      @block = current_shop.cast_page_blocks.find(params[:id])
       authorize @block
     end
 

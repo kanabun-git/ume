@@ -7,11 +7,12 @@
 </h1>
 <p><%= link_to @shop.name, shop_path(@shop) %></p>
 
-<%# Blocks below are freely composed/ordered/hidden/styled by the shop admin
-    from /shop_admin/casts/:cast_id/page_blocks — see CastPageBlock. %>
+<%# Blocks below are shared across every cast at this shop, freely
+    composed/ordered/hidden/styled by the shop admin from
+    /shop_admin/cast_page_blocks — see CastPageBlock. %>
 <div class="girl-detail-layout">
   <div class="girl-detail-main">
-    <% @cast.cast_page_blocks.visible.layout_column_main.each do |block| %>
+    <% @shop.cast_page_blocks.visible.layout_column_main.each do |block| %>
       <% next if block.block_type == "qa" && @cast.qa_message.blank? %>
       <% next if block.block_type == "appeal_comment" && @cast.appeal_comment.blank? %>
       <% next if block.block_type == "selling_points" && @cast.selling_points.blank? %>
@@ -27,7 +28,7 @@
   </div>
 
   <div class="girl-detail-side">
-    <% @cast.cast_page_blocks.visible.layout_column_side.each do |block| %>
+    <% @shop.cast_page_blocks.visible.layout_column_side.each do |block| %>
       <div class="obi-block">
         <div class="obi-header"><%= block.label %></div>
         <div class="obi-body" style="<%= block.background_style %>">

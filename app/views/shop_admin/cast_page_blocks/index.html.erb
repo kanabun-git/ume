@@ -1,8 +1,8 @@
-<% content_for :title, "#{@cast.name} - ページ構成(ブロック管理)" %>
+<% content_for :title, "女の子ページ構成(ブロック管理)" %>
 
-<h1><%= @cast.name %> - ページ構成(ブロック管理)</h1>
-<p>女の子詳細ページに表示するブロックの追加・並び替え・表示/非表示・背景色を設定できます。メイン列/サイド列はそれぞれ独立して並び替えできます。</p>
-<%= link_to "ブロックを追加", new_shop_admin_cast_cast_page_block_path(@cast), class: "btn" %>
+<h1>女の子ページ構成(ブロック管理)</h1>
+<p>在籍する全キャストの女の子詳細ページに共通で適用されるブロック構成です。追加・並び替え・表示/非表示・背景色を設定できます。メイン列/サイド列はそれぞれ独立して並び替えできます。</p>
+<%= link_to "ブロックを追加", new_shop_admin_cast_page_block_path, class: "btn" %>
 
 <h2>メイン列</h2>
 <table class="admin-table">
@@ -11,13 +11,13 @@
     <% @blocks.select(&:layout_column_main?).each do |block| %>
       <tr>
         <td>
-          <%= button_to "▲", move_up_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, form: { style: "display:inline" } %>
-          <%= button_to "▼", move_down_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, form: { style: "display:inline" } %>
+          <%= button_to "▲", move_up_shop_admin_cast_page_block_path(block), method: :patch, form: { style: "display:inline" } %>
+          <%= button_to "▼", move_down_shop_admin_cast_page_block_path(block), method: :patch, form: { style: "display:inline" } %>
         </td>
         <td><%= CastPageBlock::LABELS.fetch(block.block_type, block.block_type) %></td>
         <td><%= block.title %></td>
         <td>
-          <%= button_to (block.visible? ? "表示中" : "非表示中"), toggle_visibility_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, class: (block.visible? ? "btn" : "btn secondary"), form: { style: "display:inline" } %>
+          <%= button_to (block.visible? ? "表示中" : "非表示中"), toggle_visibility_shop_admin_cast_page_block_path(block), method: :patch, class: (block.visible? ? "btn" : "btn secondary"), form: { style: "display:inline" } %>
         </td>
         <td>
           <% if block.background_color.present? %>
@@ -28,8 +28,8 @@
           <% end %>
         </td>
         <td>
-          <%= link_to "編集", edit_shop_admin_cast_cast_page_block_path(@cast, block) %>
-          <%= button_to "削除", shop_admin_cast_cast_page_block_path(@cast, block), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" }, style: "display:inline" } %>
+          <%= link_to "編集", edit_shop_admin_cast_page_block_path(block) %>
+          <%= button_to "削除", shop_admin_cast_page_block_path(block), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" }, style: "display:inline" } %>
         </td>
       </tr>
     <% end %>
@@ -43,13 +43,13 @@
     <% @blocks.select(&:layout_column_side?).each do |block| %>
       <tr>
         <td>
-          <%= button_to "▲", move_up_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, form: { style: "display:inline" } %>
-          <%= button_to "▼", move_down_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, form: { style: "display:inline" } %>
+          <%= button_to "▲", move_up_shop_admin_cast_page_block_path(block), method: :patch, form: { style: "display:inline" } %>
+          <%= button_to "▼", move_down_shop_admin_cast_page_block_path(block), method: :patch, form: { style: "display:inline" } %>
         </td>
         <td><%= CastPageBlock::LABELS.fetch(block.block_type, block.block_type) %></td>
         <td><%= block.title %></td>
         <td>
-          <%= button_to (block.visible? ? "表示中" : "非表示中"), toggle_visibility_shop_admin_cast_cast_page_block_path(@cast, block), method: :patch, class: (block.visible? ? "btn" : "btn secondary"), form: { style: "display:inline" } %>
+          <%= button_to (block.visible? ? "表示中" : "非表示中"), toggle_visibility_shop_admin_cast_page_block_path(block), method: :patch, class: (block.visible? ? "btn" : "btn secondary"), form: { style: "display:inline" } %>
         </td>
         <td>
           <% if block.background_color.present? %>
@@ -60,13 +60,14 @@
           <% end %>
         </td>
         <td>
-          <%= link_to "編集", edit_shop_admin_cast_cast_page_block_path(@cast, block) %>
-          <%= button_to "削除", shop_admin_cast_cast_page_block_path(@cast, block), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" }, style: "display:inline" } %>
+          <%= link_to "編集", edit_shop_admin_cast_page_block_path(block) %>
+          <%= button_to "削除", shop_admin_cast_page_block_path(block), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" }, style: "display:inline" } %>
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<%= link_to "女の子詳細ページのプレビューを見る", cast_path(@cast), class: "btn secondary", target: "_blank" %>
-<%= link_to "キャスト一覧に戻る", shop_admin_casts_path, class: "btn secondary" %>
+<% if current_shop.casts.visible.any? %>
+  <%= link_to "女の子詳細ページのプレビューを見る", cast_path(current_shop.casts.visible.first), class: "btn secondary", target: "_blank" %>
+<% end %>

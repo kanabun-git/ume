@@ -32,6 +32,56 @@
   <% elsif block.block_type == "movie" %>
     <label>動画URL(YouTube埋め込みURL、またはmp4の直リンク)</label>
     <%= text_field_tag "shop_page_block[settings][video_url]", block.settings["video_url"] %>
+  <% elsif block.block_type == "price_table" %>
+    <%# Generic label/value row editor, reused for price tables, option
+        tables, and per-area transportation fee tables: the block title
+        (above) says what the table is, and each row is just a free-text
+        label + value pair (e.g. "60分"/"12,000円" or "XX地区"/"1,000円"). %>
+    <label>表の項目(項目名と金額・内容を自由に追加できます)</label>
+    <% rows = block.settings["rows"].presence || [{}] %>
+    <div id="price-table-rows">
+      <% rows.each_with_index do |row, i| %>
+        <div class="price-table-row-input">
+          <%= text_field_tag "shop_page_block[settings][rows][#{i}][label]", row["label"], placeholder: "項目名(例: 60分、XX地区)" %>
+          <%= text_field_tag "shop_page_block[settings][rows][#{i}][value]", row["value"], placeholder: "内容(例: 12,000円、1,000円)" %>
+          <button type="button" class="btn secondary price-table-remove-row">削除</button>
+        </div>
+      <% end %>
+    </div>
+    <button type="button" id="price-table-add-row" class="btn secondary">項目を追加</button>
+
+    <template id="price-table-row-template">
+      <div class="price-table-row-input">
+        <input type="text" name="shop_page_block[settings][rows][__INDEX__][label]" placeholder="項目名(例: 60分、XX地区)">
+        <input type="text" name="shop_page_block[settings][rows][__INDEX__][value]" placeholder="内容(例: 12,000円、1,000円)">
+        <button type="button" class="btn secondary price-table-remove-row">削除</button>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        var container = document.getElementById("price-table-rows");
+        var addBtn = document.getElementById("price-table-add-row");
+        var template = document.getElementById("price-table-row-template");
+        var index = <%= rows.size %>;
+
+        addBtn.addEventListener("click", function() {
+          var html = template.innerHTML.split("__INDEX__").join(index);
+          container.insertAdjacentHTML("beforeend", html);
+          index += 1;
+        });
+
+        container.addEventListener("click", function(event) {
+          if (!event.target.classList.contains("price-table-remove-row")) return;
+          var existingRows = container.querySelectorAll(".price-table-row-input");
+          if (existingRows.length <= 1) {
+            event.target.closest(".price-table-row-input").querySelectorAll("input").forEach(function(input) { input.value = ""; });
+            return;
+          }
+          event.target.closest(".price-table-row-input").remove();
+        });
+      })();
+    </script>
   <% end %>
 
   <%= f.submit "保存する", class: "btn" %>

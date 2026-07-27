@@ -205,6 +205,25 @@ shop.seed_default_page_blocks
 free_text_block = shop.shop_page_blocks.find_by(block_type: :free_text)
 free_text_block&.update!(settings: { "body" => "当店は新宿エリアで長年愛されるデリヘル店です。スタッフ一同、心を込めておもてなしいたします。" })
 
+# price_table blocks are optional (not part of seed_default_page_blocks) and
+# admin-composed: each is titled freely and holds free-form label/value rows,
+# demonstrating a price table and a per-area transportation fee table.
+{
+  "料金表" => [
+    { "label" => "60分", "value" => "12,000円" },
+    { "label" => "90分", "value" => "17,000円" },
+    { "label" => "120分", "value" => "22,000円" },
+  ],
+  "交通費" => [
+    { "label" => "新宿区内", "value" => "1,000円" },
+    { "label" => "中野区・杉並区", "value" => "2,000円" },
+  ],
+}.each_with_index do |(title, rows), index|
+  block = shop.shop_page_blocks.find_or_initialize_by(block_type: :price_table, title: title)
+  block.assign_attributes(position: shop.shop_page_blocks.maximum(:position).to_i + index + 1, settings: { "rows" => rows })
+  block.save!
+end
+
 shop.seed_default_cast_page_blocks
 
 DiaryEntry.find_or_create_by!(cast: cast1, title: "本日出勤します！") do |d|

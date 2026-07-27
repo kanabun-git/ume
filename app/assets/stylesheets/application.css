@@ -304,6 +304,15 @@ form.form textarea { min-height: 120px; }
 .obi-header { background: var(--brand); color: #fff; font-weight: bold; padding: 8px 14px; border-radius: 6px 6px 0 0; font-size: .95rem; }
 .obi-body { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; padding: 14px; font-size: .9rem; }
 
+.price-table { width: 100%; border-collapse: collapse; }
+.price-table th, .price-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: .9rem; text-align: left; }
+.price-table th { width: 40%; color: var(--muted); font-weight: bold; background: #faf6f7; }
+.price-table tr:last-child th, .price-table tr:last-child td { border-bottom: none; }
+
+.price-table-row-input { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.price-table-row-input input { flex: 1; }
+.price-table-row-input .btn.secondary { margin-top: 0; flex-shrink: 0; }
+
 .profile-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
 .profile-table th { text-align: left; width: 90px; color: var(--muted); font-size: .8rem; padding: 4px 0; vertical-align: top; }
 .profile-table td { padding: 4px 0; font-size: .88rem; }
@@ -445,4 +454,9 @@ img, video, iframe { max-width: 100%; }
   /* Tabs start at the left edge once they overflow, so the first (本日)
      tab is visible instead of being centered out of view. */
   .weekly-tabs { justify-content: flex-start; }
+
+  /* Label/value inputs side-by-side get too cramped on narrow phones;
+     stack them so each field keeps a usable width. */
+  .price-table-row-input { flex-wrap: wrap; }
+  .price-table-row-input input { flex-basis: 100%; }
 }

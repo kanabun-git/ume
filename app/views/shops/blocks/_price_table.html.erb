@@ -1,0 +1,13 @@
+<% rows = (block.settings["rows"] || []).select { |row| row["label"].present? || row["value"].present? } %>
+<% if rows.any? %>
+  <table class="price-table">
+    <% rows.each do |row| %>
+      <tr>
+        <th><%= row["label"] %></th>
+        <td><%= row["value"] %></td>
+      </tr>
+    <% end %>
+  </table>
+<% else %>
+  <p>現在情報はありません。</p>
+<% end %>

@@ -18,8 +18,8 @@
       <% if shifts_today.any? %>
         <% shifts_today.each do |shift| %>
           <%= link_to cast_path(shift.cast), class: "weekly-cast-card" do %>
-            <% if shift.cast.photos.attached? %>
-              <%= image_tag shift.cast.photos.first %>
+            <% if shift.cast.visible_photos.any? %>
+              <%= image_tag shift.cast.visible_photos.first %>
             <% else %>
               <%= image_tag "nowprinting.svg" %>
             <% end %>

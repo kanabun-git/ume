@@ -4,7 +4,12 @@
 <p><small><%= status_label(@diary_entry) %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
 <div class="grid">
   <% @diary_entry.images.each do |img| %>
-    <%= image_tag img, style: "max-width:200px;" %>
+    <div class="photo-with-status">
+      <%= image_tag img, style: "max-width:200px;" %>
+      <% if img.hidden? %>
+        <span class="badge muted">運営により非公開</span>
+      <% end %>
+    </div>
   <% end %>
 </div>
 <p><%= simple_format @diary_entry.body %></p>

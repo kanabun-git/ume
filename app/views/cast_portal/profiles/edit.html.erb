@@ -55,7 +55,12 @@
   <% if @cast.photos.attached? %>
     <div class="grid">
       <% @cast.photos.each do |photo| %>
-        <%= image_tag photo, style: "max-width:120px;" %>
+        <div class="photo-with-status">
+          <%= image_tag photo, style: "max-width:120px;" %>
+          <% if photo.hidden? %>
+            <span class="badge muted">運営により非公開</span>
+          <% end %>
+        </div>
       <% end %>
     </div>
   <% end %>

@@ -77,5 +77,14 @@ Rails.application.routes.draw do
       end
     end
     resources :users
+
+    # Content moderation screens: review submitted cast/diary photos and
+    # hide individual ones without touching the surrounding record.
+    resources :cast_images, only: [:index] do
+      member { patch :toggle_hidden }
+    end
+    resources :diary_images, only: [:index] do
+      member { patch :toggle_hidden }
+    end
   end
 end

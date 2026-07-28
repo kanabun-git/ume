@@ -2,8 +2,8 @@
     photo with the name/age/sizes overlaid on a gradient, so cast images are
     consistent everywhere they appear on the shop detail page. %>
 <%= link_to cast_path(cast), class: "weekly-cast-card" do %>
-  <% if cast.photos.attached? %>
-    <%= image_tag cast.photos.first %>
+  <% if cast.visible_photos.any? %>
+    <%= image_tag cast.visible_photos.first %>
   <% else %>
     <%= image_tag "nowprinting.svg" %>
   <% end %>

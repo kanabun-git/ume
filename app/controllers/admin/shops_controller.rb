@@ -57,7 +57,9 @@ module Admin
 
     def set_shop
       @shop = ::Shop.find(params[:id])
-      authorize @shop
+      # approve/suspend authorize explicitly against :manage_status? below,
+      # since ShopPolicy has no approve?/suspend? methods for Pundit to infer.
+      authorize @shop unless %w[approve suspend].include?(action_name)
     end
 
     def shop_params

@@ -43,7 +43,7 @@
   <div class="card" id="diary-<%= entry.id %>">
     <h3><%= entry.title %></h3>
     <p><small><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
-    <% entry.images.each do |img| %>
+    <% entry.visible_images.each do |img| %>
       <%= image_tag img, style: "max-width:200px;" %>
     <% end %>
     <p><%= simple_format entry.body %></p>

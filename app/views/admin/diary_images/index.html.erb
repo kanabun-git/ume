@@ -1,0 +1,35 @@
+<% content_for :title, "写メ日記画像の確認" %>
+
+<h1>写メ日記画像の確認</h1>
+<p>投稿された写メ日記の画像を確認し、不適切な画像は「非公開にする」で公開サイトから非表示にできます。</p>
+
+<% if @diary_entries.none? { |entry| entry.images.attached? } %>
+  <p>確認できる画像はまだありません。</p>
+<% end %>
+
+<% @diary_entries.each do |entry| %>
+  <% next unless entry.images.attached? %>
+  <div class="moderation-group">
+    <div class="moderation-group-header">
+      <strong><%= entry.cast.shop.name %></strong> / <%= entry.cast.name %> /
+      <%= link_to entry.title, cast_path(entry.cast, anchor: "diary-#{entry.id}"), target: "_blank", rel: "noopener" %>
+      <span class="badge <%= "muted" unless entry.published? %>"><%= status_label(entry) %></span>
+    </div>
+    <div class="moderation-grid">
+      <% entry.images.each do |image| %>
+        <div class="moderation-item">
+          <%= image_tag image %>
+          <% if image.hidden? %>
+            <span class="badge muted">非公開中</span>
+          <% else %>
+            <span class="badge">公開中</span>
+          <% end %>
+          <%= button_to (image.hidden? ? "公開にする" : "非公開にする"),
+                        toggle_hidden_admin_diary_image_path(image),
+                        method: :patch,
+                        class: "btn secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

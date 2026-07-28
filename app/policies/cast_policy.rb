@@ -25,6 +25,12 @@ class CastPolicy < ApplicationPolicy
     user.platform_admin? || own_record?
   end
 
+  # Hiding an individual photo (content moderation) is platform-admin-only,
+  # separate from the cast/shop admin's own profile editing rights above.
+  def manage_visibility?
+    user.platform_admin?
+  end
+
   class Scope < Scope
     def resolve
       if user.platform_admin?

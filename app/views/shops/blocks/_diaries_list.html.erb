@@ -3,8 +3,8 @@
   <div class="girl-diary-grid">
     <% entries.each do |entry| %>
       <%= link_to cast_path(entry.cast, anchor: "diary-#{entry.id}"), class: "girl-diary-thumb" do %>
-        <% if entry.images.attached? %>
-          <%= image_tag entry.images.first %>
+        <% if entry.visible_images.any? %>
+          <%= image_tag entry.visible_images.first %>
         <% else %>
           <%= image_tag "nowprinting.svg" %>
         <% end %>

@@ -23,6 +23,13 @@ class Cast < ApplicationRecord
     shifts.where(status: :scheduled).where("work_date >= ?", Date.current).order(:work_date, :start_time)
   end
 
+  # Platform admins can moderate individual photos without removing the
+  # whole cast; public pages must only ever render this, never `photos`
+  # directly, or a hidden photo would still leak out.
+  def visible_photos
+    photos.reject(&:hidden?)
+  end
+
   private
 
   # When a shop admin creates a login account for a cast via the nested

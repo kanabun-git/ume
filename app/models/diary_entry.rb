@@ -12,6 +12,13 @@ class DiaryEntry < ApplicationRecord
 
   before_save :set_published_at, if: -> { published? && published_at.blank? }
 
+  # Platform admins can moderate individual diary photos without removing
+  # the whole entry; public pages must only ever render this, never
+  # `images` directly, or a hidden photo would still leak out.
+  def visible_images
+    images.reject(&:hidden?)
+  end
+
   private
 
   def set_published_at

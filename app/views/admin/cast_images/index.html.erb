@@ -1,0 +1,34 @@
+<% content_for :title, "女の子画像の確認" %>
+
+<h1>女の子画像の確認</h1>
+<p>在籍キャストの登録画像を確認し、不適切な画像は「非公開にする」で公開サイトから非表示にできます。</p>
+
+<% if @casts.none? { |cast| cast.photos.attached? } %>
+  <p>確認できる画像はまだありません。</p>
+<% end %>
+
+<% @casts.each do |cast| %>
+  <% next unless cast.photos.attached? %>
+  <div class="moderation-group">
+    <div class="moderation-group-header">
+      <strong><%= cast.shop.name %></strong> / <%= link_to cast.name, cast_path(cast), target: "_blank", rel: "noopener" %>
+      <span class="badge <%= "muted" unless cast.active? %>"><%= status_label(cast) %></span>
+    </div>
+    <div class="moderation-grid">
+      <% cast.photos.each do |photo| %>
+        <div class="moderation-item">
+          <%= image_tag photo %>
+          <% if photo.hidden? %>
+            <span class="badge muted">非公開中</span>
+          <% else %>
+            <span class="badge">公開中</span>
+          <% end %>
+          <%= button_to (photo.hidden? ? "公開にする" : "非公開にする"),
+                        toggle_hidden_admin_cast_image_path(photo),
+                        method: :patch,
+                        class: "btn secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -30,8 +30,8 @@
       <% if pickup_casts.any? %>
         <% pickup_casts.each do |cast| %>
           <%= link_to shop_path(shop) do %>
-            <% if cast.photos.attached? %>
-              <%= image_tag cast.photos.first %>
+            <% if cast.visible_photos.any? %>
+              <%= image_tag cast.visible_photos.first %>
             <% else %>
               <%= image_tag "nowprinting.svg" %>
             <% end %>

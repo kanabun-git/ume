@@ -21,6 +21,12 @@ class DiaryEntryPolicy < ApplicationPolicy
     user.present? && (user.platform_admin? || create?)
   end
 
+  # Hiding an individual diary photo (content moderation) is
+  # platform-admin-only, distinct from destroying the whole entry above.
+  def manage_visibility?
+    user.present? && user.platform_admin?
+  end
+
   class Scope < Scope
     def resolve
       if user.nil?

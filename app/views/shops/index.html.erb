@@ -1,8 +1,12 @@
 <% content_for :title, "店舗一覧 | FuzokuZero" %>
+<% content_for :meta_description, "エリア・ジャンル・料金・カップサイズから風俗店を絞り込んで探せます。" %>
 
 <h1>店舗一覧</h1>
 
 <form class="form" method="get">
+  <label>キーワード(店舗名・キャッチコピー等)</label>
+  <input type="text" name="keyword" value="<%= params[:keyword] %>" placeholder="例: 新宿、未経験大歓迎">
+
   <label>エリア</label>
   <select name="area_id">
     <option value="">すべて</option>
@@ -15,6 +19,20 @@
     <option value="">すべて</option>
     <% Genre.all.each do |genre| %>
       <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <label>料金</label>
+  <select name="max_price">
+    <option value="">指定なし</option>
+    <% Shop::PRICE_FILTER_OPTIONS.each do |label, value| %>
+      <option value="<%= value %>" <%= "selected" if params[:max_price].to_s == value.to_s %>><%= label %></option>
+    <% end %>
+  </select>
+  <label>カップサイズ</label>
+  <select name="cup">
+    <option value="">指定なし</option>
+    <% Cast::CUP_OPTIONS.each do |cup| %>
+      <option value="<%= cup %>" <%= "selected" if params[:cup] == cup %>><%= cup %>カップ</option>
     <% end %>
   </select>
   <button type="submit" class="btn">絞り込む</button>

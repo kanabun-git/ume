@@ -1,4 +1,5 @@
 <% content_for :title, "FuzokuZero | ゼロから始める風俗体験" %>
+<% content_for :meta_description, "FuzokuZeroは、全国の風俗店・在籍キャストをエリア・ジャンル・料金から探せるポータルサイトです。口コミ・写メ日記・出勤情報もチェックできます。" %>
 
 <div class="hero">
   <h1 class="hero-title">お店・キャストを探す</h1>
@@ -11,6 +12,10 @@
       <div class="hero-search-field">
         <label>ジャンル</label>
         <%= f.select :genre_id, options_from_collection_for_select(@genres, :id, :name), { include_blank: "ジャンルを選択" } %>
+      </div>
+      <div class="hero-search-field">
+        <label>キーワード</label>
+        <%= f.text_field :keyword, placeholder: "店舗名など" %>
       </div>
       <button type="submit" class="btn hero-search-btn">この条件で探す</button>
     </div>

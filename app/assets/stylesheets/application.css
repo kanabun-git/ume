@@ -65,6 +65,9 @@ main { padding: 24px 0 60px; }
   margin-bottom: 16px;
 }
 
+.shop-reply { background: #faf6f7; border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
+.shop-reply-label { font-weight: bold; color: var(--brand); font-size: .85rem; margin-bottom: 4px; }
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 
 .photo-with-status { position: relative; display: inline-block; }

@@ -3,7 +3,7 @@
 <h1>口コミ一覧</h1>
 
 <table class="admin-table">
-  <thead><tr><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th></tr></thead>
+  <thead><tr><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th><th>店舗からの返信</th></tr></thead>
   <tbody>
     <% @reviews.each do |review| %>
       <tr>
@@ -11,6 +11,12 @@
         <td><%= review.rating %></td>
         <td><%= truncate(review.body, length: 60) %></td>
         <td><%= status_label(review) %></td>
+        <td>
+          <%= form_tag reply_shop_admin_review_path(review), method: :patch do %>
+            <%= text_area_tag :shop_reply, review.shop_reply, rows: 2, style: "width:100%;" %>
+            <%= submit_tag review.shop_reply.present? ? "返信を更新する" : "返信する", class: "btn secondary" %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>

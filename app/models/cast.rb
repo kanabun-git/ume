@@ -1,4 +1,11 @@
 class Cast < ApplicationRecord
+  # Fixed option list for the shop search's カップサイズ filter (shops.rb
+  # controller); cup itself stays a free-text column since some casts list
+  # non-standard values, but the filter only needs to offer the common ones.
+  CUP_OPTIONS = %w[A B C D E F G H I J].freeze
+
+  include AttachedImageValidatable
+
   belongs_to :shop
   belongs_to :user, optional: true, inverse_of: :cast_profile
   has_many :diary_entries, dependent: :destroy
@@ -11,6 +18,7 @@ class Cast < ApplicationRecord
   enum :status, { active: 0, inactive: 1 }, default: :active
 
   validates :name, presence: true
+  validates_attached_images :photos
 
   before_validation :assign_login_user_defaults
 

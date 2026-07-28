@@ -34,6 +34,9 @@
   <label>料金(例: 50分10000円〜)</label>
   <%= f.text_field :price_note %>
 
+  <label>最低料金(円。店舗検索の料金絞り込みに使われます)</label>
+  <%= f.number_field :min_price %>
+
   <label>交通費(例: 0〜1000円)</label>
   <%= f.text_field :transportation_fee_note %>
 
@@ -59,7 +62,10 @@
 
   <% if @shop.photos.attached? %>
     <div class="grid">
-      <% @shop.photos.each do |photo| %>
+      <%# Skip not-yet-persisted attachments: if a previous submit failed
+          validation, newly-selected files are staged in memory only and
+          have no signed_id yet — rendering them would raise. %>
+      <% @shop.photos.select(&:persisted?).each do |photo| %>
         <%= image_tag photo, style: "max-width:120px;" %>
       <% end %>
     </div>

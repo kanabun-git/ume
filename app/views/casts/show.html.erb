@@ -1,4 +1,9 @@
 <% content_for :title, "#{@cast.name} | #{@shop.name} | FuzokuZero" %>
+<% cast_display_name = @cast.alias_name.presence || @cast.name %>
+<% content_for :meta_description, "#{@shop.name}(#{@shop.area.name})在籍の#{cast_display_name}(#{@cast.age}歳)のプロフィール。#{@cast.catch_copy}"[0, 120] %>
+<% if @cast.visible_photos.any? %>
+  <% content_for :og_image, rails_blob_url(@cast.visible_photos.first, host: request.base_url) %>
+<% end %>
 
 <h1>
   <%= @cast.alias_name.presence || @cast.name %>

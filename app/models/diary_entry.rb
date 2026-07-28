@@ -1,4 +1,6 @@
 class DiaryEntry < ApplicationRecord
+  include AttachedImageValidatable
+
   belongs_to :cast
   has_many_attached :images
 
@@ -6,6 +8,7 @@ class DiaryEntry < ApplicationRecord
 
   validates :title, presence: true
   validates :body, presence: true
+  validates_attached_images :images
 
   scope :visible, -> { published.where("published_at <= ?", Time.current) }
   default_scope { order(published_at: :desc, created_at: :desc) }

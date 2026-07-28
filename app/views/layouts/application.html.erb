@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "FuzokuZero" %></title>
+    <% page_title = content_for(:title) || "FuzokuZero" %>
+    <% page_description = content_for(:meta_description) || "FuzokuZeroは、全国の風俗店・在籍キャストをエリア・ジャンルから探せるポータルサイトです。" %>
+    <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="<%= page_description %>">
+    <meta property="og:site_name" content="FuzokuZero">
+    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:description" content="<%= page_description %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <% if content_for(:og_image) %>
+      <meta property="og:image" content="<%= content_for(:og_image) %>">
+    <% end %>
+    <meta name="twitter:card" content="summary_large_image">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

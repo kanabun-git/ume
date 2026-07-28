@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   get "rankings", to: "rankings#index", as: :rankings
+  get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: "xml" }
 
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
@@ -40,7 +41,9 @@ Rails.application.routes.draw do
     resource :shop, only: [:edit, :update]
     resources :casts
     resources :diary_entries, only: [:index, :show]
-    resources :reviews, only: [:index]
+    resources :reviews, only: [:index] do
+      member { patch :reply }
+    end
     resources :shop_page_blocks do
       member do
         patch :move_up

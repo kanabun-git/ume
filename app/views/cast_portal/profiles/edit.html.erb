@@ -54,7 +54,10 @@
 
   <% if @cast.photos.attached? %>
     <div class="grid">
-      <% @cast.photos.each do |photo| %>
+      <%# Skip not-yet-persisted attachments: if a previous submit failed
+          validation, newly-selected files are staged in memory only and
+          have no signed_id yet — rendering them would raise. %>
+      <% @cast.photos.select(&:persisted?).each do |photo| %>
         <div class="photo-with-status">
           <%= image_tag photo, style: "max-width:120px;" %>
           <% if photo.hidden? %>

@@ -1,4 +1,6 @@
 class Shop < ApplicationRecord
+  include AttachedImageValidatable
+
   belongs_to :area
   belongs_to :genre
   belongs_to :plan
@@ -21,7 +23,17 @@ class Shop < ApplicationRecord
     "extended" => "延長表記 (例: 深夜2時 → 26:00)",
   }.freeze
 
+  # Fixed price ceilings offered by the shop search's 料金 filter
+  # (shops_controller#index matches shops.min_price <= 選択値).
+  PRICE_FILTER_OPTIONS = [
+    ["15,000円以下", 15_000],
+    ["20,000円以下", 20_000],
+    ["25,000円以下", 25_000],
+    ["30,000円以下", 30_000],
+  ].freeze
+
   validates :name, presence: true
+  validates_attached_images :photos
 
   after_create :seed_default_page_blocks
   after_create :seed_default_cast_page_blocks

@@ -20,6 +20,12 @@ class ReviewPolicy < ApplicationPolicy
     moderate?
   end
 
+  # A shop admin can reply to reviews left about their own shop; platform
+  # admins can reply to any (e.g. while handling an escalation).
+  def reply?
+    user.present? && (user.platform_admin? || (user.shop_admin? && record.shop_id == user.shop_id))
+  end
+
   class Scope < Scope
     def resolve
       if user.nil?

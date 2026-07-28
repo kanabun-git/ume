@@ -56,6 +56,7 @@ shop.assign_attributes(
   status: :approved,
   view_count: 1200,
   price_note: "60分12000円〜",
+  min_price: 12_000,
   transportation_fee_note: "0〜1000円",
   coverage_area_note: "新宿駅発着、代々木、高田馬場、中野",
   online_reservation: true,

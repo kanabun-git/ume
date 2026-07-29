@@ -49,7 +49,7 @@
   <label>女の子に質問(自由記載のQ&amp;A)</label>
   <%= f.text_area :qa_message %>
 
-  <label>写真を追加</label>
+  <label>写真を追加(既存の写真は残ったまま追加されます。最大5枚まで)</label>
   <%= f.file_field :photos, multiple: true %>
 
   <% if @cast.photos.attached? %>

@@ -8,8 +8,9 @@ module ShopAdmin
 
     def update
       authorize @shop, :update?
+      attrs = shop_params.except(:photos)
 
-      if @shop.update(shop_params)
+      if update_with_appended_images(@shop, attachment_name: :photos, new_files: shop_params[:photos], other_attrs: attrs)
         redirect_to shop_admin_root_path, notice: "店舗情報を更新しました。"
       else
         render :edit, status: :unprocessable_entity

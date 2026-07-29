@@ -29,7 +29,9 @@ module Admin
     end
 
     def update
-      if @shop.update(shop_params)
+      attrs = shop_params.except(:photos)
+
+      if update_with_appended_images(@shop, attachment_name: :photos, new_files: shop_params[:photos], other_attrs: attrs)
         redirect_to admin_shops_path, notice: "店舗情報を更新しました。"
       else
         render :edit, status: :unprocessable_entity

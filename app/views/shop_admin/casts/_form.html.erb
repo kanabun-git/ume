@@ -44,7 +44,7 @@
   <label>店長からのコメント</label>
   <%= f.text_area :manager_comment %>
 
-  <label>写真(複数選択可。女の子詳細ページでメイン画像下にサムネイル表示されます)</label>
+  <label>写真を追加(複数選択可。既存の写真は残ったまま追加されます。最大5枚まで)</label>
   <%= f.file_field :photos, multiple: true %>
 
   <% if cast.persisted? && cast.photos.attached? %>

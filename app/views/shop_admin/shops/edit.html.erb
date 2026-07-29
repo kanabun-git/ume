@@ -57,7 +57,7 @@
   <label>求人情報</label>
   <%= f.text_area :recruiting_message %>
 
-  <label>店舗写真を追加</label>
+  <label>店舗写真を追加(既存の写真は残ったまま追加されます。最大5枚まで)</label>
   <%= f.file_field :photos, multiple: true %>
 
   <% if @shop.photos.attached? %>

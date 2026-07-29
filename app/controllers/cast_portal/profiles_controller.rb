@@ -8,8 +8,9 @@ module CastPortal
 
     def update
       authorize @cast, :update_profile?
+      attrs = cast_params.except(:photos)
 
-      if @cast.update(cast_params)
+      if update_with_appended_images(@cast, attachment_name: :photos, new_files: cast_params[:photos], other_attrs: attrs)
         redirect_to cast_root_path, notice: "プロフィールを更新しました。"
       else
         render :edit, status: :unprocessable_entity

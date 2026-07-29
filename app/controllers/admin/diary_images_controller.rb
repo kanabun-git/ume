@@ -1,7 +1,7 @@
 module Admin
   class DiaryImagesController < BaseController
     def index
-      @diary_entries = policy_scope(::DiaryEntry).includes(:cast, images_attachments: :blob)
+      @diary_entries = policy_scope(::DiaryEntry).includes(:cast, images_attachments: :blob).page(params[:page]).per(20)
     end
 
     def toggle_hidden

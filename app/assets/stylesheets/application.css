@@ -177,6 +177,10 @@ form.form textarea { min-height: 120px; }
 
 .errors { background: #fdecec; border: 1px solid #f5b8c4; color: #b5204f; padding: 10px 14px; border-radius: 4px; margin-bottom: 12px; }
 
+/* Bot honeypot field: moved off-screen rather than display:none, since
+   some bots specifically skip hidden/display:none fields when auto-filling. */
+.honeypot-field { position: absolute; left: -9999px; top: -9999px; }
+
 /* AI drafting assistant on the cast's diary form */
 .ai-assist {
   margin: 16px 0; padding: 14px; border: 1px dashed var(--brand);

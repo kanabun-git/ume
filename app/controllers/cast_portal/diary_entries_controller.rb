@@ -29,7 +29,9 @@ module CastPortal
     end
 
     def update
-      if @diary_entry.update(diary_entry_params)
+      attrs = diary_entry_params.except(:images)
+
+      if update_with_appended_images(@diary_entry, attachment_name: :images, new_files: diary_entry_params[:images], other_attrs: attrs)
         redirect_to cast_diary_entries_path, notice: "日記を更新しました。"
       else
         render :edit, status: :unprocessable_entity

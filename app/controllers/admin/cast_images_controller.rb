@@ -1,7 +1,7 @@
 module Admin
   class CastImagesController < BaseController
     def index
-      @casts = policy_scope(::Cast).includes(photos_attachments: :blob).order(:shop_id, :name)
+      @casts = policy_scope(::Cast).includes(photos_attachments: :blob).order(:shop_id, :name).page(params[:page]).per(20)
     end
 
     def toggle_hidden

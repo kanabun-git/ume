@@ -7,7 +7,16 @@ class ReviewsController < ApplicationController
   end
 
   def create
+    # Honeypot: a field real visitors never see or fill in (hidden via CSS,
+    # not `type="hidden"`, which unsophisticated bots skip). If it's
+    # filled, silently pretend success rather than telling the bot it was
+    # caught.
+    if params.dig(:review, :website).present?
+      redirect_to shop_path(@shop), notice: "口コミを投稿しました。確認後に掲載されます。" and return
+    end
+
     @review = @shop.reviews.build(review_params)
+    @review.ip_address = request.remote_ip
     authorize @review
 
     if @review.save

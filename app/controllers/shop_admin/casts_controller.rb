@@ -30,7 +30,9 @@ module ShopAdmin
     end
 
     def update
-      if @cast.update(cast_params.except(:user_attributes))
+      attrs = cast_params.except(:user_attributes, :photos)
+
+      if update_with_appended_images(@cast, attachment_name: :photos, new_files: cast_params[:photos], other_attrs: attrs)
         redirect_to shop_admin_casts_path, notice: "キャスト情報を更新しました。"
       else
         render :edit, status: :unprocessable_entity

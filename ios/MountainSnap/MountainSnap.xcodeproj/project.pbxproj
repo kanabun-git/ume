@@ -1,0 +1,526 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A14091011A4D7FA166C31C15 /* MountainSnapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8FA6029E0DE1928BB05C1B4 /* MountainSnapApp.swift */; };
+		B8983388BF15B58101DE20B2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F58A1A180D153419F744B /* ContentView.swift */; };
+		BAC39686688048D03558805C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7413F9FD8EBFB746DF485A45 /* Assets.xcassets */; };
+		B049B73236A765E360FE2612 /* Mountain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB74860B8B4C1EA80D53819 /* Mountain.swift */; };
+		20713DE702AE3CF3FFC09456 /* SkiResort.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADC97E8B7050109966DC091 /* SkiResort.swift */; };
+		24338F5FE5AB6B7E4508B5C2 /* MountainMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC8219B4DD8B7B45F6313AF /* MountainMatcher.swift */; };
+		06AC76984D87A6FB4AAAF042 /* LocationHeadingProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455FAAE1E292C8BE49D33776 /* LocationHeadingProvider.swift */; };
+		469019AFC6CC64B1892B6351 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA65DAACA66DA46BB241001 /* DataStore.swift */; };
+		F9CB5FB7AF038A606B9C81C6 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5BFFA45DADF8FC4BCE1C5A /* CameraCaptureView.swift */; };
+		E8443D2B970B99DF825BD659 /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB267787169D95816D39368 /* ResultView.swift */; };
+		1CEA91205E08A08425C8CC7A /* mountains_japan.json in Resources */ = {isa = PBXBuildFile; fileRef = 829DBCCF8F08F310304FAD37 /* mountains_japan.json */; };
+		EB2D6584F73D1ADEB32450CA /* ski_resorts_japan.json in Resources */ = {isa = PBXBuildFile; fileRef = 201EEFDDE32619A158C5EF43 /* ski_resorts_japan.json */; };
+		2D877BA235EFB2DC20AB0186 /* PhotoMetadataExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A585A2ECF0E1F31EC640AB0E /* PhotoMetadataExtractor.swift */; };
+		BC22A19E8E949D587B8A5AF8 /* GeoMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3362AFB4ECEFD7FA6C47B830 /* GeoMath.swift */; };
+		95416E3B9742AABF8A4B1F4F /* MountainMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC31F79E15B97C77CDD47D2 /* MountainMatcherTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E51F9431BEDF8CA388406FAD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 36515F8B9296D34BD2E900D2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C18B91818E19646B5550942E;
+			remoteInfo = MountainSnap;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		362B4DD0E149BF6111135A48 /* MountainSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MountainSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8FA6029E0DE1928BB05C1B4 /* MountainSnapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MountainSnapApp.swift; sourceTree = "<group>"; };
+		9C6F58A1A180D153419F744B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7413F9FD8EBFB746DF485A45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FAB74860B8B4C1EA80D53819 /* Mountain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mountain.swift; sourceTree = "<group>"; };
+		DADC97E8B7050109966DC091 /* SkiResort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkiResort.swift; sourceTree = "<group>"; };
+		1BC8219B4DD8B7B45F6313AF /* MountainMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MountainMatcher.swift; sourceTree = "<group>"; };
+		455FAAE1E292C8BE49D33776 /* LocationHeadingProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHeadingProvider.swift; sourceTree = "<group>"; };
+		7AA65DAACA66DA46BB241001 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
+		CB5BFFA45DADF8FC4BCE1C5A /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
+		ECB267787169D95816D39368 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
+		829DBCCF8F08F310304FAD37 /* mountains_japan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mountains_japan.json; sourceTree = "<group>"; };
+		201EEFDDE32619A158C5EF43 /* ski_resorts_japan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ski_resorts_japan.json; sourceTree = "<group>"; };
+		A585A2ECF0E1F31EC640AB0E /* PhotoMetadataExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMetadataExtractor.swift; sourceTree = "<group>"; };
+		3362AFB4ECEFD7FA6C47B830 /* GeoMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoMath.swift; sourceTree = "<group>"; };
+		E927AAA779FA884DE0FA1E18 /* MountainSnapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MountainSnapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7CC31F79E15B97C77CDD47D2 /* MountainMatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MountainMatcherTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		15C97D9604D5924340263E53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F03A1A2B00000000000000F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		96FB6E605AF9572C78390A56 = {
+			isa = PBXGroup;
+			children = (
+				6FCD9A73B581F4B5BEA822FD /* MountainSnap */,
+				F03A1A2B00000000000000F2 /* MountainSnapTests */,
+				99B730C40151A04EA1D614F6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		99B730C40151A04EA1D614F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				362B4DD0E149BF6111135A48 /* MountainSnap.app */,
+				E927AAA779FA884DE0FA1E18 /* MountainSnapTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6FCD9A73B581F4B5BEA822FD /* MountainSnap */ = {
+			isa = PBXGroup;
+			children = (
+				A8FA6029E0DE1928BB05C1B4 /* MountainSnapApp.swift */,
+				9C6F58A1A180D153419F744B /* ContentView.swift */,
+				6415820073971FFD014950EB /* Models */,
+				82BD84FC1B993433351E2560 /* Services */,
+				DEAA126FC1C55F6DC907F5D2 /* Views */,
+				320822EEB6090384FC016571 /* Resources */,
+				7413F9FD8EBFB746DF485A45 /* Assets.xcassets */,
+			);
+			path = MountainSnap;
+			sourceTree = "<group>";
+		};
+		6415820073971FFD014950EB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FAB74860B8B4C1EA80D53819 /* Mountain.swift */,
+				DADC97E8B7050109966DC091 /* SkiResort.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		82BD84FC1B993433351E2560 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1BC8219B4DD8B7B45F6313AF /* MountainMatcher.swift */,
+				3362AFB4ECEFD7FA6C47B830 /* GeoMath.swift */,
+				455FAAE1E292C8BE49D33776 /* LocationHeadingProvider.swift */,
+				7AA65DAACA66DA46BB241001 /* DataStore.swift */,
+				A585A2ECF0E1F31EC640AB0E /* PhotoMetadataExtractor.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		DEAA126FC1C55F6DC907F5D2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CB5BFFA45DADF8FC4BCE1C5A /* CameraCaptureView.swift */,
+				ECB267787169D95816D39368 /* ResultView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		320822EEB6090384FC016571 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				829DBCCF8F08F310304FAD37 /* mountains_japan.json */,
+				201EEFDDE32619A158C5EF43 /* ski_resorts_japan.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F03A1A2B00000000000000F2 /* MountainSnapTests */ = {
+			isa = PBXGroup;
+			children = (
+				7CC31F79E15B97C77CDD47D2 /* MountainMatcherTests.swift */,
+			);
+			path = MountainSnapTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C18B91818E19646B5550942E /* MountainSnap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 210C9204D90729B6751AC218 /* Build configuration list for PBXNativeTarget "MountainSnap" */;
+			buildPhases = (
+				17C469787A0F1639E75DBEB4 /* Sources */,
+				15C97D9604D5924340263E53 /* Frameworks */,
+				E927AAA779FA884DE0FA1E17 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MountainSnap;
+			productName = MountainSnap;
+			productReference = 362B4DD0E149BF6111135A48 /* MountainSnap.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F03A1A2B00000000000000F3 /* MountainSnapTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F03A1A2B00000000000000F4 /* Build configuration list for PBXNativeTarget "MountainSnapTests" */;
+			buildPhases = (
+				F03A1A2B00000000000000F5 /* Sources */,
+				F03A1A2B00000000000000F1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F03A1A2B00000000000000F6 /* PBXTargetDependency */,
+			);
+			name = MountainSnapTests;
+			productName = MountainSnapTests;
+			productReference = E927AAA779FA884DE0FA1E18 /* MountainSnapTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		36515F8B9296D34BD2E900D2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					C18B91818E19646B5550942E = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					F03A1A2B00000000000000F3 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = C18B91818E19646B5550942E;
+					};
+				};
+			};
+			buildConfigurationList = B471C7E2848544F821226277 /* Build configuration list for PBXProject "MountainSnap" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				ja,
+			);
+			mainGroup = 96FB6E605AF9572C78390A56;
+			productRefGroup = 99B730C40151A04EA1D614F6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C18B91818E19646B5550942E /* MountainSnap */,
+				F03A1A2B00000000000000F3 /* MountainSnapTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E927AAA779FA884DE0FA1E17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BAC39686688048D03558805C /* Assets.xcassets in Resources */,
+				1CEA91205E08A08425C8CC7A /* mountains_japan.json in Resources */,
+				EB2D6584F73D1ADEB32450CA /* ski_resorts_japan.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17C469787A0F1639E75DBEB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A14091011A4D7FA166C31C15 /* MountainSnapApp.swift in Sources */,
+				B8983388BF15B58101DE20B2 /* ContentView.swift in Sources */,
+				B049B73236A765E360FE2612 /* Mountain.swift in Sources */,
+				20713DE702AE3CF3FFC09456 /* SkiResort.swift in Sources */,
+				24338F5FE5AB6B7E4508B5C2 /* MountainMatcher.swift in Sources */,
+				BC22A19E8E949D587B8A5AF8 /* GeoMath.swift in Sources */,
+				06AC76984D87A6FB4AAAF042 /* LocationHeadingProvider.swift in Sources */,
+				469019AFC6CC64B1892B6351 /* DataStore.swift in Sources */,
+				2D877BA235EFB2DC20AB0186 /* PhotoMetadataExtractor.swift in Sources */,
+				F9CB5FB7AF038A606B9C81C6 /* CameraCaptureView.swift in Sources */,
+				E8443D2B970B99DF825BD659 /* ResultView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F03A1A2B00000000000000F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95416E3B9742AABF8A4B1F4F /* MountainMatcherTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F03A1A2B00000000000000F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C18B91818E19646B5550942E /* MountainSnap */;
+			targetProxy = E51F9431BEDF8CA388406FAD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		764423BAD171EC8E4B0C70E5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4F36BCCA2FB745F0CE9922E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8E2DA4C781ED48BFDE4AC4F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "MountainSnap";
+				INFOPLIST_KEY_NSCameraUsageDescription = "撮影した山の写真から、その方角と現在地をもとに山名・標高・近隣スキー場を判定するためにカメラを使用します。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "現在地と撮影方向から見えている山を特定するために位置情報を使用します。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "写真ライブラリから山の写真を選択して判定するために使用します。";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_ipad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kanabun.mountainsnap;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AE74E68D725620ACEF6BCCFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "MountainSnap";
+				INFOPLIST_KEY_NSCameraUsageDescription = "撮影した山の写真から、その方角と現在地をもとに山名・標高・近隣スキー場を判定するためにカメラを使用します。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "現在地と撮影方向から見えている山を特定するために位置情報を使用します。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "写真ライブラリから山の写真を選択して判定するために使用します。";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_ipad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kanabun.mountainsnap;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F03A1A2B00000000000000F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kanabun.mountainsnap.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MountainSnap.app/MountainSnap";
+			};
+			name = Debug;
+		};
+		F03A1A2B00000000000000F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kanabun.mountainsnap.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MountainSnap.app/MountainSnap";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B471C7E2848544F821226277 /* Build configuration list for PBXProject "MountainSnap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				764423BAD171EC8E4B0C70E5 /* Debug */,
+				4F36BCCA2FB745F0CE9922E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		210C9204D90729B6751AC218 /* Build configuration list for PBXNativeTarget "MountainSnap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8E2DA4C781ED48BFDE4AC4F9 /* Debug */,
+				AE74E68D725620ACEF6BCCFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F03A1A2B00000000000000F4 /* Build configuration list for PBXNativeTarget "MountainSnapTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F03A1A2B00000000000000F7 /* Debug */,
+				F03A1A2B00000000000000F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 36515F8B9296D34BD2E900D2 /* Project object */;
+}

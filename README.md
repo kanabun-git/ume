@@ -35,3 +35,8 @@ bin/rails server
 | キャスト(女の子) | `/cast` |
 | 店舗管理者 | `/shop_admin` |
 | プラットフォーム運営者 | `/admin` |
+
+## iOSアプリ(MountainSnap)
+
+本Railsアプリとは別に、`ios/MountainSnap` に山の名前・標高・近くのスキー場を判定するiOSアプリを
+同梱しています。詳細は [ios/MountainSnap/README.md](ios/MountainSnap/README.md) を参照してください。

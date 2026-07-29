@@ -1,0 +1,17 @@
+[
+  { "id": "niseko_grandhirafu", "name": "ニセコグラン・ヒラフ", "latitude": 42.8637, "longitude": 140.6874, "nearestMountainId": "yotei", "baseElevationMeters": 210, "topElevationMeters": 1308 },
+  { "id": "niseko_annupuri", "name": "ニセコアンヌプリ国際", "latitude": 42.8797, "longitude": 140.6597, "nearestMountainId": "yotei", "baseElevationMeters": 350, "topElevationMeters": 1000 },
+  { "id": "kiroro", "name": "キロロスノーワールド", "latitude": 43.0672, "longitude": 140.9411, "nearestMountainId": null, "baseElevationMeters": 540, "topElevationMeters": 1180 },
+  { "id": "rusutsu", "name": "ルスツリゾート", "latitude": 42.7383, "longitude": 140.8828, "nearestMountainId": "yotei", "baseElevationMeters": 470, "topElevationMeters": 994 },
+  { "id": "asahidake_ropeway", "name": "旭岳ロープウェイ", "latitude": 43.6706, "longitude": 142.8578, "nearestMountainId": "asahidake", "baseElevationMeters": 1100, "topElevationMeters": 1600 },
+  { "id": "tomamu", "name": "星野リゾート トマム", "latitude": 43.1725, "longitude": 142.6797, "nearestMountainId": null, "baseElevationMeters": 540, "topElevationMeters": 1170 },
+  { "id": "hakuba_happoone", "name": "白馬八方尾根スキー場", "latitude": 36.6975, "longitude": 137.8014, "nearestMountainId": "karamatsudake", "baseElevationMeters": 760, "topElevationMeters": 1831 },
+  { "id": "hakuba_goryu", "name": "白馬五竜スキー場", "latitude": 36.7186, "longitude": 137.8225, "nearestMountainId": "goryudake", "baseElevationMeters": 750, "topElevationMeters": 1676 },
+  { "id": "tsugaike", "name": "栂池高原スキー場", "latitude": 36.7386, "longitude": 137.8547, "nearestMountainId": "shiroumadake", "baseElevationMeters": 850, "topElevationMeters": 1830 },
+  { "id": "shigakogen", "name": "志賀高原スキー場", "latitude": 36.7092, "longitude": 138.5217, "nearestMountainId": "yokoteyama", "baseElevationMeters": 850, "topElevationMeters": 2307 },
+  { "id": "naeba_ski", "name": "苗場スキー場", "latitude": 36.8306, "longitude": 138.7739, "nearestMountainId": "naeba", "baseElevationMeters": 900, "topElevationMeters": 1789 },
+  { "id": "kusatsu_onsen", "name": "草津温泉スキー場", "latitude": 36.6208, "longitude": 138.5981, "nearestMountainId": "kusatsushirane", "baseElevationMeters": 1220, "topElevationMeters": 2171 },
+  { "id": "zao_onsen", "name": "蔵王温泉スキー場", "latitude": 38.1236, "longitude": 140.4494, "nearestMountainId": "zao", "baseElevationMeters": 855, "topElevationMeters": 1736 },
+  { "id": "tanigawadake_tenjindaira", "name": "谷川岳天神平スキー場", "latitude": 36.7981, "longitude": 138.9350, "nearestMountainId": "tanigawa", "baseElevationMeters": 660, "topElevationMeters": 1319 },
+  { "id": "rokko_snowpark", "name": "六甲山スノーパーク", "latitude": 34.7461, "longitude": 135.2247, "nearestMountainId": "rokko", "baseElevationMeters": 790, "topElevationMeters": 930 }
+]

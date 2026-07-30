@@ -1,0 +1,23 @@
+<% content_for :title, "掲載のお問い合わせ" %>
+
+<h1>掲載のお問い合わせ</h1>
+<p>店舗掲載を検討している方からの問い合わせ一覧です。内容を確認の上、担当者よりご連絡ください。連絡が済んだら状態を更新し、実際の掲載は「店舗管理」から新規店舗登録を行ってください。</p>
+
+<table class="admin-table">
+  <thead><tr><th>店舗名</th><th>ご担当者</th><th>電話番号</th><th>希望エリア</th><th>受付日時</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @shop_inquiries.each do |inquiry| %>
+      <tr>
+        <td><%= link_to inquiry.shop_name, admin_shop_inquiry_path(inquiry) %></td>
+        <td><%= inquiry.contact_name %></td>
+        <td><%= inquiry.phone %></td>
+        <td><%= inquiry.area_note %></td>
+        <td><%= inquiry.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><span class="badge <%= "muted" if inquiry.closed? %>"><%= status_label(inquiry) %></span></td>
+        <td><%= link_to "詳細", admin_shop_inquiry_path(inquiry) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @shop_inquiries %>

@@ -1,0 +1,44 @@
+<% content_for :title, "掲載のお問い合わせ | FuzokuZero" %>
+<% content_for :meta_description, "FuzokuZeroへの店舗掲載をご検討の方はこちらからお問い合わせください。担当者よりご連絡いたします。" %>
+
+<h1>掲載のお問い合わせ</h1>
+<p>
+  FuzokuZeroへの店舗掲載をご検討の方は、以下のフォームよりお問い合わせください。<br>
+  内容を確認の上、担当者よりお電話・メールにてご連絡いたします。店舗の掲載登録は運営側で行いますので、こちらでのアカウント作成はできません。
+</p>
+
+<% if @shop_inquiry.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% @shop_inquiry.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @shop_inquiry, url: shop_inquiries_path, local: true, class: "form" do |f| %>
+  <%# Honeypot: same pattern as the review form (see reviews/new.html.erb). %>
+  <div class="honeypot-field" aria-hidden="true">
+    <label for="shop_inquiry_website">ウェブサイト</label>
+    <input type="text" name="shop_inquiry[website]" id="shop_inquiry_website" tabindex="-1" autocomplete="off">
+  </div>
+
+  <label>店舗名</label>
+  <%= f.text_field :shop_name %>
+
+  <label>ご担当者名</label>
+  <%= f.text_field :contact_name %>
+
+  <label>メールアドレス</label>
+  <%= f.email_field :email %>
+
+  <label>電話番号</label>
+  <%= f.text_field :phone %>
+
+  <label>希望エリア(任意)</label>
+  <%= f.text_field :area_note, placeholder: "例: 新宿・池袋" %>
+
+  <label>お問い合わせ内容(任意)</label>
+  <%= f.text_area :message %>
+
+  <%= f.submit "問い合わせる", class: "btn" %>
+<% end %>

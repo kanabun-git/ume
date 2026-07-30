@@ -5,6 +5,7 @@ ja:
       cast: キャスト
       shop: 店舗
       diary_entry: 写メ日記
+      shop_inquiry: 掲載のお問い合わせ
     attributes:
       shift:
         work_date: 出勤日
@@ -20,3 +21,10 @@ ja:
       diary_entry:
         title: タイトル
         body: 本文
+      shop_inquiry:
+        shop_name: 店舗名
+        contact_name: ご担当者名
+        email: メールアドレス
+        phone: 電話番号
+        area_note: 希望エリア
+        message: お問い合わせ内容

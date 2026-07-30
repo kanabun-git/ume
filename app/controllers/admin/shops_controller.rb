@@ -10,7 +10,10 @@ module Admin
     end
 
     def new
-      @shop = ::Shop.new
+      # `shop_name` may arrive from a shop registration inquiry's "この内容
+      # で登録する" link (see admin/shop_inquiries/show) — it only prefills
+      # a GET form field, so accepting it outside shop_params is safe.
+      @shop = ::Shop.new(name: params[:shop_name])
       authorize @shop
     end
 

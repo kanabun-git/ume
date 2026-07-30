@@ -1,0 +1,32 @@
+<% content_for :title, "#{@shop_inquiry.shop_name} からのお問い合わせ" %>
+
+<h1><%= @shop_inquiry.shop_name %> からのお問い合わせ</h1>
+<p><span class="badge <%= "muted" if @shop_inquiry.closed? %>"><%= status_label(@shop_inquiry) %></span></p>
+
+<table class="profile-table">
+  <tr><th>店舗名</th><td><%= @shop_inquiry.shop_name %></td></tr>
+  <tr><th>ご担当者名</th><td><%= @shop_inquiry.contact_name %></td></tr>
+  <tr><th>メールアドレス</th><td><%= mail_to @shop_inquiry.email %></td></tr>
+  <tr><th>電話番号</th><td><%= @shop_inquiry.phone %></td></tr>
+  <tr><th>希望エリア</th><td><%= @shop_inquiry.area_note.presence || "(未記入)" %></td></tr>
+  <tr><th>受付日時</th><td><%= @shop_inquiry.created_at.strftime("%Y-%m-%d %H:%M") %></td></tr>
+</table>
+
+<h2>お問い合わせ内容</h2>
+<p><%= simple_format @shop_inquiry.message.presence || "(本文なし)" %></p>
+
+<h2>対応状況</h2>
+<p>
+  <% ShopInquiry.statuses.each_key do |status| %>
+    <% next if status == @shop_inquiry.status %>
+    <%= button_to "「#{ApplicationHelper::STATUS_LABELS["ShopInquiry"][status]}」にする", update_status_admin_shop_inquiry_path(@shop_inquiry, status: status), method: :patch, class: "btn secondary" %>
+  <% end %>
+</p>
+
+<h2>担当者へ連絡後</h2>
+<p>
+  電話・メールでの確認が済んだら、以下から新規店舗登録を行ってください(店舗名のみ引き継がれます)。
+  <%= link_to "この内容で店舗を登録する", new_admin_shop_path(shop_name: @shop_inquiry.shop_name), class: "btn" %>
+</p>
+
+<%= link_to "一覧に戻る", admin_shop_inquiries_path, class: "btn secondary" %>

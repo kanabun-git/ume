@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_29_044312) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_30_082548) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -157,6 +157,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_29_044312) do
     t.datetime "updated_at", null: false
     t.boolean "ends_next_day", default: false, null: false
     t.index ["cast_id"], name: "index_shifts_on_cast_id"
+  end
+
+  create_table "shop_inquiries", force: :cascade do |t|
+    t.string "shop_name", null: false
+    t.string "contact_name", null: false
+    t.string "email", null: false
+    t.string "phone", null: false
+    t.string "area_note"
+    t.text "message"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "shop_page_blocks", force: :cascade do |t|

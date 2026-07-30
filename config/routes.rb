@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   resources :shops, only: [:index, :show] do
     resources :reviews, only: [:new, :create]
   end
+  resources :shop_inquiries, only: [:new, :create]
 
   # --- Cast (女の子) dashboard: manage own profile, diary, shifts ---
   # `module: "cast_portal"` avoids clashing with the top-level Cast model
@@ -88,6 +89,10 @@ Rails.application.routes.draw do
     end
     resources :diary_images, only: [:index] do
       member { patch :toggle_hidden }
+    end
+
+    resources :shop_inquiries, only: [:index, :show] do
+      member { patch :update_status }
     end
   end
 end

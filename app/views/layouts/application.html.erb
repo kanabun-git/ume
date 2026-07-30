@@ -38,6 +38,7 @@
           <%= link_to "エリアから探す", root_path %>
           <%= link_to "店舗一覧", shops_path %>
           <%= link_to "ランキング", rankings_path %>
+          <%= link_to "掲載のお問い合わせ", new_shop_inquiry_path %>
           <% if user_signed_in? %>
             <%= link_to "マイページ", current_user.platform_admin? ? admin_root_path : (current_user.shop_admin? ? shop_admin_root_path : cast_root_path) %>
             <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>

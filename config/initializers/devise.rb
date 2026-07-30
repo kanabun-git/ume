@@ -227,7 +227,12 @@ Devise.setup do |config|
   # Time interval you can reset your password with a reset password key.
   # Don't put a too small interval or your users won't have the time to
   # change their passwords.
-  config.reset_password_within = 6.hours
+  # 6 hours is Devise's default, but this app also reuses this same token
+  # mechanism for platform-admin-issued "set up your account" links (see
+  # Admin::UsersController#issue_account_setup_link) that get handed to a
+  # shop owner over phone/email/LINE — they need more lead time than a
+  # same-session "I forgot my password" reset.
+  config.reset_password_within = 3.days
 
   # When set to false, does not sign a user in automatically after their password is
   # reset. Defaults to true, so a user is signed in automatically after a reset.

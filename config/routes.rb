@@ -80,7 +80,9 @@ Rails.application.routes.draw do
         patch :reject
       end
     end
-    resources :users
+    resources :users do
+      member { post :issue_account_setup_link }
+    end
 
     # Content moderation screens: review submitted cast/diary photos and
     # hide individual ones without touching the surrounding record.

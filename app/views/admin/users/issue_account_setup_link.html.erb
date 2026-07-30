@@ -1,0 +1,45 @@
+<% content_for :title, "#{@user.name} のアカウント案内" %>
+
+<h1><%= @user.name %> のアカウント案内</h1>
+<p>
+  以下のリンクは<%= @user.email %>宛のアカウント設定用リンクです。運営がこのリンクをコピーして、メール・電話・LINEなど普段お使いの方法で本人にお伝えください。
+  リンクの有効期限は発行から3日間です。期限が切れた場合は、このページを再度開いて発行し直してください。
+</p>
+
+<div class="account-setup-box">
+  <label>アカウント設定用リンク</label>
+  <div class="copy-row">
+    <input type="text" id="account-setup-url" value="<%= @account_setup_url %>" readonly>
+    <button type="button" class="btn secondary" data-copy-target="account-setup-url">コピー</button>
+  </div>
+
+  <label>案内メッセージ(コピーしてそのまま送れます)</label>
+  <div class="copy-row">
+    <textarea id="account-setup-message" rows="8" readonly><%= @user.shop ? "#{@user.shop.name} 様\n\n" : "" %>FuzokuZeroへのご登録ありがとうございます。
+以下のリンクからパスワードを設定し、管理画面にログインしてください。
+
+ログイン用メールアドレス: <%= @user.email %>
+パスワード設定リンク: <%= @account_setup_url %>
+(このリンクは発行から3日間有効です)
+
+ログイン後の管理画面URL: <%= @user.shop_admin? ? shop_admin_root_url(host: request.base_url) : root_url(host: request.base_url) %></textarea>
+    <button type="button" class="btn secondary" data-copy-target="account-setup-message">コピー</button>
+  </div>
+</div>
+
+<%= link_to "#{@user.name} の詳細に戻る", admin_user_path(@user), class: "btn secondary" %>
+
+<script>
+  (function() {
+    document.querySelectorAll("[data-copy-target]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        var target = document.getElementById(button.dataset.copyTarget);
+        navigator.clipboard.writeText(target.value).then(function() {
+          var original = button.textContent;
+          button.textContent = "コピーしました";
+          setTimeout(function() { button.textContent = original; }, 1500);
+        });
+      });
+    });
+  })();
+</script>

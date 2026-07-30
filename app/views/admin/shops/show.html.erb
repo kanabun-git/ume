@@ -10,5 +10,25 @@
   <p><%= cast.name %> (<%= status_label(cast) %>)</p>
 <% end %>
 
+<h2>店舗管理者アカウント</h2>
+<% shop_admin_users = @shop.users.shop_admin %>
+<% if shop_admin_users.any? %>
+  <table class="admin-table">
+    <thead><tr><th>名前</th><th>メールアドレス</th><th></th></tr></thead>
+    <tbody>
+      <% shop_admin_users.each do |user| %>
+        <tr>
+          <td><%= user.name %></td>
+          <td><%= user.email %></td>
+          <td><%= button_to "アカウント案内を発行する", issue_account_setup_link_admin_user_path(user), method: :post, class: "btn secondary" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>この店舗の店舗管理者アカウントはまだありません。</p>
+  <%= link_to "アカウントを作成する", new_admin_user_path(shop_id: @shop.id, role: "shop_admin"), class: "btn" %>
+<% end %>
+
 <%= link_to "編集", edit_admin_shop_path(@shop), class: "btn" %>
 <%= link_to "一覧に戻る", admin_shops_path, class: "btn secondary" %>

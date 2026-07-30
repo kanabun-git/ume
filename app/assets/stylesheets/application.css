@@ -153,6 +153,15 @@ table.admin-table { width: 100%; border-collapse: collapse; background: #fff; }
 table.admin-table th, table.admin-table td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; font-size: .9rem; }
 table.admin-table th { background: #f4f0f1; }
 
+.account-setup-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 16px 0; }
+.account-setup-box label { display: block; font-weight: bold; margin: 12px 0 4px; font-size: .9rem; }
+.account-setup-box label:first-child { margin-top: 0; }
+.copy-row { display: flex; gap: 8px; align-items: flex-start; }
+.copy-row input, .copy-row textarea {
+  flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: .9rem; background: #faf6f7;
+}
+.copy-row .btn { margin-top: 0; flex-shrink: 0; }
+
 form.form label { display: block; font-weight: bold; margin: 12px 0 4px; font-size: .9rem; }
 form.form input[type=text], form.form input[type=email], form.form input[type=password],
 form.form input[type=number], form.form input[type=date], form.form input[type=time],
@@ -478,4 +487,9 @@ img, video, iframe { max-width: 100%; }
      stack them so each field keeps a usable width. */
   .price-table-row-input { flex-wrap: wrap; }
   .price-table-row-input input { flex-basis: 100%; }
+
+  /* Same reasoning for the account-setup link/message + copy button row. */
+  .copy-row { flex-wrap: wrap; }
+  .copy-row input, .copy-row textarea { flex-basis: 100%; }
+  .copy-row .btn { width: 100%; }
 }

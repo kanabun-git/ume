@@ -1,0 +1,44 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 105,
+      "fingerprint": "c4e987106697eeb040afba0e1fdedcf83707d060ab010d25471433acec8ca81f",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/admin/users_controller.rb",
+      "line": 74,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Admin::UsersController",
+        "method": "user_params"
+      },
+      "user_input": ":role",
+      "confidence": "Medium",
+      "cwe_id": [915],
+      "note": "Admin::UsersController is gated by Admin::BaseController#require_platform_admin_role! — only platform_admin users can reach this action, and assigning :role there is the intended feature (creating shop_admin/cast/platform_admin accounts)."
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 121,
+      "fingerprint": "98b26f60d776fd41ee6f088c833725145be9aac2d7c5b33780241c273622db42",
+      "check_name": "EOLRails",
+      "message": "Support for Rails 7.2.3.1 ends on 2026-08-09",
+      "file": "Gemfile.lock",
+      "line": 478,
+      "link": "https://brakemanscanner.org/docs/warning_types/unmaintained_dependency/",
+      "code": null,
+      "render_path": null,
+      "location": null,
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [1104],
+      "note": "Known/tracked separately — a Rails version upgrade is a bigger undertaking to schedule on its own, not something to do reactively for CI. Revisit and re-ignore (or upgrade) after the EOL date."
+    }
+  ],
+  "updated": "2026-08-01 21:56:00 +0000",
+  "brakeman_version": "8.0.5"
+}

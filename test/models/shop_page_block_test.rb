@@ -28,7 +28,7 @@ class ShopPageBlockTest < ActiveSupport::TestCase
     assert_kind_of Array, block.settings["rows"]
     assert_equal [
       { "label" => "延長30分", "value" => "5,000円" },
-      { "label" => "VIP", "value" => "20,000円" },
+      { "label" => "VIP", "value" => "20,000円" }
     ], block.settings["rows"]
   end
 

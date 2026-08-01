@@ -8,7 +8,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def create?
-    user.platform_admin? || (user.shop_admin? && record.cast? )
+    user.platform_admin? || (user.shop_admin? && record.cast?)
   end
 
   def update?

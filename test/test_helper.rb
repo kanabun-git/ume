@@ -26,7 +26,7 @@ module TestRecords
       area: create_area,
       genre: create_genre,
       plan: create_plan,
-      status: :approved,
+      status: :approved
     }.merge(attrs))
   end
 
@@ -40,7 +40,7 @@ module TestRecords
       cup: "C",
       waist: 58,
       hip: 86,
-      status: :active,
+      status: :active
     }.merge(attrs))
   end
 
@@ -50,7 +50,7 @@ module TestRecords
       title: "テスト日記",
       body: "テスト本文",
       status: :published,
-      published_at: Time.current,
+      published_at: Time.current
     }.merge(attrs))
   end
 
@@ -85,7 +85,7 @@ module ActionDispatch
         password_confirmation: "password1234",
         name: "テストユーザー",
         role: role,
-        shop: shop,
+        shop: shop
       }.merge(attrs))
     end
   end

@@ -13,7 +13,7 @@ class ShopPageBlock < ApplicationRecord
     free_text: 6,
     movie: 7,
     coupon: 8,
-    price_table: 9,
+    price_table: 9
   }.freeze
 
   LABELS = {
@@ -26,7 +26,7 @@ class ShopPageBlock < ApplicationRecord
     "free_text" => "フリーテキスト",
     "movie" => "動画",
     "coupon" => "クーポン",
-    "price_table" => "料金表・オプション表",
+    "price_table" => "料金表・オプション表"
   }.freeze
 
   belongs_to :shop

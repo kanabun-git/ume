@@ -6,13 +6,13 @@ module ApplicationHelper
     "Shift" => { "scheduled" => "予定", "cancelled" => "キャンセル" },
     "Review" => { "pending" => "承認待ち", "approved" => "承認済み", "rejected" => "却下" },
     "ShopSubscription" => { "active" => "契約中", "canceled" => "解約" },
-    "ShopInquiry" => { "pending" => "未対応", "in_progress" => "対応中", "closed" => "対応済み" },
+    "ShopInquiry" => { "pending" => "未対応", "in_progress" => "対応中", "closed" => "対応済み" }
   }.freeze
 
   ROLE_LABELS = {
     "cast" => "キャスト",
     "shop_admin" => "店舗管理者",
-    "platform_admin" => "運営者",
+    "platform_admin" => "運営者"
   }.freeze
 
   def status_label(record)

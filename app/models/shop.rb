@@ -20,7 +20,7 @@ class Shop < ApplicationRecord
 
   TIME_DISPLAY_FORMAT_LABELS = {
     "standard" => "24時間表記 (例: 深夜2時 → 02:00)",
-    "extended" => "延長表記 (例: 深夜2時 → 26:00)",
+    "extended" => "延長表記 (例: 深夜2時 → 26:00)"
   }.freeze
 
   # Fixed price ceilings offered by the shop search's 料金 filter
@@ -29,7 +29,7 @@ class Shop < ApplicationRecord
     ["15,000円以下", 15_000],
     ["20,000円以下", 20_000],
     ["25,000円以下", 25_000],
-    ["30,000円以下", 30_000],
+    ["30,000円以下", 30_000]
   ].freeze
 
   validates :name, presence: true

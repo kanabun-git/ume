@@ -3,7 +3,7 @@ require "test_helper"
 class ShopInquiriesControllerTest < ActionDispatch::IntegrationTest
   test "a normal inquiry submission is saved" do
     post shop_inquiries_path, params: { shop_inquiry: {
-      shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222",
+      shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222"
     } }
 
     assert_redirected_to root_path
@@ -13,7 +13,7 @@ class ShopInquiriesControllerTest < ActionDispatch::IntegrationTest
   test "filling the honeypot field silently discards the submission" do
     post shop_inquiries_path, params: { shop_inquiry: {
       shop_name: "spam", contact_name: "bot", email: "bot@example.com", phone: "000",
-      website: "http://spam.example",
+      website: "http://spam.example"
     } }
 
     assert_redirected_to root_path # looks identical to a real success

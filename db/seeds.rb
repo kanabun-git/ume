@@ -188,7 +188,7 @@ additional_casts = [
   { name: "かのん", alias_name: "かのんちゃん", age: 22, height: 157, bust: 82, cup: "C", waist: 56, hip: 85,
     catch_copy: "小悪魔テクニシャン", zodiac_sign: "さそり座", blood_type: "B型", color: "#b06bc9" },
   { name: "ののか", alias_name: "ののかちゃん", age: 25, height: 158, bust: 89, cup: "F", waist: 58, hip: 89,
-    catch_copy: "グラマラスな人気No.1", zodiac_sign: "やぎ座", blood_type: "O型", pick_up: true, color: "#d97b3f" },
+    catch_copy: "グラマラスな人気No.1", zodiac_sign: "やぎ座", blood_type: "O型", pick_up: true, color: "#d97b3f" }
 ]
 
 additional_casts.each do |attrs|
@@ -213,12 +213,12 @@ free_text_block&.update!(settings: { "body" => "当店は新宿エリアで長�
   "料金表" => [
     { "label" => "60分", "value" => "12,000円" },
     { "label" => "90分", "value" => "17,000円" },
-    { "label" => "120分", "value" => "22,000円" },
+    { "label" => "120分", "value" => "22,000円" }
   ],
   "交通費" => [
     { "label" => "新宿区内", "value" => "1,000円" },
-    { "label" => "中野区・杉並区", "value" => "2,000円" },
-  ],
+    { "label" => "中野区・杉並区", "value" => "2,000円" }
+  ]
 }.each_with_index do |(title, rows), index|
   block = shop.shop_page_blocks.find_or_initialize_by(block_type: :price_table, title: title)
   block.assign_attributes(position: shop.shop_page_blocks.maximum(:position).to_i + index + 1, settings: { "rows" => rows })
@@ -242,7 +242,7 @@ shift_times = [
   ["12:00", "17:00", false], ["12:00", "20:00", false], ["13:00", "18:00", false],
   ["14:00", "22:00", false], ["15:00", "20:00", false], ["16:00", "23:00", false],
   ["17:00", "22:00", false], ["18:00", "23:30", false],
-  ["19:00", "01:00", true],  ["20:00", "02:00", true],
+  ["19:00", "01:00", true],  ["20:00", "02:00", true]
 ]
 [0, 1, 2].each do |day_offset|
   work_date = Date.current + day_offset

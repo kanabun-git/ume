@@ -11,7 +11,7 @@ class CastPageBlock < ApplicationRecord
     diary: 6,
     shift: 7,
     reviews: 8,
-    free_text: 9,
+    free_text: 9
   }.freeze
 
   LABELS = {
@@ -24,7 +24,7 @@ class CastPageBlock < ApplicationRecord
     "diary" => "投稿!!写メ日記",
     "shift" => "出勤情報",
     "reviews" => "口コミ",
-    "free_text" => "フリーテキスト",
+    "free_text" => "フリーテキスト"
   }.freeze
 
   belongs_to :shop

@@ -1,0 +1,10 @@
+<div class="card video-card">
+  <div class="video-card-head">
+    <h3><%= link_to video.shop.name, shop_path(video.shop) %></h3>
+    <div>
+      <span class="badge"><%= video.shop.genre.name %></span>
+      <span class="video-card-date"><%= video.created_at.strftime("%Y/%m/%d") %> 投稿</span>
+    </div>
+  </div>
+  <%= render "shops/blocks/movie", block: video %>
+</div>

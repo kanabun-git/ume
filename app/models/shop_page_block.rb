@@ -38,6 +38,7 @@ class ShopPageBlock < ApplicationRecord
 
   default_scope { order(:position) }
   scope :visible, -> { where(visible: true) }
+  scope :with_video, -> { movie.where("settings->>'video_url' IS NOT NULL AND settings->>'video_url' != ''") }
 
   def label
     title.presence || LABELS.fetch(block_type, block_type)

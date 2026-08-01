@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get "rankings", to: "rankings#index", as: :rankings
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: "xml" }
 
+  resources :videos, only: [:index]
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
   resources :casts, only: [:show]

@@ -94,6 +94,20 @@
 
 <section class="home-section">
   <div class="home-section-head">
+    <h2>体験動画</h2>
+    <%= link_to "動画一覧を見る >", videos_path, class: "home-section-more" %>
+  </div>
+  <% if @latest_videos.any? %>
+    <div class="video-grid">
+      <%= render partial: "videos/video_card", collection: @latest_videos, as: :video %>
+    </div>
+  <% else %>
+    <p class="region-note">まだ動画がありません。</p>
+  <% end %>
+</section>
+
+<section class="home-section">
+  <div class="home-section-head">
     <h2>新着日記</h2>
   </div>
   <div class="grid">

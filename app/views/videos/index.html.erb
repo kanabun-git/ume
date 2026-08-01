@@ -1,0 +1,24 @@
+<% content_for :title, "体験動画一覧 | FuzokuZero" %>
+<% content_for :meta_description, "全国の風俗店が投稿した体験動画を、新着順・ジャンル別に探せます。" %>
+
+<h1>体験動画</h1>
+
+<form class="form" method="get">
+  <label>ジャンル</label>
+  <select name="genre_id">
+    <option value="">すべて</option>
+    <% @genres.each do |genre| %>
+      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <button type="submit" class="btn">絞り込む</button>
+</form>
+
+<% if @videos.any? %>
+  <div class="video-grid">
+    <%= render partial: "video_card", collection: @videos, as: :video %>
+  </div>
+  <%= paginate @videos %>
+<% else %>
+  <p>該当する動画がまだありません。</p>
+<% end %>

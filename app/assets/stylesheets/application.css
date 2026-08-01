@@ -97,6 +97,10 @@ main { padding: 24px 0 60px; }
 
 .photo-with-status { position: relative; display: inline-block; }
 .photo-with-status .badge { position: absolute; bottom: 6px; left: 6px; }
+/* Inside a diary thumbnail, the caption <span> must sit on its own line
+   below the photo/video box rather than wrapping beside it — the box's
+   own display:inline-block otherwise lets a line box form alongside it. */
+.girl-diary-thumb .photo-with-status { display: block; }
 
 .moderation-group { margin-bottom: 24px; }
 .moderation-group-header { font-size: .95rem; margin-bottom: 8px; }

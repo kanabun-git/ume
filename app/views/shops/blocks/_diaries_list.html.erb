@@ -6,6 +6,8 @@
         <div class="photo-with-status">
           <% if entry.visible_images.any? %>
             <%= image_tag entry.visible_images.first %>
+          <% elsif entry.video.attached? %>
+            <%= video_tag entry.video, muted: true, preload: "metadata" %>
           <% else %>
             <%= image_tag "nowprinting.svg" %>
           <% end %>

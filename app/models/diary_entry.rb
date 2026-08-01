@@ -1,14 +1,17 @@
 class DiaryEntry < ApplicationRecord
   include AttachedImageValidatable
+  include AttachedVideoValidatable
 
   belongs_to :cast
   has_many_attached :images
+  has_one_attached :video
 
   enum :status, { draft: 0, published: 1 }, default: :draft
 
   validates :title, presence: true
   validates :body, presence: true
   validates_attached_images :images
+  validates_attached_video :video
 
   scope :visible, -> { published.where("published_at <= ?", Time.current) }
   default_scope { order(published_at: :desc, created_at: :desc) }

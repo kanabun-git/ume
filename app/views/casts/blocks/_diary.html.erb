@@ -3,11 +3,16 @@
   <div class="girl-diary-grid">
     <% entries.each do |entry| %>
       <%= link_to cast_path(cast, anchor: "diary-#{entry.id}"), class: "girl-diary-thumb" do %>
-        <% if entry.visible_images.any? %>
-          <%= image_tag entry.visible_images.first %>
-        <% else %>
-          <%= image_tag "nowprinting.svg" %>
-        <% end %>
+        <div class="photo-with-status">
+          <% if entry.visible_images.any? %>
+            <%= image_tag entry.visible_images.first %>
+          <% else %>
+            <%= image_tag "nowprinting.svg" %>
+          <% end %>
+          <% if entry.video.attached? %>
+            <span class="badge">動画あり</span>
+          <% end %>
+        </div>
         <span><%= truncate(entry.title, length: 16) %></span>
       <% end %>
     <% end %>

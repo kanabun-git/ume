@@ -12,6 +12,11 @@
     </div>
   <% end %>
 </div>
+<% if @diary_entry.video.attached? %>
+  <div class="block-video-wrapper">
+    <%= video_tag @diary_entry.video, controls: true %>
+  </div>
+<% end %>
 <p><%= simple_format @diary_entry.body %></p>
 
 <%= link_to "編集", edit_cast_diary_entry_path(@diary_entry), class: "btn" %>

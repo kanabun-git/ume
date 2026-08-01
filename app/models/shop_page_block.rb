@@ -1,4 +1,6 @@
 class ShopPageBlock < ApplicationRecord
+  include AttachedVideoValidatable
+
   # The set of block types a shop admin can compose a store page from.
   # Order here doubles as the option order in the "add block" form.
   BLOCK_TYPES = {
@@ -28,6 +30,7 @@ class ShopPageBlock < ApplicationRecord
   }.freeze
 
   belongs_to :shop
+  has_one_attached :video_file
 
   enum :block_type, BLOCK_TYPES
 
@@ -35,6 +38,7 @@ class ShopPageBlock < ApplicationRecord
 
   validates :block_type, presence: true
   validates :background_opacity, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+  validates_attached_video :video_file
 
   default_scope { order(:position) }
   scope :visible, -> { where(visible: true) }

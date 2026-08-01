@@ -30,6 +30,10 @@ module CastPortal
 
     def update
       attrs = diary_entry_params.except(:images)
+      # A file_field with no new selection submits an empty string, and
+      # assigning that to a has_one_attached setter purges the existing
+      # attachment — so leave :video out entirely unless a file was chosen.
+      attrs = attrs.except(:video) if diary_entry_params[:video].blank?
 
       if update_with_appended_images(@diary_entry, attachment_name: :images, new_files: diary_entry_params[:images], other_attrs: attrs)
         redirect_to cast_diary_entries_path, notice: "日記を更新しました。"
@@ -68,7 +72,7 @@ module CastPortal
     end
 
     def diary_entry_params
-      params.require(:diary_entry).permit(:title, :body, :status, :published_at, images: [])
+      params.require(:diary_entry).permit(:title, :body, :status, :published_at, :video, images: [])
     end
   end
 end

@@ -2,6 +2,11 @@
 
 <h1><%= @diary_entry.title %></h1>
 <p><%= @diary_entry.cast.name %> / <%= status_label(@diary_entry) %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></p>
+<% if @diary_entry.video.attached? %>
+  <div class="block-video-wrapper">
+    <%= video_tag @diary_entry.video, controls: true %>
+  </div>
+<% end %>
 <p><%= simple_format @diary_entry.body %></p>
 
 <%= link_to "一覧に戻る", shop_admin_diary_entries_path, class: "btn secondary" %>

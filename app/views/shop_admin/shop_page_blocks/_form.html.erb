@@ -30,7 +30,13 @@
     <label>本文</label>
     <%= text_area_tag "shop_page_block[settings][body]", block.settings["body"] %>
   <% elsif block.block_type == "movie" %>
-    <label>動画URL(YouTube埋め込みURL、またはmp4の直リンク)</label>
+    <label>動画ファイルをアップロード(MP4・MOV・WEBM、50MBまで)</label>
+    <% if block.video_file.attached? %>
+      <p><small>現在のファイル: <%= block.video_file.filename %>(新しいファイルを選ぶと置き換わります)</small></p>
+    <% end %>
+    <%= f.file_field :video_file, accept: "video/mp4,video/quicktime,video/webm" %>
+
+    <label>または動画URL(YouTube埋め込みURL、またはmp4の直リンク。ファイルをアップロードした場合はそちらが優先されます)</label>
     <%= text_field_tag "shop_page_block[settings][video_url]", block.settings["video_url"] %>
   <% elsif block.block_type == "price_table" %>
     <%# Generic label/value row editor, reused for price tables, option

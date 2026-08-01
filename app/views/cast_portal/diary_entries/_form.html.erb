@@ -30,6 +30,12 @@
   <label>写真(既存の写真は残ったまま追加されます。最大5枚まで)</label>
   <%= f.file_field :images, multiple: true %>
 
+  <label>動画(任意、MP4・MOV・WEBM、50MBまで)</label>
+  <% if diary_entry.video.attached? %>
+    <p><small>現在のファイル: <%= diary_entry.video.filename %>(新しいファイルを選ぶと置き換わります)</small></p>
+  <% end %>
+  <%= f.file_field :video, accept: "video/mp4,video/quicktime,video/webm" %>
+
   <label>公開状態</label>
   <%= f.select :status, DiaryEntry.statuses.keys.map { |s| [s == "draft" ? "下書き" : "公開", s] } %>
 

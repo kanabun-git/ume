@@ -27,7 +27,13 @@ module ShopAdmin
     end
 
     def update
-      if @block.update(block_params)
+      attrs = block_params
+      # A file_field with no new selection submits an empty string, and
+      # assigning that to a has_one_attached setter purges the existing
+      # attachment — so leave :video_file out entirely unless a file was chosen.
+      attrs = attrs.except(:video_file) if block_params[:video_file].blank?
+
+      if @block.update(attrs)
         redirect_to shop_admin_shop_page_blocks_path, notice: "ブロックを更新しました。"
       else
         render :edit, status: :unprocessable_entity
@@ -72,7 +78,7 @@ module ShopAdmin
     end
 
     def block_params
-      params.require(:shop_page_block).permit(:block_type, :title, :visible, :background_color, :background_opacity, settings: {})
+      params.require(:shop_page_block).permit(:block_type, :title, :visible, :background_color, :background_opacity, :video_file, settings: {})
     end
   end
 end

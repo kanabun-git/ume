@@ -21,6 +21,9 @@ ja:
       diary_entry:
         title: タイトル
         body: 本文
+        video: 動画
+      shop_page_block:
+        video_file: 動画ファイル
       shop_inquiry:
         shop_name: 店舗名
         contact_name: ご担当者名

@@ -3,12 +3,24 @@
 <h1>店舗ランキング</h1>
 <p>閲覧数 x プラン優先度 のスコアで並び替えています。</p>
 
-<ol>
-  <% @shops.each do |shop| %>
-    <li class="card">
-      <%= link_to shop.name, shop_path(shop) %>
-      <span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span>
-      <div>閲覧数: <%= shop.view_count %> / プラン: <%= shop.plan.name %></div>
+<ol class="ranking-list">
+  <% @shops.each_with_index do |shop, i| %>
+    <% rank = @shops.offset_value + i + 1 %>
+    <li class="ranking-item">
+      <span class="ranking-rank rank-<%= rank <= 3 ? rank : "other" %>"><%= rank %></span>
+      <%= link_to shop_path(shop), class: "ranking-thumb" do %>
+        <% if shop.photos.attached? %>
+          <%= image_tag shop.photos.first %>
+        <% else %>
+          <div class="ranking-thumb-placeholder"></div>
+        <% end %>
+      <% end %>
+      <div class="ranking-body">
+        <h3><%= link_to shop.name, shop_path(shop) %></h3>
+        <div><span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span></div>
+        <p><%= truncate(shop.catch_copy.to_s, length: 50) %></p>
+        <p class="ranking-meta">閲覧数: <%= shop.view_count %> / プラン: <%= shop.plan.name %></p>
+      </div>
     </li>
   <% end %>
 </ol>

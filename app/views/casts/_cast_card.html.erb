@@ -5,7 +5,7 @@
   <% if cast.visible_photos.any? %>
     <%= image_tag cast.visible_photos.first %>
   <% else %>
-    <%= image_tag "nowprinting.svg" %>
+    <%= nowprinting_image_tag %>
   <% end %>
   <% if cast.is_trial? %>
     <span class="weekly-cast-badge">体験入店</span>

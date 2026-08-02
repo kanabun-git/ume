@@ -33,13 +33,13 @@
             <% if cast.visible_photos.any? %>
               <%= image_tag cast.visible_photos.first %>
             <% else %>
-              <%= image_tag "nowprinting.svg" %>
+              <%= nowprinting_image_tag %>
             <% end %>
           <% end %>
         <% end %>
       <% else %>
         <%= link_to shop_path(shop) do %>
-          <%= image_tag "nowprinting.svg", class: "shop-listing-photo-placeholder" %>
+          <%= nowprinting_image_tag(class: "shop-listing-photo-placeholder") %>
         <% end %>
       <% end %>
       <% if shop.recruiting_cast? || shop.recruiting_staff? %>

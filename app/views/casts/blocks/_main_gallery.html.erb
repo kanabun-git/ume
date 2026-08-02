@@ -7,7 +7,7 @@
     <% if photos.any? %>
       <%= image_tag photos.first, id: "girl-main-image" %>
     <% else %>
-      <%= image_tag "nowprinting.svg", id: "girl-main-image" %>
+      <%= nowprinting_image_tag(id: "girl-main-image") %>
     <% end %>
   </div>
   <% if photos.size > 1 %>

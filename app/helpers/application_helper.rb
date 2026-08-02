@@ -22,4 +22,18 @@ module ApplicationHelper
   def role_label(user)
     ROLE_LABELS[user.role] || user.role
   end
+
+  # Renders the shared "Now Printing" placeholder, using the image uploaded
+  # in 運営管理画面 > サイト設定 if one is set, falling back to the default
+  # SVG otherwise. orientation is :portrait (3:4 spots) or :landscape.
+  def nowprinting_image_tag(orientation = :portrait, **html_options)
+    attachment_name = orientation == :landscape ? :nowprinting_landscape_image : :nowprinting_portrait_image
+    attachment = (@nowprinting_site_setting ||= SiteSetting.instance).public_send(attachment_name)
+
+    if attachment.attached?
+      image_tag(attachment, html_options)
+    else
+      image_tag("nowprinting.svg", html_options)
+    end
+  end
 end

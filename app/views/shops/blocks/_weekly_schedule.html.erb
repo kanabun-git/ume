@@ -21,7 +21,7 @@
             <% if shift.cast.visible_photos.any? %>
               <%= image_tag shift.cast.visible_photos.first %>
             <% else %>
-              <%= image_tag "nowprinting.svg" %>
+              <%= nowprinting_image_tag %>
             <% end %>
             <div class="weekly-cast-overlay">
               <div class="weekly-cast-time">⏰<%= shift.formatted_start_time %>〜<%= shift.formatted_end_time(shop.time_display_format) %></div>

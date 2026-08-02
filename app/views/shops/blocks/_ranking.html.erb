@@ -15,7 +15,7 @@
           <% if cast.visible_photos.any? %>
             <%= image_tag cast.visible_photos.first %>
           <% else %>
-            <%= image_tag "nowprinting.svg" %>
+            <%= nowprinting_image_tag %>
           <% end %>
         <% end %>
         <div class="ranking-body">

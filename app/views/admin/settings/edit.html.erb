@@ -10,7 +10,7 @@
     キャストマイページ・ログイン画面は、メンテナンス中でもこれまで通り利用できます。
   </p>
 
-  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, class: "form" do |f| %>
+  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
     <label>
       <%= f.check_box :maintenance_mode %>
       メンテナンスモードを有効にする
@@ -20,5 +20,33 @@
     <%= f.text_area :maintenance_message, placeholder: "例: 8/10 22:00〜24:00の間、サーバーメンテナンスのためサイトをご利用いただけません。" %>
 
     <%= f.submit "保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>Now Printing画像</h2>
+  <p>
+    キャストや店舗の写真が未登録の箇所に表示する「Now Printing」プレースホルダー画像です。
+    未設定の場合は標準の画像が使われます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>縦長画像(キャスト写真・写メ日記サムネイルなど / 縦横比3:4推奨)</label>
+    <% if @site_setting.nowprinting_portrait_image.attached? %>
+      <div class="nowprinting-preview">
+        <%= image_tag @site_setting.nowprinting_portrait_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :nowprinting_portrait_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>横長画像(店舗フォトギャラリーなど)</label>
+    <% if @site_setting.nowprinting_landscape_image.attached? %>
+      <div class="nowprinting-preview">
+        <%= image_tag @site_setting.nowprinting_landscape_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :nowprinting_landscape_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
   <% end %>
 </div>

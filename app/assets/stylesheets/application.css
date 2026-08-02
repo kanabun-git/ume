@@ -207,6 +207,8 @@ form.form select, form.form textarea {
   width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: .95rem;
 }
 form.form textarea { min-height: 120px; }
+.nowprinting-preview { margin-bottom: 8px; }
+.nowprinting-preview img { max-width: 200px; max-height: 200px; border-radius: 6px; border: 1px solid var(--border); display: block; }
 .btn {
   display: inline-block; background: linear-gradient(135deg, var(--brand), var(--brand-dark));
   color: #fff; border: none;

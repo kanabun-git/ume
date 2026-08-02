@@ -17,7 +17,13 @@ module Admin
     private
 
     def setting_params
-      params.require(:site_setting).permit(:maintenance_mode, :maintenance_message)
+      attrs = params.require(:site_setting).permit(
+        :maintenance_mode, :maintenance_message,
+        :nowprinting_portrait_image, :nowprinting_landscape_image
+      )
+      attrs.delete(:nowprinting_portrait_image) if attrs[:nowprinting_portrait_image].blank?
+      attrs.delete(:nowprinting_landscape_image) if attrs[:nowprinting_landscape_image].blank?
+      attrs
     end
   end
 end

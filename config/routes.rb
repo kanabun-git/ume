@@ -97,5 +97,7 @@ Rails.application.routes.draw do
     resources :shop_inquiries, only: [:index, :show] do
       member { patch :update_status }
     end
+
+    resource :setting, only: [:edit, :update]
   end
 end

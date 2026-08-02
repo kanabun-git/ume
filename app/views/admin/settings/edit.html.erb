@@ -1,0 +1,24 @@
+<% content_for :title, "サイト設定" %>
+
+<h1>サイト設定</h1>
+
+<div class="card">
+  <h2>メンテナンスモード</h2>
+  <p>
+    オンにすると、一般公開ページ(TOP・店舗一覧・店舗詳細・キャスト詳細など)は
+    メンテナンス中の案内画面に切り替わります。運営管理画面・店舗管理画面・
+    キャストマイページ・ログイン画面は、メンテナンス中でもこれまで通り利用できます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, class: "form" do |f| %>
+    <label>
+      <%= f.check_box :maintenance_mode %>
+      メンテナンスモードを有効にする
+    </label>
+
+    <label>案内メッセージ(空欄の場合は標準メッセージを表示)</label>
+    <%= f.text_area :maintenance_message, placeholder: "例: 8/10 22:00〜24:00の間、サーバーメンテナンスのためサイトをご利用いただけません。" %>
+
+    <%= f.submit "保存する", class: "btn" %>
+  <% end %>
+</div>

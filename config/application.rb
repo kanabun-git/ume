@@ -1,4 +1,5 @@
 require_relative "boot"
+require_relative "../app/middleware/maintenance_mode_middleware"
 
 require "rails/all"
 
@@ -29,5 +30,9 @@ module Ume
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Shows a maintenance page for public-facing requests while the platform
+    # admin has maintenance mode switched on (see MaintenanceModeMiddleware).
+    config.middleware.use MaintenanceModeMiddleware
   end
 end

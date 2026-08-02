@@ -1,5 +1,53 @@
-<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-  <rect width="400" height="300" fill="#f0ecec"/>
-  <text x="200" y="140" font-size="22" fill="#bcb3b3" text-anchor="middle" font-family="sans-serif" font-weight="bold">Now Printing</text>
-  <text x="200" y="168" font-size="14" fill="#bcb3b3" text-anchor="middle" font-family="sans-serif">準備中</text>
+<svg width="600" height="800" viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0356b"/>
+      <stop offset="100%" stop-color="#b5204f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="600" height="800" fill="url(#bg)"/>
+
+  <text x="300" y="150" text-anchor="middle" font-family="'Hiragino Sans', 'Helvetica Neue', Arial, sans-serif"
+        font-size="92" font-weight="800" fill="#ffffff" stroke="#7a1636" stroke-width="7"
+        paint-order="stroke fill" letter-spacing="2">Now</text>
+  <text x="300" y="240" text-anchor="middle" font-family="'Hiragino Sans', 'Helvetica Neue', Arial, sans-serif"
+        font-size="76" font-weight="800" fill="#ffffff" stroke="#7a1636" stroke-width="7"
+        paint-order="stroke fill" letter-spacing="1">Printing!</text>
+
+  <!-- Simple stylized standing-figure silhouette -->
+  <g fill="#ffffff" stroke="#7a1636" stroke-width="4" stroke-linejoin="round">
+    <!-- hair bun -->
+    <circle cx="300" cy="333" r="18"/>
+    <!-- head -->
+    <circle cx="300" cy="383" r="46"/>
+    <!-- neck -->
+    <path d="M282,418 L318,418 L314,442 L286,442 Z"/>
+    <!-- torso: shoulders -> waist -> hips, an hourglass silhouette -->
+    <path d="M244,448
+             C260,440 280,436 300,436
+             C320,436 340,440 356,448
+             C366,453 372,462 372,474
+             C372,500 362,520 350,536
+             C362,552 368,572 366,594
+             C364,618 352,638 334,652
+             C346,660 354,672 356,686
+             L354,700 L246,700 L244,686
+             C246,672 254,660 266,652
+             C248,638 236,618 234,594
+             C232,572 238,552 250,536
+             C238,520 228,500 228,474
+             C228,462 234,453 244,448 Z"/>
+    <!-- left arm -->
+    <path d="M246,452 C222,462 208,500 210,548 C211,572 217,592 228,604 L242,594 C234,576 231,554 233,532 C235,510 240,490 250,472 Z"/>
+    <!-- right arm -->
+    <path d="M354,452 C378,462 392,500 390,548 C389,572 383,592 372,604 L358,594 C366,576 369,554 367,532 C365,510 360,490 350,472 Z"/>
+    <!-- left leg -->
+    <path d="M248,700 C245,730 242,765 240,798 L268,798 C269,765 271,732 276,700 Z"/>
+    <!-- right leg -->
+    <path d="M352,700 C355,730 358,765 360,798 L332,798 C331,765 329,732 324,700 Z"/>
+  </g>
+
+  <text x="560" y="770" text-anchor="end" font-family="'Hiragino Sans', 'Helvetica Neue', Arial, sans-serif"
+        font-size="34" font-weight="800" fill="#ffffff">風俗Zero</text>
 </svg>

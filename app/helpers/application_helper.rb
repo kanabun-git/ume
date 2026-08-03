@@ -23,6 +23,16 @@ module ApplicationHelper
     ROLE_LABELS[user.role] || user.role
   end
 
+  # Badge shown in the review admin/moderation tables so it's obvious at a
+  # glance which reviews the shop hasn't replied to yet.
+  def review_reply_status_badge(review)
+    if review.shop_reply.present?
+      content_tag(:span, "返信済み", class: "badge")
+    else
+      content_tag(:span, "未返信", class: "badge warning")
+    end
+  end
+
   # Renders the shared "Now Printing" placeholder, using the image uploaded
   # in 運営管理画面 > サイト設定 if one is set, falling back to the default
   # SVG otherwise. orientation is :portrait (3:4 spots) or :landscape.

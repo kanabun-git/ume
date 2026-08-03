@@ -125,6 +125,7 @@ main { padding: 24px 0 60px; }
 .cast-card h3 { margin: 8px 0 4px; font-size: 1rem; }
 .badge { display: inline-block; background: var(--brand); color: #fff; font-size: .75rem; padding: 2px 8px; border-radius: 10px; box-shadow: var(--shadow-sm); }
 .badge.muted { background: var(--muted); }
+.badge.warning { background: #e8b923; }
 
 /* --- Shop listing card (店舗一覧) --------------------------------------- */
 

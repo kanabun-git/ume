@@ -2,4 +2,15 @@
 <h1><%= @review.shop.name %> への口コミ</h1>
 <p>投稿者: <%= @review.reviewer_name %> / 評価: <%= @review.rating %> / 状態: <%= status_label(@review) %></p>
 <p><%= @review.body %></p>
+
+<div class="card">
+  <h2>店舗からの返信 <%= review_reply_status_badge(@review) %></h2>
+  <% if @review.shop_reply.present? %>
+    <p><%= @review.shop_reply %></p>
+    <p><small>返信日時: <%= @review.shop_replied_at&.strftime("%Y/%m/%d %H:%M") %></small></p>
+  <% else %>
+    <p><small>この口コミにはまだ店舗からの返信がありません。</small></p>
+  <% end %>
+</div>
+
 <%= link_to "一覧に戻る", admin_reviews_path, class: "btn secondary" %>

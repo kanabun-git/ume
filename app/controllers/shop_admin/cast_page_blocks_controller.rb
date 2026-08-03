@@ -40,12 +40,12 @@ module ShopAdmin
     end
 
     def move_up
-      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position < ?", @block.position).order(position: :desc).first)
+      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position < ?", @block.position).reorder(position: :desc).first)
       redirect_to shop_admin_cast_page_blocks_path
     end
 
     def move_down
-      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position > ?", @block.position).order(:position).first)
+      swap_with(current_shop.cast_page_blocks.where(layout_column: @block.layout_column).where("position > ?", @block.position).reorder(:position).first)
       redirect_to shop_admin_cast_page_blocks_path
     end
 

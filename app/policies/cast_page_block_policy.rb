@@ -19,6 +19,18 @@ class CastPageBlockPolicy < ApplicationPolicy
     create?
   end
 
+  def move_up?
+    update?
+  end
+
+  def move_down?
+    update?
+  end
+
+  def toggle_visibility?
+    update?
+  end
+
   class Scope < Scope
     def resolve
       if user&.platform_admin?

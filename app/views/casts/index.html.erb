@@ -1,5 +1,5 @@
 <% content_for :title, "女の子検索 | FuzokuZero" %>
-<% content_for :meta_description, "エリア・ジャンル・カップサイズ・年齢から在籍中の女の子を絞り込んで探せます。" %>
+<% content_for :meta_description, "エリア・ジャンル・カップサイズ・年齢・身長から在籍中の女の子を絞り込んで探せます。" %>
 
 <h1>女の子検索</h1>
 
@@ -32,6 +32,10 @@
   <input type="number" name="min_age" value="<%= params[:min_age] %>" placeholder="下限" style="width:80px;">
   〜
   <input type="number" name="max_age" value="<%= params[:max_age] %>" placeholder="上限" style="width:80px;">
+  <label>身長(cm)</label>
+  <input type="number" name="min_height" value="<%= params[:min_height] %>" placeholder="下限" style="width:80px;">
+  〜
+  <input type="number" name="max_height" value="<%= params[:max_height] %>" placeholder="上限" style="width:80px;">
   <label><input type="checkbox" name="trial" value="1" <%= "checked" if params[:trial].present? %>> 体験入店のみ</label>
   <button type="submit" class="btn">絞り込む</button>
 </form>

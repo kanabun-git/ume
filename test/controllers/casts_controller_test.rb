@@ -49,6 +49,17 @@ class CastsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match younger.name, response.body
   end
 
+  test "filters by height range" do
+    shorter = create_cast(name: "低身長キャスト", height: 150)
+    taller = create_cast(name: "高身長キャスト", height: 170)
+
+    get casts_path, params: { min_height: 160, max_height: 180 }
+
+    assert_response :success
+    assert_match taller.name, response.body
+    assert_no_match shorter.name, response.body
+  end
+
   test "filters to trial casts only" do
     trial_cast = create_cast(name: "体験入店キャスト", is_trial: true)
     regular_cast = create_cast(name: "通常キャスト", is_trial: false)

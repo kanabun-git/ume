@@ -8,6 +8,8 @@ class CastsController < ApplicationController
     @casts = @casts.where(cup: params[:cup]) if params[:cup].present?
     @casts = @casts.where("casts.age >= ?", params[:min_age]) if params[:min_age].present?
     @casts = @casts.where("casts.age <= ?", params[:max_age]) if params[:max_age].present?
+    @casts = @casts.where("casts.height >= ?", params[:min_height]) if params[:min_height].present?
+    @casts = @casts.where("casts.height <= ?", params[:max_height]) if params[:max_height].present?
     @casts = @casts.where(is_trial: true) if params[:trial].present?
     if params[:keyword].present?
       keyword = "%#{params[:keyword]}%"

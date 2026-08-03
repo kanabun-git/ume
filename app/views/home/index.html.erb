@@ -50,6 +50,20 @@
 
 <section class="home-section">
   <div class="home-section-head">
+    <h2>本日出勤中の女の子</h2>
+    <%= link_to "出勤一覧を見る >", today_shifts_path, class: "home-section-more" %>
+  </div>
+  <% if @today_shifts.any? %>
+    <div class="weekly-day-grid today-shifts-grid">
+      <%= render partial: "today_shifts/shift_card", collection: @today_shifts, as: :shift %>
+    </div>
+  <% else %>
+    <p class="region-note">本日出勤予定の女の子はいません。</p>
+  <% end %>
+</section>
+
+<section class="home-section">
+  <div class="home-section-head">
     <h2>ジャンルから探す</h2>
   </div>
   <div class="genre-pills">
@@ -83,6 +97,22 @@
       </li>
     <% end %>
   </ol>
+</section>
+
+<section class="home-section">
+  <div class="home-section-head">
+    <h2>クーポン</h2>
+    <%= link_to "クーポン一覧を見る >", coupons_path, class: "home-section-more" %>
+  </div>
+  <% if @coupon_shops.any? %>
+    <div class="shop-listing">
+      <% @coupon_shops.each do |shop| %>
+        <%= render "shops/shop_card", shop: shop %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="region-note">現在クーポンを実施中の店舗はありません。</p>
+  <% end %>
 </section>
 
 <section class="home-section">

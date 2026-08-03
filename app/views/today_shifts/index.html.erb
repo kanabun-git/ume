@@ -1,0 +1,32 @@
+<% content_for :title, "本日の出勤一覧 | FuzokuZero" %>
+<% content_for :meta_description, "本日出勤中の女の子を、エリア・ジャンルから絞り込んで探せます。" %>
+
+<h1>本日の出勤一覧(<%= Date.current.strftime("%-m/%-d") %>)</h1>
+
+<form class="form" method="get">
+  <label>エリア</label>
+  <select name="area_id">
+    <option value="">すべて</option>
+    <% @areas.each do |area| %>
+      <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+    <% end %>
+  </select>
+  <label>ジャンル</label>
+  <select name="genre_id">
+    <option value="">すべて</option>
+    <% @genres.each do |genre| %>
+      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <button type="submit" class="btn">絞り込む</button>
+</form>
+
+<% if @shifts.any? %>
+  <div class="weekly-day-grid today-shifts-grid">
+    <%= render partial: "shift_card", collection: @shifts, as: :shift %>
+  </div>
+<% else %>
+  <p class="region-note">本日出勤予定の女の子はいません。</p>
+<% end %>
+
+<%= paginate @shifts %>

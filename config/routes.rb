@@ -16,9 +16,11 @@ Rails.application.routes.draw do
   get "chubu", to: "home#index", defaults: { region: "中部" }, as: :chubu_home
 
   get "rankings", to: "rankings#index", as: :rankings
+  get "today_shifts", to: "today_shifts#index", as: :today_shifts
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: "xml" }
 
   resources :videos, only: [:index]
+  resources :coupons, only: [:index]
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
   resources :casts, only: [:show]

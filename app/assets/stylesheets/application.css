@@ -489,6 +489,7 @@ form.form textarea { min-height: 120px; }
 .weekly-cast-time { font-size: .7rem; }
 .weekly-cast-name { font-size: .8rem; font-weight: bold; margin-top: 2px; }
 .weekly-cast-size { font-size: .62rem; opacity: .9; margin-top: 1px; }
+.weekly-cast-shop { font-size: .68rem; opacity: .95; margin-top: 1px; }
 .weekly-cast-catch { font-size: .65rem; opacity: .95; margin-top: 3px; }
 .weekly-cast-badge {
   position: absolute; top: 6px; left: 6px; z-index: 1;
@@ -503,6 +504,11 @@ form.form textarea { min-height: 120px; }
 @media (max-width: 560px) {
   .weekly-day-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Full-page listing of today's shifts across every shop: wider than the
+   shop page's own 週間出勤 grid, so it gets its own column count instead
+   of the fixed 5-column .weekly-day-grid default. */
+.today-shifts-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
 .block-video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 6px; overflow: hidden; }
 .block-video-wrapper iframe, .block-video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; object-fit: contain; }

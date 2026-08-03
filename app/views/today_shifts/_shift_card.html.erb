@@ -1,0 +1,11 @@
+<%# Same visual treatment as the shop page's 週間出勤 cards, plus the shop
+    name since this listing spans every shop. %>
+<%= link_to cast_path(shift.cast), class: "weekly-cast-card" do %>
+  <%= photo_or_placeholder_tag shift.cast.visible_photos.first, removed: shift.cast.photos_removed_by_moderation? %>
+  <div class="weekly-cast-overlay">
+    <div class="weekly-cast-time">⏰<%= shift.formatted_start_time %>〜<%= shift.formatted_end_time(shift.cast.shop.time_display_format) %></div>
+    <div class="weekly-cast-name"><%= shift.cast.alias_name.presence || shift.cast.name %>(<%= shift.cast.age %>歳)</div>
+    <div class="weekly-cast-shop"><%= shift.cast.shop.name %></div>
+    <div class="weekly-cast-size">T<%= shift.cast.height %>・<%= shift.cast.bust %>(<%= shift.cast.cup %>)・<%= shift.cast.waist %>・<%= shift.cast.hip %></div>
+  </div>
+<% end %>

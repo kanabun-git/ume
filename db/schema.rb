@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_02_134136) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_013000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_134136) do
     t.decimal "background_opacity", precision: 3, scale: 2, default: "1.0", null: false
     t.integer "block_type", null: false
     t.datetime "created_at", null: false
+    t.boolean "hide_header", default: false, null: false
     t.integer "layout_column", default: 0, null: false
     t.integer "position", default: 0, null: false
     t.jsonb "settings", default: {}, null: false
@@ -176,6 +177,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_134136) do
     t.decimal "background_opacity", precision: 3, scale: 2, default: "1.0", null: false
     t.integer "block_type", null: false
     t.datetime "created_at", null: false
+    t.boolean "hide_header", default: false, null: false
     t.integer "position", default: 0, null: false
     t.jsonb "settings", default: {}, null: false
     t.bigint "shop_id", null: false

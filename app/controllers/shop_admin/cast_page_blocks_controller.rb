@@ -72,7 +72,7 @@ module ShopAdmin
     end
 
     def block_params
-      params.require(:cast_page_block).permit(:block_type, :layout_column, :title, :visible, :background_color, :background_opacity, settings: {})
+      params.require(:cast_page_block).permit(:block_type, :layout_column, :title, :visible, :hide_header, :background_color, :background_opacity, settings: {})
     end
   end
 end

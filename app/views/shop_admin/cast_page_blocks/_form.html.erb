@@ -23,6 +23,9 @@
   <label>表示する</label>
   <%= f.check_box :visible %>
 
+  <label>ヘッダー(タイトルの帯)を非表示にする</label>
+  <%= f.check_box :hide_header %>
+
   <label>背景色(空欄でデフォルト)</label>
   <%= f.color_field :background_color, value: block.background_color.presence || "#ffffff" %>
 

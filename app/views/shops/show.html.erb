@@ -51,8 +51,10 @@
     /shop_admin/shop_page_blocks — see ShopPageBlock. %>
 <% @shop.shop_page_blocks.visible.each do |block| %>
   <div class="obi-block">
-    <div class="obi-header"><%= block.label %></div>
-    <div class="obi-body" style="<%= block.background_style %>">
+    <% unless block.hide_header? %>
+      <div class="obi-header"><%= block.label %></div>
+    <% end %>
+    <div class="obi-body<%= " no-header" if block.hide_header? %>" style="<%= block.background_style %>">
       <%= render "shops/blocks/#{block.block_type}", shop: @shop, block: block %>
     </div>
   </div>

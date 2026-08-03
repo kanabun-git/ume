@@ -393,6 +393,7 @@ form.form textarea { min-height: 120px; }
 .obi-block { margin-bottom: 16px; box-shadow: var(--shadow-sm); border-radius: var(--radius); }
 .obi-header { background: linear-gradient(120deg, var(--brand), var(--brand-dark)); color: #fff; font-weight: bold; padding: 9px 16px; border-radius: var(--radius) var(--radius) 0 0; font-size: .95rem; }
 .obi-body { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 14px; font-size: .9rem; }
+.obi-body.no-header { border-top: 1px solid var(--border); border-radius: var(--radius); }
 
 .price-table { width: 100%; border-collapse: collapse; }
 .price-table th, .price-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: .9rem; text-align: left; }

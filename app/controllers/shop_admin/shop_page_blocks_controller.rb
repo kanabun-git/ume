@@ -78,7 +78,7 @@ module ShopAdmin
     end
 
     def block_params
-      params.require(:shop_page_block).permit(:block_type, :title, :visible, :background_color, :background_opacity, :video_file, settings: {})
+      params.require(:shop_page_block).permit(:block_type, :title, :visible, :hide_header, :background_color, :background_opacity, :video_file, settings: {})
     end
   end
 end

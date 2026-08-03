@@ -28,11 +28,9 @@
     <h2><%= @region %>マップから探す</h2>
     <%= link_to "エリア一覧を見る >", shops_path, class: "home-section-more" %>
   </div>
-  <div class="illust-map-grid">
+  <div class="region-explorer">
     <%= render "region_image_map", region: @region, areas: @areas %>
-  </div>
 
-  <div class="region-grid">
     <div class="region-block">
       <div class="area-grid">
         <% @areas.each do |area| %>

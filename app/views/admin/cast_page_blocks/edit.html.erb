@@ -1,0 +1,3 @@
+<% content_for :title, "ブロックを編集" %>
+<h1><%= @shop.name %> のブロックを編集(<%= @block.label %>)</h1>
+<%= render "shop_admin/cast_page_blocks/form", block: @block, url: admin_shop_cast_page_block_path(@shop, @block) %>

@@ -70,6 +70,20 @@ Rails.application.routes.draw do
         patch :approve
         patch :suspend
       end
+      resources :shop_page_blocks, except: [:show] do
+        member do
+          patch :move_up
+          patch :move_down
+          patch :toggle_visibility
+        end
+      end
+      resources :cast_page_blocks, except: [:show] do
+        member do
+          patch :move_up
+          patch :move_down
+          patch :toggle_visibility
+        end
+      end
     end
     resources :areas
     resources :genres

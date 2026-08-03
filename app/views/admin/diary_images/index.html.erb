@@ -1,14 +1,14 @@
 <% content_for :title, "写メ日記画像の確認" %>
 
 <h1>写メ日記画像の確認</h1>
-<p>投稿された写メ日記の画像を確認し、不適切な画像は「非公開にする」で公開サイトから非表示にできます。</p>
+<p>投稿された写メ日記の画像・動画を確認し、不適切なものは「非公開にする」で公開サイトから非表示にできます。</p>
 
-<% if @diary_entries.none? { |entry| entry.images.attached? } %>
-  <p>確認できる画像はまだありません。</p>
+<% if @diary_entries.none? { |entry| entry.images.attached? || entry.video.attached? } %>
+  <p>確認できる画像・動画はまだありません。</p>
 <% end %>
 
 <% @diary_entries.each do |entry| %>
-  <% next unless entry.images.attached? %>
+  <% next unless entry.images.attached? || entry.video.attached? %>
   <div class="moderation-group">
     <div class="moderation-group-header">
       <strong><%= entry.cast.shop.name %></strong> / <%= entry.cast.name %> /
@@ -26,6 +26,20 @@
           <% end %>
           <%= button_to (image.hidden? ? "公開にする" : "非公開にする"),
                         toggle_hidden_admin_diary_image_path(image),
+                        method: :patch,
+                        class: "btn secondary" %>
+        </div>
+      <% end %>
+      <% if entry.video.attached? %>
+        <div class="moderation-item">
+          <%= video_tag entry.video, muted: true, preload: "metadata" %>
+          <% if entry.video_hidden? %>
+            <span class="badge muted">非公開中(動画)</span>
+          <% else %>
+            <span class="badge">公開中(動画)</span>
+          <% end %>
+          <%= button_to (entry.video_hidden? ? "公開にする" : "非公開にする"),
+                        admin_toggle_video_hidden_diary_entry_path(entry),
                         method: :patch,
                         class: "btn secondary" %>
         </div>

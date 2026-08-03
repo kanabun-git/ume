@@ -5,14 +5,18 @@ class SiteSetting < ApplicationRecord
   # Single-image site assets, each swappable from 運営管理画面 > サイト設定
   # without a deploy: the "Now Printing" placeholders shown wherever a photo
   # hasn't been uploaded yet (portrait for cast/diary thumbnails, landscape
-  # for the shop photo gallery), and the site logo in its three standard
-  # shapes (header, OGP share image, favicon).
+  # for the shop photo gallery), the site logo in its three standard shapes
+  # (header, OGP share image, favicon), and the "removed by moderation"
+  # placeholders shown when a photo/video was hidden rather than never
+  # uploaded.
   IMAGE_ATTACHMENTS = %i[
     nowprinting_portrait_image
     nowprinting_landscape_image
     logo_horizontal_image
     logo_square_large_image
     logo_square_small_image
+    removed_content_portrait_image
+    removed_content_landscape_image
   ].freeze
 
   IMAGE_ATTACHMENTS.each { |name| has_one_attached name }

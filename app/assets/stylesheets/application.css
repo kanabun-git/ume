@@ -107,7 +107,7 @@ main { padding: 24px 0 60px; }
 .moderation-group-header .badge { margin-left: 6px; }
 .moderation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
 .moderation-item { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center; }
-.moderation-item img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 6px; }
+.moderation-item img, .moderation-item video { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 6px; background: #000; }
 .moderation-item .badge { margin-bottom: 6px; }
 .moderation-item .btn { width: 100%; margin-top: 0; }
 

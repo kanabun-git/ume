@@ -25,6 +25,22 @@ class DiaryEntry < ApplicationRecord
     images.reject(&:hidden?)
   end
 
+  def video_hidden?
+    video.attached? && video.attachment.hidden?
+  end
+
+  # True once every uploaded image and the video (if any) have been hidden
+  # by admin moderation, as opposed to nothing ever having been uploaded —
+  # the two cases show different placeholders (see
+  # ApplicationHelper#diary_thumb_tag).
+  def content_removed_by_moderation?
+    return false unless images.attached? || video.attached?
+    return false if visible_images.any?
+    return false if video.attached? && !video_hidden?
+
+    true
+  end
+
   private
 
   def set_published_at

@@ -57,6 +57,49 @@ module ApplicationHelper
     attachment if attachment.attached?
   end
 
+  # Renders the placeholder shown when a photo/video was hidden by admin
+  # moderation (as opposed to never having been uploaded — see
+  # #nowprinting_image_tag for that case). Falls back to the generic Now
+  # Printing SVG if the admin hasn't uploaded a dedicated one.
+  def removed_content_image_tag(orientation = :portrait, **html_options)
+    attachment_name = orientation == :landscape ? :removed_content_landscape_image : :removed_content_portrait_image
+    attachment = site_setting_singleton.public_send(attachment_name)
+
+    if attachment.attached?
+      image_tag(attachment, html_options)
+    else
+      image_tag("nowprinting.svg", html_options)
+    end
+  end
+
+  # Shared "first visible photo, or the right placeholder" logic used by
+  # every shop/cast card and gallery: shows removed_content_image_tag when
+  # every uploaded photo was hidden by moderation, or nowprinting_image_tag
+  # when nothing was ever uploaded.
+  def photo_or_placeholder_tag(photo, removed:, orientation: :portrait, **html_options)
+    if photo
+      image_tag(photo, html_options)
+    elsif removed
+      removed_content_image_tag(orientation, **html_options)
+    else
+      nowprinting_image_tag(orientation, **html_options)
+    end
+  end
+
+  # Shared "image, else video, else the right placeholder" logic for diary
+  # entry thumbnails (shop page's 写メ日記 block and the cast page's own).
+  def diary_thumb_tag(entry, **html_options)
+    if entry.visible_images.any?
+      image_tag(entry.visible_images.first, html_options)
+    elsif entry.video.attached? && !entry.video_hidden?
+      video_tag(entry.video, muted: true, preload: "metadata", **html_options)
+    elsif entry.content_removed_by_moderation?
+      removed_content_image_tag(:portrait, **html_options)
+    else
+      nowprinting_image_tag(:portrait, **html_options)
+    end
+  end
+
   private
 
   def site_setting_singleton

@@ -4,14 +4,8 @@
     <% entries.each do |entry| %>
       <%= link_to cast_path(cast, anchor: "diary-#{entry.id}"), class: "girl-diary-thumb" do %>
         <div class="photo-with-status">
-          <% if entry.visible_images.any? %>
-            <%= image_tag entry.visible_images.first %>
-          <% elsif entry.video.attached? %>
-            <%= video_tag entry.video, muted: true, preload: "metadata" %>
-          <% else %>
-            <%= nowprinting_image_tag %>
-          <% end %>
-          <% if entry.video.attached? %>
+          <%= diary_thumb_tag entry %>
+          <% if entry.video.attached? && !entry.video_hidden? %>
             <span class="badge">動画あり</span>
           <% end %>
         </div>

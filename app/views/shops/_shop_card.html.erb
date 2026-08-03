@@ -31,11 +31,7 @@
       <% if pickup_casts.any? %>
         <% pickup_casts.each do |cast| %>
           <%= link_to shop_path(shop) do %>
-            <% if cast.visible_photos.any? %>
-              <%= image_tag cast.visible_photos.first %>
-            <% else %>
-              <%= nowprinting_image_tag %>
-            <% end %>
+            <%= photo_or_placeholder_tag cast.visible_photos.first, removed: cast.photos_removed_by_moderation? %>
           <% end %>
         <% end %>
       <% else %>

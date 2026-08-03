@@ -38,6 +38,13 @@ class Cast < ApplicationRecord
     photos.reject(&:hidden?)
   end
 
+  # True once every uploaded photo has been hidden by admin moderation,
+  # as opposed to no photo ever having been uploaded — the two cases show
+  # different placeholders (see ApplicationHelper#photo_or_placeholder_tag).
+  def photos_removed_by_moderation?
+    photos.attached? && visible_photos.empty?
+  end
+
   private
 
   # When a shop admin creates a login account for a cast via the nested

@@ -2,11 +2,7 @@
     photo with the name/age/sizes overlaid on a gradient, so cast images are
     consistent everywhere they appear on the shop detail page. %>
 <%= link_to cast_path(cast), class: "weekly-cast-card" do %>
-  <% if cast.visible_photos.any? %>
-    <%= image_tag cast.visible_photos.first %>
-  <% else %>
-    <%= nowprinting_image_tag %>
-  <% end %>
+  <%= photo_or_placeholder_tag cast.visible_photos.first, removed: cast.photos_removed_by_moderation? %>
   <% if cast.is_trial? %>
     <span class="weekly-cast-badge">体験入店</span>
   <% end %>

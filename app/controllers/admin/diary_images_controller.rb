@@ -1,7 +1,9 @@
 module Admin
   class DiaryImagesController < BaseController
     def index
-      @diary_entries = policy_scope(::DiaryEntry).includes(:cast, images_attachments: :blob).page(params[:page]).per(20)
+      @diary_entries = policy_scope(::DiaryEntry)
+                        .includes(:cast, images_attachments: :blob, video_attachment: :blob)
+                        .page(params[:page]).per(20)
     end
 
     def toggle_hidden
@@ -11,6 +13,15 @@ module Admin
 
       attachment.update!(hidden: !attachment.hidden)
       redirect_to admin_diary_images_path, notice: "画像の公開状態を更新しました。"
+    end
+
+    def toggle_video_hidden
+      entry = policy_scope(::DiaryEntry).find(params[:id])
+      authorize entry, :manage_visibility?
+
+      attachment = entry.video.attachment
+      attachment.update!(hidden: !attachment.hidden)
+      redirect_to admin_diary_images_path, notice: "動画の公開状態を更新しました。"
     end
   end
 end

@@ -55,7 +55,7 @@
     <% entry.visible_images.each do |img| %>
       <%= image_tag img, style: "max-width:200px;" %>
     <% end %>
-    <% if entry.video.attached? %>
+    <% if entry.video.attached? && !entry.video_hidden? %>
       <div class="block-video-wrapper">
         <%= video_tag entry.video, controls: true %>
       </div>

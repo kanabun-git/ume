@@ -1,0 +1,16 @@
+<%# Same visual treatment as casts/_cast_card, plus the shop name since
+    this listing spans every shop. %>
+<%= link_to cast_path(cast), class: "weekly-cast-card" do %>
+  <%= photo_or_placeholder_tag cast.visible_photos.first, removed: cast.photos_removed_by_moderation? %>
+  <% if cast.is_trial? %>
+    <span class="weekly-cast-badge">体験入店</span>
+  <% end %>
+  <div class="weekly-cast-overlay">
+    <div class="weekly-cast-name"><%= cast.alias_name.presence || cast.name %>(<%= cast.age %>歳)</div>
+    <div class="weekly-cast-shop"><%= cast.shop.name %></div>
+    <div class="weekly-cast-size">T<%= cast.height %>・<%= cast.bust %>(<%= cast.cup %>)・<%= cast.waist %>・<%= cast.hip %></div>
+    <% if cast.catch_copy.present? %>
+      <div class="weekly-cast-catch"><%= truncate(cast.catch_copy, length: 22) %></div>
+    <% end %>
+  </div>
+<% end %>

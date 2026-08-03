@@ -1,0 +1,47 @@
+<% content_for :title, "女の子検索 | FuzokuZero" %>
+<% content_for :meta_description, "エリア・ジャンル・カップサイズ・年齢から在籍中の女の子を絞り込んで探せます。" %>
+
+<h1>女の子検索</h1>
+
+<form class="form" method="get">
+  <label>キーワード(源氏名・キャッチコピー等)</label>
+  <input type="text" name="keyword" value="<%= params[:keyword] %>" placeholder="例: 未経験、癒し系">
+
+  <label>エリア</label>
+  <select name="area_id">
+    <option value="">すべて</option>
+    <% @areas.each do |area| %>
+      <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+    <% end %>
+  </select>
+  <label>ジャンル</label>
+  <select name="genre_id">
+    <option value="">すべて</option>
+    <% @genres.each do |genre| %>
+      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <label>カップサイズ</label>
+  <select name="cup">
+    <option value="">指定なし</option>
+    <% Cast::CUP_OPTIONS.each do |cup| %>
+      <option value="<%= cup %>" <%= "selected" if params[:cup] == cup %>><%= cup %>カップ</option>
+    <% end %>
+  </select>
+  <label>年齢</label>
+  <input type="number" name="min_age" value="<%= params[:min_age] %>" placeholder="下限" style="width:80px;">
+  〜
+  <input type="number" name="max_age" value="<%= params[:max_age] %>" placeholder="上限" style="width:80px;">
+  <label><input type="checkbox" name="trial" value="1" <%= "checked" if params[:trial].present? %>> 体験入店のみ</label>
+  <button type="submit" class="btn">絞り込む</button>
+</form>
+
+<% if @casts.any? %>
+  <div class="cast-listing-grid">
+    <%= render partial: "cast_search_card", collection: @casts, as: :cast %>
+  </div>
+<% else %>
+  <p class="region-note">条件に一致する女の子が見つかりませんでした。</p>
+<% end %>
+
+<%= paginate @casts %>

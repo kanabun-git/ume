@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   resources :coupons, only: [:index]
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
-  resources :casts, only: [:show]
+  resources :casts, only: [:index, :show]
   resources :shops, only: [:index, :show] do
     resources :reviews, only: [:new, :create]
   end

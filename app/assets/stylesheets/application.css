@@ -510,6 +510,9 @@ form.form textarea { min-height: 120px; }
    of the fixed 5-column .weekly-day-grid default. */
 .today-shifts-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 
+/* Cross-shop cast search results, reusing the same card look. */
+.cast-listing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-top: 16px; }
+
 .block-video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 6px; overflow: hidden; }
 .block-video-wrapper iframe, .block-video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; object-fit: contain; }
 

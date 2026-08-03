@@ -33,9 +33,14 @@ module ApplicationHelper
     end
   end
 
+  NOWPRINTING_IMAGE_DEFAULTS = {
+    portrait: "nowprinting_portrait.png",
+    landscape: "nowprinting_landscape.png"
+  }.freeze
+
   # Renders the shared "Now Printing" placeholder, using the image uploaded
-  # in 運営管理画面 > サイト設定 if one is set, falling back to the default
-  # SVG otherwise. orientation is :portrait (3:4 spots) or :landscape.
+  # in 運営管理画面 > サイト設定 if one is set, falling back to the checked-in
+  # default otherwise. orientation is :portrait (3:4 spots) or :landscape.
   def nowprinting_image_tag(orientation = :portrait, **html_options)
     attachment_name = orientation == :landscape ? :nowprinting_landscape_image : :nowprinting_portrait_image
     attachment = site_setting_singleton.public_send(attachment_name)
@@ -43,7 +48,7 @@ module ApplicationHelper
     if attachment.attached?
       image_tag(attachment, html_options)
     else
-      image_tag("nowprinting.svg", html_options)
+      image_tag(NOWPRINTING_IMAGE_DEFAULTS.fetch(orientation), html_options)
     end
   end
 

@@ -3,7 +3,7 @@
 <h1>口コミモデレーション</h1>
 
 <table class="admin-table">
-  <thead><tr><th>店舗</th><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th><th>返信状況</th><th></th></tr></thead>
+  <thead><tr><th>店舗</th><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th><th>返信状況</th><th>返信</th><th></th></tr></thead>
   <tbody>
     <% @reviews.each do |review| %>
       <tr>
@@ -13,6 +13,21 @@
         <td><%= truncate(review.body, length: 50) %></td>
         <td><%= status_label(review) %></td>
         <td><%= review_reply_status_badge(review) %></td>
+        <td>
+          <%= form_tag reply_admin_review_path(review), method: :patch, class: "reply-form" do %>
+            <% templates = @templates_by_shop[review.shop_id] || [] %>
+            <% if templates.any? %>
+              <select class="reply-template-select">
+                <option value="">テンプレートを選択...</option>
+                <% templates.each do |template| %>
+                  <option value="<%= template.id %>" data-body="<%= template.body %>"><%= template.title %></option>
+                <% end %>
+              </select>
+            <% end %>
+            <%= text_area_tag :shop_reply, review.shop_reply, rows: 2, style: "width:100%;", class: "reply-textarea" %>
+            <%= submit_tag review.shop_reply.present? ? "返信を更新する" : "返信する", class: "btn secondary" %>
+          <% end %>
+        </td>
         <td>
           <% if review.pending? %>
             <%= button_to "承認", approve_admin_review_path(review), method: :patch %>
@@ -24,3 +39,15 @@
     <% end %>
   </tbody>
 </table>
+
+<script>
+  document.querySelectorAll(".reply-template-select").forEach(function(select) {
+    select.addEventListener("change", function() {
+      var option = select.options[select.selectedIndex];
+      var body = option.getAttribute("data-body");
+      if (!body) return;
+      var textarea = select.closest(".reply-form").querySelector(".reply-textarea");
+      textarea.value = body;
+    });
+  });
+</script>

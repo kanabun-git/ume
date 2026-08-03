@@ -1,0 +1,22 @@
+<% content_for :title, "返信テンプレート管理" %>
+
+<h1>返信テンプレート管理</h1>
+<p>口コミへの返信でよく使う文章をテンプレートとして登録しておくと、口コミ一覧の返信欄からワンクリックで呼び出せます。</p>
+
+<%= link_to "新しいテンプレートを追加", new_shop_admin_review_reply_template_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>テンプレート名</th><th>返信文</th><th></th></tr></thead>
+  <tbody>
+    <% @templates.each do |template| %>
+      <tr>
+        <td><%= template.title %></td>
+        <td><%= truncate(template.body, length: 60) %></td>
+        <td>
+          <%= link_to "編集", edit_shop_admin_review_reply_template_path(template), class: "btn secondary" %>
+          <%= button_to "削除", shop_admin_review_reply_template_path(template), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

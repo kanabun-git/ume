@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_023000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_103525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_023000) do
     t.integer "position", default: 0, null: false
     t.integer "priority_weight", default: 1, null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "review_reply_templates", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "shop_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id"], name: "index_review_reply_templates_on_shop_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -266,6 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_023000) do
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
   add_foreign_key "diary_entries", "casts"
+  add_foreign_key "review_reply_templates", "shops"
   add_foreign_key "reviews", "casts"
   add_foreign_key "reviews", "shops"
   add_foreign_key "shifts", "casts"

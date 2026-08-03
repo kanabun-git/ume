@@ -1,0 +1,4 @@
+<% content_for :title, "返信テンプレートを追加" %>
+<h1>返信テンプレートを追加</h1>
+<%= render "form", template: @template, url: shop_admin_review_reply_templates_path %>
+<%= link_to "一覧に戻る", shop_admin_review_reply_templates_path, class: "btn secondary" %>

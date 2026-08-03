@@ -3,6 +3,7 @@ module ShopAdmin
     def index
       authorize ::Review, :index?
       @reviews = policy_scope(::Review)
+      @templates = policy_scope(::ReviewReplyTemplate).where(shop: current_shop)
     end
 
     def reply

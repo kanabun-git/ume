@@ -1,6 +1,7 @@
 <% content_for :title, "口コミ一覧" %>
 
 <h1>口コミ一覧</h1>
+<p><%= link_to "返信テンプレートを管理する", shop_admin_review_reply_templates_path, class: "home-section-more" %></p>
 
 <table class="admin-table">
   <thead><tr><th>投稿者</th><th>評価</th><th>本文</th><th>状態</th><th>返信状況</th><th>店舗からの返信</th></tr></thead>
@@ -13,8 +14,16 @@
         <td><%= status_label(review) %></td>
         <td><%= review_reply_status_badge(review) %></td>
         <td>
-          <%= form_tag reply_shop_admin_review_path(review), method: :patch do %>
-            <%= text_area_tag :shop_reply, review.shop_reply, rows: 2, style: "width:100%;" %>
+          <%= form_tag reply_shop_admin_review_path(review), method: :patch, class: "reply-form" do %>
+            <% if @templates.any? %>
+              <select class="reply-template-select">
+                <option value="">テンプレートを選択...</option>
+                <% @templates.each do |template| %>
+                  <option value="<%= template.id %>" data-body="<%= template.body %>"><%= template.title %></option>
+                <% end %>
+              </select>
+            <% end %>
+            <%= text_area_tag :shop_reply, review.shop_reply, rows: 2, style: "width:100%;", class: "reply-textarea" %>
             <%= submit_tag review.shop_reply.present? ? "返信を更新する" : "返信する", class: "btn secondary" %>
           <% end %>
         </td>
@@ -23,3 +32,15 @@
   </tbody>
 </table>
 <p><small>口コミの承認・却下は運営者のみ行えます。</small></p>
+
+<script>
+  document.querySelectorAll(".reply-template-select").forEach(function(select) {
+    select.addEventListener("change", function() {
+      var option = select.options[select.selectedIndex];
+      var body = option.getAttribute("data-body");
+      if (!body) return;
+      var textarea = select.closest(".reply-form").querySelector(".reply-textarea");
+      textarea.value = body;
+    });
+  });
+</script>

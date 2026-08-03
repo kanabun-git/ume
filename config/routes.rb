@@ -50,6 +50,7 @@ Rails.application.routes.draw do
     resources :reviews, only: [:index] do
       member { patch :reply }
     end
+    resources :review_reply_templates
     resources :shop_page_blocks do
       member do
         patch :move_up
@@ -88,6 +89,7 @@ Rails.application.routes.draw do
           patch :toggle_visibility
         end
       end
+      resources :review_reply_templates
     end
     resources :areas
     resources :genres
@@ -97,6 +99,7 @@ Rails.application.routes.draw do
       member do
         patch :approve
         patch :reject
+        patch :reply
       end
     end
     resources :users do

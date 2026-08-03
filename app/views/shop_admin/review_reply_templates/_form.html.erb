@@ -1,0 +1,17 @@
+<% if template.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% template.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: template, url: url, local: true, class: "form" do |f| %>
+  <label>テンプレート名(管理用)</label>
+  <%= f.text_field :title, placeholder: "例: ご来店のお礼" %>
+
+  <label>返信文</label>
+  <%= f.text_area :body, rows: 5, placeholder: "この度はご来店・口コミ投稿いただきありがとうございます。..." %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

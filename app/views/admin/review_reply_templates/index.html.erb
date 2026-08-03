@@ -1,0 +1,23 @@
+<% content_for :title, "#{@shop.name} の返信テンプレート管理" %>
+
+<h1><%= @shop.name %> の返信テンプレート管理</h1>
+
+<%= link_to "新しいテンプレートを追加", new_admin_shop_review_reply_template_path(@shop), class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>テンプレート名</th><th>返信文</th><th></th></tr></thead>
+  <tbody>
+    <% @templates.each do |template| %>
+      <tr>
+        <td><%= template.title %></td>
+        <td><%= truncate(template.body, length: 60) %></td>
+        <td>
+          <%= link_to "編集", edit_admin_shop_review_reply_template_path(@shop, template), class: "btn secondary" %>
+          <%= button_to "削除", admin_shop_review_reply_template_path(@shop, template), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

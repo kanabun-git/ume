@@ -1,0 +1,31 @@
+<% content_for :title, "データバックアップ" %>
+
+<h1>データバックアップ</h1>
+<p>
+  各データの最新状態を手動でダウンロードできます。CSVファイルと、関連する画像・動画ファイルを
+  まとめたtar.gz形式でダウンロードされます。データ量によっては生成に時間がかかる場合があります。
+</p>
+
+<div class="card">
+  <h2>店舗データ</h2>
+  <p>全店舗の情報と、店舗フォトギャラリーの画像。</p>
+  <%= link_to "ダウンロード", admin_data_backups_shops_path, class: "btn" %>
+</div>
+
+<div class="card">
+  <h2>女の子データ</h2>
+  <p>全キャストの情報と、プロフィール写真。</p>
+  <%= link_to "ダウンロード", admin_data_backups_casts_path, class: "btn" %>
+</div>
+
+<div class="card">
+  <h2>写メ日記データ</h2>
+  <p>全写メ日記の本文と、添付画像・動画。</p>
+  <%= link_to "ダウンロード", admin_data_backups_diary_entries_path, class: "btn" %>
+</div>
+
+<div class="card">
+  <h2>体験動画データ</h2>
+  <p>店舗ページの動画ブロックに登録された、体験動画ファイル。</p>
+  <%= link_to "ダウンロード", admin_data_backups_videos_path, class: "btn" %>
+</div>

@@ -113,5 +113,11 @@ Rails.application.routes.draw do
     end
 
     resource :setting, only: [:edit, :update]
+
+    get "data_backups", to: "data_backups#index", as: :data_backups
+    get "data_backups/shops", to: "data_backups#shops", as: :data_backups_shops
+    get "data_backups/casts", to: "data_backups#casts", as: :data_backups_casts
+    get "data_backups/diary_entries", to: "data_backups#diary_entries", as: :data_backups_diary_entries
+    get "data_backups/videos", to: "data_backups#videos", as: :data_backups_videos
   end
 end

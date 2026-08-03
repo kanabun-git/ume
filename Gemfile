@@ -16,6 +16,9 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
+# Used by lib/data_export.rb; ships as a default gem today, but stdlib is
+# dropping it starting Ruby 3.4, so pin it explicitly here.
+gem "csv"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

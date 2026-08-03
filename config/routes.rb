@@ -9,7 +9,11 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  root "home#index"
+  # Age-gate / region-picker splash page shown before the region-scoped
+  # TOP page (see HomeController#index below).
+  root "top#index"
+  get "kanto", to: "home#index", defaults: { region: "関東" }, as: :kanto_home
+  get "chubu", to: "home#index", defaults: { region: "中部" }, as: :chubu_home
 
   get "rankings", to: "rankings#index", as: :rankings
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: "xml" }

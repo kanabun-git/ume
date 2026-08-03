@@ -317,6 +317,27 @@ form.form textarea { min-height: 120px; }
   border-bottom: 2px solid var(--brand); padding-bottom: 8px;
 }
 
+.region-switch { margin: 0 0 16px; }
+.region-switch a { color: rgba(255, 255, 255, 0.85); }
+.region-switch a:hover { color: #fff; }
+
+/* --- Index gate / splash page ------------------------------------------- */
+
+.top-gate {
+  max-width: 640px; margin: 32px auto; text-align: center;
+}
+.top-gate-eyecatch { margin-bottom: 24px; }
+.top-gate-eyecatch img { width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow-md); }
+.top-gate-heading { font-size: 1.3rem; margin: 0 0 20px; }
+.top-gate-map { position: relative; margin-bottom: 28px; }
+.top-gate-map-img { width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.top-gate-region-buttons {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 20px;
+}
+.top-gate-region-btn { font-size: 1.05rem; padding: 14px 32px; }
+.top-gate-age-check { margin-top: 12px; }
+.top-gate-age-link { color: var(--muted); font-size: .85rem; text-decoration: underline; }
+
 .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
 .area-block { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
 .area-block h4 { margin: 0 0 6px; font-size: .95rem; }

@@ -8,8 +8,8 @@ module TestRecords
   # fixtures or factory gem, so tests build their own data directly —
   # these just centralize the "what's the minimum required to get a valid
   # Shop/Cast/etc." knowledge in one place instead of every test.
-  def create_area(slug: "test-area-#{SecureRandom.hex(4)}")
-    Area.create!(slug: slug, name: "テストエリア", region: "関東", position: 1)
+  def create_area(slug: "test-area-#{SecureRandom.hex(4)}", region: "関東", parent: nil)
+    Area.create!(slug: slug, name: "テストエリア", region: parent ? nil : region, parent: parent, position: 1)
   end
 
   def create_genre(slug: "test-genre-#{SecureRandom.hex(4)}")

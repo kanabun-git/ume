@@ -57,6 +57,15 @@ module ApplicationHelper
     attachment if attachment.attached?
   end
 
+  # Returns the attached image for the top gate/splash page if the admin has
+  # uploaded one via 運営管理画面 > サイト設定, or nil otherwise so callers
+  # can render nothing instead of a broken image. kind is :eyecatch or :map.
+  def site_index_image(kind)
+    attachment_name = :"index_#{kind}_image"
+    attachment = site_setting_singleton.public_send(attachment_name)
+    attachment if attachment.attached?
+  end
+
   # Renders the placeholder shown when a photo/video was hidden by admin
   # moderation (as opposed to never having been uploaded — see
   # #nowprinting_image_tag for that case). Falls back to the generic Now

@@ -115,3 +115,31 @@
     <%= f.submit "画像を保存する", class: "btn" %>
   <% end %>
 </div>
+
+<div class="card">
+  <h2>Indexページ画像</h2>
+  <p>
+    TOPページの前に表示される案内ページ(Indexページ)のアイキャッチ画像と、
+    関東・中部を選ぶ地図画像です。未設定の場合は画像なしで表示されます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>アイキャッチ画像</label>
+    <% if @site_setting.index_eyecatch_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.index_eyecatch_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :index_eyecatch_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>地図画像(関東・中部の選択案内用)</label>
+    <% if @site_setting.index_map_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.index_map_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :index_map_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>

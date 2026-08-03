@@ -1,12 +1,12 @@
 class HomeController < ApplicationController
   def index
-    @areas = Area.where(parent_id: nil).active_region.includes(:children)
-    @prefectures_by_region = @areas.group_by(&:region)
+    @region = Area::ACTIVE_REGIONS.include?(params[:region]) ? params[:region] : Area::ACTIVE_REGIONS.first
+    @areas = Area.where(parent_id: nil, region: @region).includes(:children)
     @genres = Genre.all
-    @ranked_shops = Shop.ranked.limit(10)
-    @latest_diary_entries = DiaryEntry.visible.limit(8)
+    @ranked_shops = Shop.ranked.in_region(@region).limit(10)
+    @latest_diary_entries = DiaryEntry.visible.joins(cast: :shop).merge(Shop.in_region(@region)).limit(8)
     @latest_videos = ShopPageBlock.with_video.visible
-      .joins(:shop).merge(Shop.visible)
+      .joins(:shop).merge(Shop.visible).merge(Shop.in_region(@region))
       .includes(shop: :genre)
       .reorder(created_at: :desc).limit(4)
   end

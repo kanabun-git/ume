@@ -6,9 +6,9 @@ class SiteSetting < ApplicationRecord
   # without a deploy: the "Now Printing" placeholders shown wherever a photo
   # hasn't been uploaded yet (portrait for cast/diary thumbnails, landscape
   # for the shop photo gallery), the site logo in its three standard shapes
-  # (header, OGP share image, favicon), and the "removed by moderation"
+  # (header, OGP share image, favicon), the "removed by moderation"
   # placeholders shown when a photo/video was hidden rather than never
-  # uploaded.
+  # uploaded, and the top gate/splash page's eyecatch + region map images.
   IMAGE_ATTACHMENTS = %i[
     nowprinting_portrait_image
     nowprinting_landscape_image
@@ -17,6 +17,8 @@ class SiteSetting < ApplicationRecord
     logo_square_small_image
     removed_content_portrait_image
     removed_content_landscape_image
+    index_eyecatch_image
+    index_map_image
   ].freeze
 
   IMAGE_ATTACHMENTS.each { |name| has_one_attached name }

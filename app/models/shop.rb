@@ -40,6 +40,13 @@ class Shop < ApplicationRecord
 
   scope :visible, -> { approved }
   scope :ranked, -> { visible.joins(:plan).order(Arel.sql("plans.priority_weight * shops.view_count DESC")) }
+  # Areas can be a prefecture (region set directly) or a city belonging to
+  # one (region only set on its parent), so match either.
+  scope :in_region, lambda { |region|
+    joins("INNER JOIN areas ON areas.id = shops.area_id")
+      .joins("LEFT JOIN areas parent_areas ON parent_areas.id = areas.parent_id")
+      .where("areas.region = :region OR parent_areas.region = :region", region: region)
+  }
 
   def approved_reviews
     reviews.approved

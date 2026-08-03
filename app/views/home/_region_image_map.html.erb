@@ -1,6 +1,6 @@
 <%
   map_data = image_map_for(region)
-  areas_by_name = (@prefectures_by_region[region] || []).index_by(&:name)
+  areas_by_name = areas.index_by(&:name)
 %>
 <div class="illust-map-block">
   <h3 class="region-name"><%= region %></h3>

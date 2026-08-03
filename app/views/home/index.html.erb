@@ -1,13 +1,14 @@
-<% content_for :title, "FuzokuZero | ゼロから始める風俗体験" %>
-<% content_for :meta_description, "FuzokuZeroは、全国の風俗店・在籍キャストをエリア・ジャンル・料金から探せるポータルサイトです。口コミ・写メ日記・出勤情報もチェックできます。" %>
+<% content_for :title, "FuzokuZero #{@region}版 | ゼロから始める風俗体験" %>
+<% content_for :meta_description, "FuzokuZero #{@region}版は、#{@region}エリアの風俗店・在籍キャストをエリア・ジャンル・料金から探せるポータルサイトです。口コミ・写メ日記・出勤情報もチェックできます。" %>
 
 <div class="hero">
-  <h1 class="hero-title">お店・キャストを探す</h1>
+  <h1 class="hero-title"><%= @region %>版 お店・キャストを探す</h1>
+  <p class="region-switch"><%= link_to "地域を変更する >", root_path, class: "home-section-more" %></p>
   <%= form_with url: shops_path, method: :get, local: true, class: "hero-search" do |f| %>
     <div class="hero-search-row">
       <div class="hero-search-field">
         <label>エリア</label>
-        <%= f.select :area_id, grouped_options_for_select(Area::ACTIVE_REGIONS.map { |region| [region, (@prefectures_by_region[region] || []).flat_map { |pref| [[pref.name, pref.id]] + pref.children.map { |c| ["　" + c.name, c.id] } }] }), { include_blank: "エリアを選択" } %>
+        <%= f.select :area_id, @areas.flat_map { |pref| [[pref.name, pref.id]] + pref.children.map { |c| ["　" + c.name, c.id] } }, { include_blank: "エリアを選択" } %>
       </div>
       <div class="hero-search-field">
         <label>ジャンル</label>
@@ -24,34 +25,28 @@
 
 <section class="home-section">
   <div class="home-section-head">
-    <h2>マップから探す</h2>
+    <h2><%= @region %>マップから探す</h2>
     <%= link_to "エリア一覧を見る >", shops_path, class: "home-section-more" %>
   </div>
-  <p class="region-note">現在対応中のエリア: <%= Area::ACTIVE_REGIONS.join(" / ") %>(他のエリアは順次拡大予定です)</p>
   <div class="illust-map-grid">
-    <% Area::ACTIVE_REGIONS.each do |region| %>
-      <%= render "region_image_map", region: region %>
-    <% end %>
+    <%= render "region_image_map", region: @region, areas: @areas %>
   </div>
 
   <div class="region-grid">
-    <% Area::ACTIVE_REGIONS.each do |region| %>
-      <div class="region-block">
-        <h3 class="region-name"><%= region %></h3>
-        <div class="area-grid">
-          <% (@prefectures_by_region[region] || []).each do |area| %>
-            <div class="area-block">
-              <h4><%= link_to area.name, area_path(area) %></h4>
-              <ul class="area-children">
-                <% area.children.each do |child| %>
-                  <li><%= link_to child.name, area_path(child) %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-        </div>
+    <div class="region-block">
+      <div class="area-grid">
+        <% @areas.each do |area| %>
+          <div class="area-block">
+            <h4><%= link_to area.name, area_path(area) %></h4>
+            <ul class="area-children">
+              <% area.children.each do |child| %>
+                <li><%= link_to child.name, area_path(child) %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
       </div>
-    <% end %>
+    </div>
   </div>
 </section>
 

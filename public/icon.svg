@@ -1,3 +1,12 @@
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="red"/>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ff6f9c"/>
+      <stop offset="55%" stop-color="#e0356b"/>
+      <stop offset="100%" stop-color="#b5204f"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
+  <text x="50" y="70" text-anchor="middle" font-family="Arial, 'Helvetica Neue', sans-serif"
+        font-size="64" font-weight="800" fill="#ffffff">0</text>
 </svg>

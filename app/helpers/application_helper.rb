@@ -57,13 +57,26 @@ module ApplicationHelper
     attachment if attachment.attached?
   end
 
-  # Returns the attached image for the top gate/splash page if the admin has
-  # uploaded one via 運営管理画面 > サイト設定, or nil otherwise so callers
-  # can render nothing instead of a broken image. kind is :eyecatch or :map.
-  def site_index_image(kind)
+  # Static defaults for the top gate/splash page images, used whenever the
+  # admin hasn't uploaded a replacement via 運営管理画面 > サイト設定.
+  INDEX_IMAGE_DEFAULTS = {
+    eyecatch: "index_img.png",
+    map: "japan_map.png"
+  }.freeze
+
+  # Renders the top gate/splash page's eyecatch or region-picker map image,
+  # using the file uploaded in 運営管理画面 > サイト設定 if one is set,
+  # falling back to the static default asset otherwise. kind is :eyecatch or
+  # :map.
+  def site_index_image_tag(kind, **html_options)
     attachment_name = :"index_#{kind}_image"
     attachment = site_setting_singleton.public_send(attachment_name)
-    attachment if attachment.attached?
+
+    if attachment.attached?
+      image_tag(attachment, html_options)
+    else
+      image_tag(INDEX_IMAGE_DEFAULTS.fetch(kind), html_options)
+    end
   end
 
   # Renders the placeholder shown when a photo/video was hidden by admin

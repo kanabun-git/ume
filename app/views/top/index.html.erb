@@ -2,18 +2,14 @@
 <% content_for :meta_description, "FuzokuZeroは、全国の風俗店・在籍キャストをエリア・ジャンル・料金から探せるポータルサイトです。" %>
 
 <div class="top-gate">
-  <% if (eyecatch = site_index_image(:eyecatch)) %>
-    <div class="top-gate-eyecatch">
-      <%= image_tag eyecatch, alt: "FuzokuZero" %>
-    </div>
-  <% end %>
+  <div class="top-gate-eyecatch">
+    <%= site_index_image_tag :eyecatch, alt: "FuzokuZero" %>
+  </div>
 
   <h1 class="top-gate-heading">エリアを選択してください</h1>
 
   <div class="top-gate-map">
-    <% if (map_image = site_index_image(:map)) %>
-      <%= image_tag map_image, alt: "エリア選択マップ", class: "top-gate-map-img" %>
-    <% end %>
+    <%= site_index_image_tag :map, alt: "エリア選択マップ", class: "top-gate-map-img" %>
 
     <div class="top-gate-region-buttons">
       <%= link_to "関東版はこちら", kanto_home_path, class: "btn top-gate-region-btn" %>

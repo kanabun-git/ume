@@ -11,6 +11,8 @@
 !/tmp/storage/.keep
 /storage/*
 !/storage/.keep
+/backups/*
+!/backups/.keep
 /public/assets
 
 .byebug_history

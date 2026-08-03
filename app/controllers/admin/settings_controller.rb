@@ -19,10 +19,14 @@ module Admin
     def setting_params
       attrs = params.require(:site_setting).permit(
         :maintenance_mode, :maintenance_message,
-        :nowprinting_portrait_image, :nowprinting_landscape_image
+        *::SiteSetting::IMAGE_ATTACHMENTS
       )
-      attrs.delete(:nowprinting_portrait_image) if attrs[:nowprinting_portrait_image].blank?
-      attrs.delete(:nowprinting_landscape_image) if attrs[:nowprinting_landscape_image].blank?
+      # A blank file field submits "" for the attachment, which Rails'
+      # has_one_attached setter treats as "remove the current file" -- only
+      # pass it through when the admin actually chose a new file.
+      ::SiteSetting::IMAGE_ATTACHMENTS.each do |name|
+        attrs.delete(name) if attrs[name].blank?
+      end
       attrs
     end
   end

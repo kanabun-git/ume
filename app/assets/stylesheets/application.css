@@ -54,6 +54,7 @@ header.site-header {
 }
 header.site-header .container { display: flex; align-items: center; justify-content: space-between; }
 header.site-header .logo { font-size: 1.4rem; font-weight: bold; color: #fff; display: flex; align-items: baseline; gap: 8px; letter-spacing: .02em; text-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+header.site-header .logo .site-logo-img { display: block; height: 36px; width: auto; }
 header.site-header .logo .tagline { font-size: .75rem; font-weight: normal; color: rgba(255, 255, 255, 0.85); }
 header.site-header nav { display: flex; align-items: center; }
 header.site-header nav a, header.site-header nav button.link-button {
@@ -207,8 +208,8 @@ form.form select, form.form textarea {
   width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: .95rem;
 }
 form.form textarea { min-height: 120px; }
-.nowprinting-preview { margin-bottom: 8px; }
-.nowprinting-preview img { max-width: 200px; max-height: 200px; border-radius: 6px; border: 1px solid var(--border); display: block; }
+.image-setting-preview { margin-bottom: 8px; }
+.image-setting-preview img { max-width: 200px; max-height: 200px; border-radius: 6px; border: 1px solid var(--border); display: block; }
 .btn {
   display: inline-block; background: linear-gradient(135deg, var(--brand), var(--brand-dark));
   color: #fff; border: none;

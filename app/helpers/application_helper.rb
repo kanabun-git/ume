@@ -28,12 +28,28 @@ module ApplicationHelper
   # SVG otherwise. orientation is :portrait (3:4 spots) or :landscape.
   def nowprinting_image_tag(orientation = :portrait, **html_options)
     attachment_name = orientation == :landscape ? :nowprinting_landscape_image : :nowprinting_portrait_image
-    attachment = (@nowprinting_site_setting ||= SiteSetting.instance).public_send(attachment_name)
+    attachment = site_setting_singleton.public_send(attachment_name)
 
     if attachment.attached?
       image_tag(attachment, html_options)
     else
       image_tag("nowprinting.svg", html_options)
     end
+  end
+
+  # Returns the attached logo image for the given shape if the admin has
+  # uploaded one via 運営管理画面 > サイト設定, or nil otherwise so callers
+  # can fall back to their own default (text logo, static favicon, ...).
+  # kind is :horizontal, :square_large, or :square_small.
+  def site_logo(kind)
+    attachment_name = :"logo_#{kind}_image"
+    attachment = site_setting_singleton.public_send(attachment_name)
+    attachment if attachment.attached?
+  end
+
+  private
+
+  def site_setting_singleton
+    @site_setting_singleton ||= SiteSetting.instance
   end
 end

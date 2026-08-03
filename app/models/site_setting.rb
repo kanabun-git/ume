@@ -2,14 +2,22 @@ class SiteSetting < ApplicationRecord
   MAX_IMAGE_FILE_SIZE = 5.megabytes
   ALLOWED_IMAGE_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
 
-  # "Now Printing" placeholder shown wherever a photo hasn't been uploaded
-  # yet: one image for portrait (3:4) spots like cast/diary thumbnails, one
-  # for landscape spots like the shop photo gallery.
-  has_one_attached :nowprinting_portrait_image
-  has_one_attached :nowprinting_landscape_image
+  # Single-image site assets, each swappable from 運営管理画面 > サイト設定
+  # without a deploy: the "Now Printing" placeholders shown wherever a photo
+  # hasn't been uploaded yet (portrait for cast/diary thumbnails, landscape
+  # for the shop photo gallery), and the site logo in its three standard
+  # shapes (header, OGP share image, favicon).
+  IMAGE_ATTACHMENTS = %i[
+    nowprinting_portrait_image
+    nowprinting_landscape_image
+    logo_horizontal_image
+    logo_square_large_image
+    logo_square_small_image
+  ].freeze
 
-  validate :validate_nowprinting_portrait_image
-  validate :validate_nowprinting_landscape_image
+  IMAGE_ATTACHMENTS.each { |name| has_one_attached name }
+
+  validate :validate_image_attachments
 
   # This table only ever holds a single row: site-wide toggles like
   # maintenance mode don't belong to any particular record, so rather than
@@ -21,24 +29,18 @@ class SiteSetting < ApplicationRecord
 
   private
 
-  def validate_nowprinting_portrait_image
-    validate_image_attachment(:nowprinting_portrait_image)
-  end
+  def validate_image_attachments
+    IMAGE_ATTACHMENTS.each do |attachment_name|
+      attachment = public_send(attachment_name)
+      next unless attachment.attached?
 
-  def validate_nowprinting_landscape_image
-    validate_image_attachment(:nowprinting_landscape_image)
-  end
-
-  def validate_image_attachment(attachment_name)
-    attachment = public_send(attachment_name)
-    return unless attachment.attached?
-
-    blob = attachment.blob
-    if blob.byte_size > MAX_IMAGE_FILE_SIZE
-      errors.add(attachment_name, "は5MBまでのファイルを指定してください")
-    end
-    unless ALLOWED_IMAGE_CONTENT_TYPES.include?(blob.content_type)
-      errors.add(attachment_name, "はJPEG・PNG・WEBP形式の画像を指定してください")
+      blob = attachment.blob
+      if blob.byte_size > MAX_IMAGE_FILE_SIZE
+        errors.add(attachment_name, "は5MBまでのファイルを指定してください")
+      end
+      unless ALLOWED_IMAGE_CONTENT_TYPES.include?(blob.content_type)
+        errors.add(attachment_name, "はJPEG・PNG・WEBP形式の画像を指定してください")
+      end
     end
   end
 end

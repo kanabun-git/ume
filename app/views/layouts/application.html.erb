@@ -12,8 +12,9 @@
     <meta property="og:description" content="<%= page_description %>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<%= request.original_url %>">
-    <% if content_for(:og_image) %>
-      <meta property="og:image" content="<%= content_for(:og_image) %>">
+    <% og_image_url = content_for(:og_image) || (site_logo(:square_large) && rails_blob_url(site_logo(:square_large), host: request.base_url)) %>
+    <% if og_image_url %>
+      <meta property="og:image" content="<%= og_image_url %>">
     <% end %>
     <meta name="twitter:card" content="summary_large_image">
     <%= csrf_meta_tags %>
@@ -22,9 +23,14 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <% if (favicon = site_logo(:square_small)) %>
+      <link rel="icon" href="<%= rails_blob_path(favicon) %>">
+      <link rel="apple-touch-icon" href="<%= rails_blob_path(favicon) %>">
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+      <link rel="apple-touch-icon" href="/icon.png">
+    <% end %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -33,7 +39,11 @@
     <header class="site-header">
       <div class="container">
         <%= link_to root_path, class: "logo" do %>
-          FuzokuZero <span class="tagline">ゼロから始める風俗体験</span>
+          <% if (logo = site_logo(:horizontal)) %>
+            <%= image_tag logo, alt: "FuzokuZero", class: "site-logo-img" %>
+          <% else %>
+            FuzokuZero <span class="tagline">ゼロから始める風俗体験</span>
+          <% end %>
         <% end %>
         <nav>
           <%= link_to "エリアから探す", root_path %>

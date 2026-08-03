@@ -52,6 +52,8 @@
   <label>編集部レビュー(運営者のみ編集可)</label>
   <%= f.text_area :editor_review %>
 
+  <label><%= f.check_box :zero_recommended %> Zeroお勧め店舗に指定する(有料プランの店舗には自動的に表示されます)</label>
+
   <label>掲載バッジ</label>
   <label><%= f.check_box :online_reservation %> ネット予約</label>
   <label><%= f.check_box :visit_point_program %> 来店ポイント</label>

@@ -4,7 +4,10 @@
   <% content_for :og_image, rails_blob_url(@shop.photos.first, host: request.base_url) %>
 <% end %>
 
-<h1><%= @shop.name %><% if @shop.chain_name.present? %><span class="shop-listing-chain">(<%= @shop.chain_name %>)</span><% end %></h1>
+<h1>
+  <%= @shop.name %><% if @shop.chain_name.present? %><span class="shop-listing-chain">(<%= @shop.chain_name %>)</span><% end %>
+  <% if @shop.zero_recommended_badge? %><span class="tag-badge zero-recommend">Zeroお勧め</span><% end %>
+</h1>
 <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
 <p><%= @shop.catch_copy %></p>
 

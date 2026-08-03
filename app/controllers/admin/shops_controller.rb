@@ -74,7 +74,7 @@ module Admin
         :price_note, :min_price, :transportation_fee_note, :coverage_area_note,
         :coupon_description, :recruiting_message,
         :online_reservation, :visit_point_program, :coupon_available,
-        :event_ongoing, :recruiting_cast, :recruiting_staff,
+        :event_ongoing, :recruiting_cast, :recruiting_staff, :zero_recommended,
         photos: []
       )
     end

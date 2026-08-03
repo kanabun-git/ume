@@ -153,6 +153,7 @@ main { padding: 24px 0 60px; }
 }
 .tag-badge.highlight { background: #b5204f; color: #fff; border-color: #b5204f; }
 .tag-badge.recruit { background: #fff8e1; color: #9a6b00; border-color: #e0b23a; }
+.tag-badge.zero-recommend { background: #e8b923; color: #fff; border-color: #e8b923; font-weight: bold; }
 
 .shop-listing-body { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
 .shop-listing-photos { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; width: 240px; flex: 0 0 auto; }

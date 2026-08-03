@@ -45,6 +45,12 @@ class Shop < ApplicationRecord
     reviews.approved
   end
 
+  # "Zeroお勧め" badge: shown for shops on a paid plan, or for any shop the
+  # platform admin has explicitly flagged regardless of plan.
+  def zero_recommended_badge?
+    zero_recommended? || plan.monthly_fee.positive?
+  end
+
   def average_rating
     approved_reviews.average(:rating)&.round(1)
   end

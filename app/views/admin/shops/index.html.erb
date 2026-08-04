@@ -15,8 +15,8 @@
         <td><span class="badge <%= "muted" unless shop.approved? %>"><%= status_label(shop) %></span></td>
         <td>
           <%= link_to "編集", edit_admin_shop_path(shop) %>
-          <% if shop.pending? %>
-            <%= button_to "承認", approve_admin_shop_path(shop), method: :patch %>
+          <% unless shop.approved? %>
+            <%= button_to (shop.suspended? ? "復帰" : "承認"), approve_admin_shop_path(shop), method: :patch %>
           <% end %>
           <% unless shop.suspended? %>
             <%= button_to "停止", suspend_admin_shop_path(shop), method: :patch %>

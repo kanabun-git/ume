@@ -22,7 +22,7 @@ class CastsController < ApplicationController
   end
 
   def show
-    @cast = Cast.visible.find(params[:id])
+    @cast = Cast.visible.joins(:shop).merge(Shop.visible).find(params[:id])
     @shop = @cast.shop
     @diary_entries = @cast.diary_entries.visible.limit(10)
   end

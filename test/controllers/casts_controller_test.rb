@@ -14,6 +14,14 @@ class CastsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match suspended_cast.name, response.body
   end
 
+  test "show 404s for a cast whose shop is suspended" do
+    suspended_cast = create_cast(shop: create_shop(status: :suspended))
+
+    get cast_path(suspended_cast)
+
+    assert_response :not_found
+  end
+
   test "filters by area_id" do
     matching_area = create_area
     other_area = create_area

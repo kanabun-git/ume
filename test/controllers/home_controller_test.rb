@@ -70,4 +70,30 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_match kanto_shop.name, response.body
     assert_no_match chubu_shop.name, response.body
   end
+
+  test "latest diary entries exclude a diary entry whose shop is suspended" do
+    suspended_shop = create_shop(status: :suspended)
+    suspended_cast = create_cast(shop: suspended_shop, name: "停止店キャスト")
+    hidden_entry = create_diary_entry(cast: suspended_cast, title: "停止店の日記")
+
+    visible_cast = create_cast(name: "公開店キャスト")
+    visible_entry = create_diary_entry(cast: visible_cast, title: "公開店の日記")
+
+    get kanto_home_path
+
+    assert_response :success
+    assert_match visible_entry.title, response.body
+    assert_no_match hidden_entry.title, response.body
+  end
+
+  test "today's shift preview excludes a shift whose shop is suspended" do
+    suspended_shop = create_shop(status: :suspended)
+    suspended_cast = create_cast(shop: suspended_shop, name: "停止店出勤キャスト")
+    suspended_cast.shifts.create!(work_date: Date.current, start_time: "18:00", end_time: "23:00")
+
+    get kanto_home_path
+
+    assert_response :success
+    assert_no_match suspended_cast.name, response.body
+  end
 end

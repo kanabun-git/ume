@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_132307) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -113,6 +113,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_132307) do
     t.index ["cast_id"], name: "index_diary_entries_on_cast_id"
   end
 
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "cast_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cast_id"], name: "index_favorites_on_cast_id"
+    t.index ["member_id", "cast_id"], name: "index_favorites_on_member_id_and_cast_id", unique: true
+    t.index ["member_id"], name: "index_favorites_on_member_id"
+  end
+
   create_table "genres", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -120,6 +130,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_132307) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_genres_on_slug", unique: true
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "name", default: "", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_members_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_members_on_reset_password_token", unique: true
   end
 
   create_table "plans", force: :cascade do |t|
@@ -287,6 +310,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_132307) do
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
   add_foreign_key "diary_entries", "casts"
+  add_foreign_key "favorites", "casts"
+  add_foreign_key "favorites", "members"
   add_foreign_key "review_reply_templates", "shops"
   add_foreign_key "reviews", "casts"
   add_foreign_key "reviews", "shops"

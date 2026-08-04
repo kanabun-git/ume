@@ -1,5 +1,16 @@
 Rails.application.routes.draw do
   devise_for :users
+  devise_for :members
+
+  resources :favorites, only: [:create, :destroy], param: :cast_id
+
+  # --- Individual member (個人会員) mypage: favorited casts + their shift
+  # and diary updates --- `module: "member_portal"` mirrors the cast/
+  # cast_portal split (avoids a bare `namespace :member` reopening nothing
+  # in particular, and keeps Devise's own /members/* routes untouched).
+  namespace :member, module: "member_portal" do
+    root to: "mypage#show"
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

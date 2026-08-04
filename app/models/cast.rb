@@ -11,6 +11,7 @@ class Cast < ApplicationRecord
   has_many :diary_entries, dependent: :destroy
   has_many :shifts, dependent: :destroy
   has_many :reviews, dependent: :nullify
+  has_many :favorites, dependent: :destroy
   has_many_attached :photos
 
   accepts_nested_attributes_for :user

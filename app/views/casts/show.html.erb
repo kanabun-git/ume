@@ -11,6 +11,7 @@
   <% if @cast.manager_recommended? %><span class="tag-badge">店長おすすめ</span><% end %>
 </h1>
 <p><%= link_to @shop.name, shop_path(@shop) %></p>
+<%= render "favorites/button", cast: @cast %>
 
 <%# Blocks below are shared across every cast at this shop, freely
     composed/ordered/hidden/styled by the shop admin from

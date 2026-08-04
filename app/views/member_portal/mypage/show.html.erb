@@ -1,0 +1,36 @@
+<% content_for :title, "お気に入り一覧 | 会員マイページ" %>
+
+<h1>お気に入りの女の子</h1>
+
+<% if @favorite_casts.any? %>
+  <div class="grid">
+    <% @favorite_casts.each do |cast| %>
+      <div class="card favorite-card">
+        <%= link_to cast_path(cast) do %>
+          <%= photo_or_placeholder_tag cast.visible_photos.first, removed: cast.photos_removed_by_moderation? %>
+        <% end %>
+        <h3><%= link_to cast.alias_name.presence || cast.name, cast_path(cast) %></h3>
+        <p class="diary-meta"><%= link_to cast.shop.name, shop_path(cast.shop) %></p>
+
+        <% shift = @today_shifts_by_cast_id[cast.id] %>
+        <% if shift %>
+          <p class="favorite-shift-status on-duty">本日出勤: <%= shift.formatted_start_time %>〜<%= shift.formatted_end_time(cast.shop.time_display_format) %></p>
+        <% else %>
+          <p class="favorite-shift-status off-duty">本日の出勤予定なし</p>
+        <% end %>
+
+        <% entry = @latest_diary_entry_by_cast_id[cast.id] %>
+        <% if entry %>
+          <p class="favorite-diary-update">
+            最新日記: <%= link_to entry.title, cast_path(cast, anchor: "diary-#{entry.id}") %>
+            <br><small><%= entry.published_at&.strftime("%Y/%m/%d %H:%M") %></small>
+          </p>
+        <% end %>
+
+        <%= button_to "お気に入り解除", favorite_path(cast), method: :delete, class: "btn secondary" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="region-note">まだお気に入りの女の子がいません。気になる女の子のページから「お気に入りに追加」してみましょう。</p>
+<% end %>

@@ -391,6 +391,17 @@ form.form textarea { min-height: 120px; }
 
 .diary-card .diary-meta { font-size: .8rem; color: var(--muted); margin: 4px 0; }
 
+/* --- Favorites (お気に入り) ---------------------------------------------- */
+
+.favorite-btn { margin-top: 10px; }
+.favorite-btn.favorited { background: var(--brand); color: #fff; border-color: var(--brand); }
+.favorite-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; display: block; }
+.favorite-card h3 { margin: 10px 0 2px; font-size: 1rem; }
+.favorite-shift-status { font-size: .85rem; font-weight: bold; margin: 6px 0 2px; }
+.favorite-shift-status.on-duty { color: var(--brand-dark); }
+.favorite-shift-status.off-duty { color: var(--muted); font-weight: normal; }
+.favorite-diary-update { font-size: .85rem; margin: 6px 0; }
+
 @media (max-width: 640px) {
   .hero-search-row { flex-direction: column; align-items: stretch; }
   .area-children { columns: 1; }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "会員マイページ | FuzokuZero" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <div class="admin-shell">
+      <div class="sidebar">
+        <div class="brand">会員マイページ</div>
+        <%= link_to "お気に入り一覧", member_root_path %>
+        <%= link_to "サイトを見る", root_path %>
+        <%= button_to "ログアウト", destroy_member_session_path, method: :delete, class: "link-button" %>
+      </div>
+      <div class="content">
+        <% if notice %><div class="notice"><%= notice %></div><% end %>
+        <% if alert %><div class="alert"><%= alert %></div><% end %>
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

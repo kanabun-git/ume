@@ -131,6 +131,29 @@ module ApplicationHelper
     end
   end
 
+  YOUTUBE_ID_PATTERN = %r{(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([\w-]{11})}
+
+  # Compact, non-interactive preview for a :movie-type ShopPageBlock, used
+  # where several videos are shown side by side (e.g. the TOP page's 体験動画
+  # row) and a full player with controls would be too heavy. Uploaded files
+  # get a muted, controls-less <video> (the browser shows its first frame);
+  # YouTube URLs get the real static thumbnail image instead of an iframe;
+  # any other URL falls back to the same muted <video> treatment.
+  def video_thumbnail_tag(block, **html_options)
+    if block.video_file.attached?
+      video_tag(block.video_file, muted: true, preload: "metadata", **html_options)
+    else
+      url = block.settings["video_url"].to_s
+      youtube_id = url[YOUTUBE_ID_PATTERN, 1]
+
+      if youtube_id
+        image_tag("https://img.youtube.com/vi/#{youtube_id}/hqdefault.jpg", html_options)
+      elsif url.present?
+        video_tag(url, muted: true, preload: "metadata", **html_options)
+      end
+    end
+  end
+
   private
 
   def site_setting_singleton

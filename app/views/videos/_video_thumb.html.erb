@@ -1,0 +1,4 @@
+<%= link_to shop_path(video.shop), class: "video-thumb" do %>
+  <div class="video-thumb-media"><%= video_thumbnail_tag(video) %></div>
+  <div class="video-thumb-shop"><%= video.shop.name %></div>
+<% end %>

@@ -121,8 +121,8 @@
     <%= link_to "動画一覧を見る >", videos_path, class: "home-section-more" %>
   </div>
   <% if @latest_videos.any? %>
-    <div class="video-grid">
-      <%= render partial: "videos/video_card", collection: @latest_videos, as: :video %>
+    <div class="video-thumb-grid">
+      <%= render partial: "videos/video_thumb", collection: @latest_videos, as: :video %>
     </div>
   <% else %>
     <p class="region-note">まだ動画がありません。</p>
@@ -133,13 +133,17 @@
   <div class="home-section-head">
     <h2>新着日記</h2>
   </div>
-  <div class="grid">
-    <% @latest_diary_entries.each do |entry| %>
-      <div class="card diary-card">
-        <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
-        <p class="diary-meta"><%= entry.cast.name %>(<%= link_to entry.cast.shop.name, shop_path(entry.cast.shop) %>)</p>
-        <p><%= truncate(entry.body, length: 60) %></p>
-      </div>
-    <% end %>
-  </div>
+  <% if @latest_diary_entries.any? %>
+    <div class="grid">
+      <% @latest_diary_entries.each do |entry| %>
+        <div class="card diary-card">
+          <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
+          <p class="diary-meta"><%= entry.cast.name %>(<%= link_to entry.cast.shop.name, shop_path(entry.cast.shop) %>)</p>
+          <p><%= truncate(entry.body, length: 60) %></p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="region-note">まだ日記がありません。</p>
+  <% end %>
 </section>

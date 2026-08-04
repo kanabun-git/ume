@@ -96,4 +96,34 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match suspended_cast.name, response.body
   end
+
+  test "shows an empty-state message when there are no diary entries for the region" do
+    get kanto_home_path
+
+    assert_response :success
+    assert_match "まだ日記がありません", response.body
+  end
+
+  test "does not show the diary empty-state message when an entry exists" do
+    entry = create_diary_entry(cast: create_cast(name: "日記ありキャスト"))
+
+    get kanto_home_path
+
+    assert_response :success
+    assert_match entry.title, response.body
+    assert_no_match "まだ日記がありません", response.body
+  end
+
+  test "video preview renders a 5-wide thumbnail grid" do
+    shop = create_shop
+    shop.shop_page_blocks.create!(
+      block_type: :movie, position: 0, visible: true,
+      settings: { "video_url" => "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    )
+
+    get kanto_home_path
+
+    assert_response :success
+    assert_select ".video-thumb-grid .video-thumb", 1
+  end
 end

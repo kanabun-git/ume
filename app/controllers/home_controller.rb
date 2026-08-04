@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     @latest_videos = ShopPageBlock.with_video.visible
       .joins(:shop).merge(Shop.visible).merge(Shop.in_region(@region))
       .includes(shop: :genre)
-      .reorder(created_at: :desc).limit(4)
+      .reorder(created_at: :desc).limit(5)
     @today_shifts = Shift.scheduled
       .where(work_date: Date.current)
       .joins(cast: :shop).merge(Cast.visible).merge(Shop.visible).merge(Shop.in_region(@region))

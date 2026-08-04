@@ -1,0 +1,32 @@
+<% if prospect.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% prospect.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: prospect, url: url, local: true, class: "form" do |f| %>
+  <label>店舗名</label>
+  <%= f.text_field :name %>
+
+  <label>電話番号</label>
+  <%= f.text_field :phone %>
+
+  <label>メールアドレス</label>
+  <%= f.email_field :email %>
+
+  <label>掲載サイト名</label>
+  <%= f.text_field :listing_site_name %>
+
+  <label>掲載URL</label>
+  <%= f.url_field :listing_url %>
+
+  <label>進捗ステータス</label>
+  <%= f.select :status, ShopProspect.statuses.keys.map { |s| [ApplicationHelper::STATUS_LABELS["ShopProspect"][s], s] } %>
+
+  <label>メモ</label>
+  <%= f.text_area :memo, rows: 4 %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

@@ -1,0 +1,4 @@
+<% content_for :title, "営業先候補を登録" %>
+<h1>営業先候補を登録</h1>
+<%= render "form", prospect: @prospect, url: admin_shop_prospects_path %>
+<%= link_to "一覧に戻る", admin_shop_prospects_path, class: "btn secondary" %>

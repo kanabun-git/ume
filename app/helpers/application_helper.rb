@@ -6,7 +6,11 @@ module ApplicationHelper
     "Shift" => { "scheduled" => "予定", "cancelled" => "キャンセル" },
     "Review" => { "pending" => "承認待ち", "approved" => "承認済み", "rejected" => "却下" },
     "ShopSubscription" => { "active" => "契約中", "canceled" => "解約" },
-    "ShopInquiry" => { "pending" => "未対応", "in_progress" => "対応中", "closed" => "対応済み" }
+    "ShopInquiry" => { "pending" => "未対応", "in_progress" => "対応中", "closed" => "対応済み" },
+    "ShopProspect" => {
+      "not_contacted" => "未アプローチ", "contacted" => "アプローチ済み",
+      "negotiating" => "商談中", "won" => "成約", "lost" => "見送り"
+    }
   }.freeze
 
   ROLE_LABELS = {

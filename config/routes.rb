@@ -97,6 +97,12 @@ Rails.application.routes.draw do
     resources :genres
     resources :plans
     resources :shop_subscriptions
+    resources :shop_prospects do
+      collection do
+        post :import
+        get :template
+      end
+    end
     resources :reviews, only: [:index, :show, :destroy] do
       member do
         patch :approve

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_103525) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_132307) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -195,6 +195,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_103525) do
     t.boolean "visible", default: true, null: false
     t.index ["shop_id", "position"], name: "index_shop_page_blocks_on_shop_id_and_position"
     t.index ["shop_id"], name: "index_shop_page_blocks_on_shop_id"
+  end
+
+  create_table "shop_prospects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "listing_site_name"
+    t.string "listing_url"
+    t.text "memo"
+    t.string "name", null: false
+    t.string "phone"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "shop_subscriptions", force: :cascade do |t|

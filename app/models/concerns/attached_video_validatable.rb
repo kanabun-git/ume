@@ -17,11 +17,18 @@ module AttachedVideoValidatable
     return unless attachment.attached?
 
     blob = attachment.blob
-    if blob.byte_size > AttachedVideoValidatable::MAX_VIDEO_FILE_SIZE
+    if !skip_video_size_limit? && blob.byte_size > AttachedVideoValidatable::MAX_VIDEO_FILE_SIZE
       errors.add(attachment_name, "は50MBまでの動画をアップロードできます")
     end
     unless AttachedVideoValidatable::ALLOWED_VIDEO_CONTENT_TYPES.include?(blob.content_type)
       errors.add(attachment_name, "はMP4・MOV・WEBM形式の動画をアップロードできます")
     end
+  end
+
+  # Overridden by includers that need to bypass the size cap for a
+  # specific, trusted upload path (see ShopPageBlock#skip_video_size_limit?,
+  # used only by Admin::VideosController).
+  def skip_video_size_limit?
+    false
   end
 end

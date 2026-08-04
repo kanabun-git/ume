@@ -97,6 +97,7 @@ Rails.application.routes.draw do
     resources :genres
     resources :plans
     resources :shop_subscriptions
+    resources :videos, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :shop_prospects do
       collection do
         post :import

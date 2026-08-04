@@ -62,6 +62,10 @@ module TestRecords
     )
     { io: StringIO.new(bytes), filename: filename, content_type: content_type }
   end
+
+  def mp4_upload(filename: "test.mp4", content_type: "video/mp4", bytes: "not a real video, just enough for content-type/size checks")
+    { io: StringIO.new(bytes), filename: filename, content_type: content_type }
+  end
 end
 
 module ActiveSupport

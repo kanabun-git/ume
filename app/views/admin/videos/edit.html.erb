@@ -1,0 +1,4 @@
+<% content_for :title, "体験動画を編集" %>
+<h1>体験動画を編集</h1>
+<%= render "form", block: @block, url: admin_video_path(@block) %>
+<%= link_to "一覧に戻る", admin_videos_path, class: "btn secondary" %>

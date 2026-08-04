@@ -32,6 +32,11 @@ class ShopPageBlock < ApplicationRecord
   belongs_to :shop
   has_one_attached :video_file
 
+  # Set by Admin::VideosController only: 体験動画 uploaded there come from
+  # the platform admin (a trusted role), not a shop, so the normal 50MB
+  # shop-facing cap doesn't apply.
+  attr_accessor :unlimited_video_size
+
   enum :block_type, BLOCK_TYPES
 
   before_validation :normalize_settings_rows
@@ -42,7 +47,15 @@ class ShopPageBlock < ApplicationRecord
 
   default_scope { order(:position) }
   scope :visible, -> { where(visible: true) }
-  scope :with_video, -> { movie.where("settings->>'video_url' IS NOT NULL AND settings->>'video_url' != ''") }
+  # Matches movie blocks with either an uploaded video_file or a video_url
+  # set in settings — a file-only upload has no video_url, so checking
+  # settings alone (the original implementation) silently excluded it from
+  # every public video listing.
+  scope :with_video, lambda {
+    movie.left_joins(:video_file_attachment).where(
+      "shop_page_blocks.settings->>'video_url' IS NOT NULL AND shop_page_blocks.settings->>'video_url' != '' OR active_storage_attachments.id IS NOT NULL"
+    )
+  }
 
   def label
     title.presence || LABELS.fetch(block_type, block_type)
@@ -59,6 +72,10 @@ class ShopPageBlock < ApplicationRecord
   end
 
   private
+
+  def skip_video_size_limit?
+    unlimited_video_size.present?
+  end
 
   # The price_table row editor submits settings[rows][INDEX][label/value]
   # with numeric indices. When an admin removes a row from the middle, the

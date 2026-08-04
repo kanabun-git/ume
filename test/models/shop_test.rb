@@ -19,4 +19,17 @@ class ShopTest < ActiveSupport::TestCase
     assert_includes Shop.in_region("中部"), shop
     assert_not_includes Shop.in_region("関東"), shop
   end
+
+  test "#region reads directly from a prefecture-level area" do
+    shop = create_shop(area: create_area(region: "関東"))
+
+    assert_equal "関東", shop.region
+  end
+
+  test "#region falls back to a child area's parent prefecture region" do
+    parent = create_area(region: "中部")
+    shop = create_shop(area: create_area(parent: parent))
+
+    assert_equal "中部", shop.region
+  end
 end

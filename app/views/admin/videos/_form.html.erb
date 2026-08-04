@@ -1,0 +1,29 @@
+<% if block.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% block.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: block, url: url, local: true, class: "form" do |f| %>
+  <label>店舗</label>
+  <%= f.collection_select :shop_id, @shops, :id, ->(shop) { "#{shop.name}(#{shop.region})" }, include_blank: "店舗を選択" %>
+
+  <label>タイトル(空欄可)</label>
+  <%= f.text_field :title %>
+
+  <label>表示する</label>
+  <%= f.check_box :visible %>
+
+  <label>動画ファイルをアップロード(MP4・MOV・WEBM。運営者アップロードのため容量無制限)</label>
+  <% if block.video_file.attached? %>
+    <p><small>現在のファイル: <%= block.video_file.filename %>(新しいファイルを選ぶと置き換わります)</small></p>
+  <% end %>
+  <%= f.file_field :video_file, accept: "video/mp4,video/quicktime,video/webm" %>
+
+  <label>または動画URL(YouTube埋め込みURL、またはmp4の直リンク。ファイルをアップロードした場合はそちらが優先されます)</label>
+  <%= text_field_tag "shop_page_block[settings][video_url]", block.settings["video_url"] %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

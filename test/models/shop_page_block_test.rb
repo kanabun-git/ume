@@ -38,4 +38,40 @@ class ShopPageBlockTest < ActiveSupport::TestCase
 
     assert_equal rows, block.settings["rows"]
   end
+
+  test "rejects a video file over 50MB by default" do
+    block = create_shop.shop_page_blocks.build(block_type: :movie, position: 0)
+    block.video_file.attach(mp4_upload)
+    block.video_file.blob.update!(byte_size: 60.megabytes)
+
+    assert_not block.valid?
+    assert_includes block.errors[:video_file].join, "50MB"
+  end
+
+  test "unlimited_video_size bypasses the 50MB cap (admin upload path only)" do
+    block = create_shop.shop_page_blocks.build(block_type: :movie, position: 0, unlimited_video_size: true)
+    block.video_file.attach(mp4_upload)
+    block.video_file.blob.update!(byte_size: 200.megabytes)
+
+    assert block.valid?
+  end
+
+  test "with_video matches a block that only has an uploaded file, with no video_url" do
+    block = create_shop.shop_page_blocks.create!(block_type: :movie, position: 0)
+    block.video_file.attach(mp4_upload)
+
+    assert_includes ShopPageBlock.with_video, block
+  end
+
+  test "with_video matches a block that only has a video_url, with no uploaded file" do
+    block = create_shop.shop_page_blocks.create!(block_type: :movie, position: 0, settings: { "video_url" => "https://example.com/a.mp4" })
+
+    assert_includes ShopPageBlock.with_video, block
+  end
+
+  test "with_video excludes a movie block with neither a file nor a URL" do
+    block = create_shop.shop_page_blocks.create!(block_type: :movie, position: 0)
+
+    assert_not_includes ShopPageBlock.with_video, block
+  end
 end

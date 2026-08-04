@@ -53,6 +53,13 @@ class Shop < ApplicationRecord
     reviews.approved
   end
 
+  # The "地方" (Kanto/Chubu/...) this shop belongs to — area can be either
+  # a prefecture (region set directly) or a city (region only on its
+  # parent), mirroring the fallback in the .in_region scope above.
+  def region
+    area.prefecture? ? area.region : area.parent&.region
+  end
+
   # "Zeroお勧め" badge: shown for shops on a paid plan, or for any shop the
   # platform admin has explicitly flagged regardless of plan.
   def zero_recommended_badge?

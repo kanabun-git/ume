@@ -32,6 +32,7 @@ Rails.application.routes.draw do
 
   resources :videos, only: [:index]
   resources :coupons, only: [:index]
+  resources :diary_entries, only: [:index]
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
   resources :casts, only: [:index, :show]

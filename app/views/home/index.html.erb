@@ -132,11 +132,20 @@
 <section class="home-section">
   <div class="home-section-head">
     <h2>新着日記</h2>
+    <%= link_to "日記一覧を見る >", diary_entries_path, class: "home-section-more" %>
   </div>
   <% if @latest_diary_entries.any? %>
     <div class="grid">
       <% @latest_diary_entries.each do |entry| %>
         <div class="card diary-card">
+          <%= link_to cast_path(entry.cast, anchor: "diary-#{entry.id}"), class: "diary-card-thumb" do %>
+            <div class="photo-with-status">
+              <%= diary_thumb_tag entry %>
+              <% if entry.video.attached? && !entry.video_hidden? %>
+                <span class="badge">動画あり</span>
+              <% end %>
+            </div>
+          <% end %>
           <h3><%= link_to entry.title, cast_path(entry.cast) %></h3>
           <p class="diary-meta"><%= entry.cast.name %>(<%= link_to entry.cast.shop.name, shop_path(entry.cast.shop) %>)</p>
           <p><%= truncate(entry.body, length: 60) %></p>

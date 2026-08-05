@@ -1,0 +1,44 @@
+<% content_for :title, "新着日記一覧 | FuzokuZero" %>
+<% content_for :meta_description, "在籍キャストの新着写メ日記を、エリア・ジャンルから絞り込んで探せます。" %>
+
+<h1>新着日記一覧</h1>
+
+<form class="form" method="get">
+  <label>エリア</label>
+  <select name="area_id">
+    <option value="">すべて</option>
+    <% @areas.each do |area| %>
+      <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+    <% end %>
+  </select>
+  <label>ジャンル</label>
+  <select name="genre_id">
+    <option value="">すべて</option>
+    <% @genres.each do |genre| %>
+      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+    <% end %>
+  </select>
+  <button type="submit" class="btn">絞り込む</button>
+</form>
+
+<% if @diary_entries.any? %>
+  <div class="grid">
+    <% @diary_entries.each do |entry| %>
+      <%= link_to cast_path(entry.cast, anchor: "diary-#{entry.id}"), class: "card diary-card" do %>
+        <div class="photo-with-status">
+          <%= diary_thumb_tag entry %>
+          <% if entry.video.attached? && !entry.video_hidden? %>
+            <span class="badge">動画あり</span>
+          <% end %>
+        </div>
+        <h3><%= entry.title %></h3>
+        <p class="diary-meta"><%= entry.cast.name %>(<%= entry.cast.shop.name %>)</p>
+        <p><%= truncate(entry.body, length: 60) %></p>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p class="region-note">まだ日記がありません。</p>
+<% end %>
+
+<%= paginate @diary_entries %>

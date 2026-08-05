@@ -392,6 +392,9 @@ form.form textarea { min-height: 120px; }
 .ranking-body p { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
 
 .diary-card .diary-meta { font-size: .8rem; color: var(--muted); margin: 4px 0; }
+.diary-card-thumb { display: block; margin-bottom: 10px; }
+.diary-card-thumb .photo-with-status { display: block; }
+.diary-card-thumb img, .diary-card-thumb video { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
 
 /* --- Favorites (お気に入り) ---------------------------------------------- */
 

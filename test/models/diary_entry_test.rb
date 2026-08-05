@@ -29,6 +29,26 @@ class DiaryEntryTest < ActiveSupport::TestCase
     assert entry.video_hidden?
   end
 
+  test "scheduled? is true for a published entry whose published_at is still in the future" do
+    entry = create_diary_entry(status: :published, published_at: 1.day.from_now)
+
+    assert entry.scheduled?
+    assert_not DiaryEntry.visible.include?(entry)
+  end
+
+  test "scheduled? is false once published_at has passed" do
+    entry = create_diary_entry(status: :published, published_at: 1.day.ago)
+
+    assert_not entry.scheduled?
+    assert DiaryEntry.visible.include?(entry)
+  end
+
+  test "scheduled? is false for a draft even with a future published_at" do
+    entry = create_diary_entry(status: :draft, published_at: 1.day.from_now)
+
+    assert_not entry.scheduled?
+  end
+
   test "rejects more than 5 attached images" do
     entry = create_diary_entry
     6.times { |i| entry.images.attach(**png_upload(filename: "photo#{i}.png")) }

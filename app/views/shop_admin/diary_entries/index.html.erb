@@ -9,7 +9,10 @@
       <tr>
         <td><%= entry.cast.name %></td>
         <td><%= link_to entry.title, shop_admin_diary_entry_path(entry) %></td>
-        <td><%= status_label(entry) %></td>
+        <td>
+          <%= status_label(entry) %>
+          <% if entry.scheduled? %><span class="badge">予約中</span><% end %>
+        </td>
         <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
       </tr>
     <% end %>

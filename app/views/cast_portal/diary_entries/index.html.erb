@@ -9,7 +9,10 @@
     <% @diary_entries.each do |entry| %>
       <tr>
         <td><%= link_to entry.title, cast_diary_entry_path(entry) %></td>
-        <td><%= status_label(entry) %></td>
+        <td>
+          <%= status_label(entry) %>
+          <% if entry.scheduled? %><span class="badge">予約中</span><% end %>
+        </td>
         <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
         <td>
           <%= link_to "編集", edit_cast_diary_entry_path(entry) %>

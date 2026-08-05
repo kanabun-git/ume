@@ -1,7 +1,7 @@
 <% content_for :title, @diary_entry.title %>
 
 <h1><%= @diary_entry.title %></h1>
-<p><small><%= status_label(@diary_entry) %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
+<p><small><%= status_label(@diary_entry) %><% if @diary_entry.scheduled? %> <span class="badge">予約中</span><% end %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></small></p>
 <div class="grid">
   <% @diary_entry.images.each do |img| %>
     <div class="photo-with-status">

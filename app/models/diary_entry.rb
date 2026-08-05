@@ -29,6 +29,12 @@ class DiaryEntry < ApplicationRecord
     video.attached? && video.attachment.hidden?
   end
 
+  # True while a published entry's published_at is still in the future —
+  # it's saved and will go live on its own, but isn't in `visible` yet.
+  def scheduled?
+    published? && published_at.present? && published_at > Time.current
+  end
+
   # True once every uploaded image and the video (if any) have been hidden
   # by admin moderation, as opposed to nothing ever having been uploaded —
   # the two cases show different placeholders (see

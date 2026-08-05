@@ -39,6 +39,10 @@
   <label>公開状態</label>
   <%= f.select :status, DiaryEntry.statuses.keys.map { |s| [s == "draft" ? "下書き" : "公開", s] } %>
 
+  <label>公開日時(予約投稿)</label>
+  <%= f.datetime_field :published_at %>
+  <p><small>空欄のまま保存すると今すぐ公開されます。未来の日時を指定すると、その日時になるまで一覧・詳細ページには表示されません(予約投稿)。</small></p>
+
   <%= f.submit "保存する", class: "btn" %>
 <% end %>
 

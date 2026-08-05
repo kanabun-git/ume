@@ -7,6 +7,7 @@ class Review < ApplicationRecord
 
   belongs_to :shop
   belongs_to :cast, optional: true
+  belongs_to :member, optional: true
 
   enum :status, { pending: 0, approved: 1, rejected: 2 }, default: :pending
 

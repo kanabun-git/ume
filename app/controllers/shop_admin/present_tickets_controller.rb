@@ -1,0 +1,77 @@
+module ShopAdmin
+  class PresentTicketsController < BaseController
+    before_action :set_present_ticket, only: [:show, :edit, :update, :destroy, :draw, :send_result_emails]
+
+    def index
+      @present_tickets = current_shop.present_tickets
+    end
+
+    def show
+      @entries = @present_ticket.present_ticket_entries.includes(:member).order(:created_at)
+    end
+
+    def new
+      @present_ticket = current_shop.present_tickets.build
+      authorize @present_ticket
+    end
+
+    def create
+      @present_ticket = current_shop.present_tickets.build(present_ticket_params)
+      authorize @present_ticket
+
+      if @present_ticket.save
+        redirect_to shop_admin_present_tickets_path, notice: "プレゼント企画を登録しました。"
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+
+    def edit
+    end
+
+    def update
+      if @present_ticket.update(present_ticket_params)
+        redirect_to shop_admin_present_tickets_path, notice: "プレゼント企画を更新しました。"
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      @present_ticket.destroy
+      redirect_to shop_admin_present_tickets_path, notice: "プレゼント企画を削除しました。"
+    end
+
+    def draw
+      if @present_ticket.draw!
+        redirect_to shop_admin_present_ticket_path(@present_ticket), notice: "抽選しました。"
+      else
+        redirect_to shop_admin_present_ticket_path(@present_ticket), alert: "抽選できませんでした(すでに抽選済みです)。"
+      end
+    end
+
+    def send_result_emails
+      entries = @present_ticket.present_ticket_entries.where(notified_at: nil).where.not(status: :pending)
+
+      sent_count = 0
+      entries.find_each do |entry|
+        PresentTicketMailer.result_email(entry).deliver_now
+        entry.update!(notified_at: Time.current)
+        sent_count += 1
+      end
+
+      redirect_to shop_admin_present_ticket_path(@present_ticket), notice: "#{sent_count}件の当落メールを送信しました。"
+    end
+
+    private
+
+    def set_present_ticket
+      @present_ticket = current_shop.present_tickets.find(params[:id])
+      authorize @present_ticket
+    end
+
+    def present_ticket_params
+      params.require(:present_ticket).permit(:name, :description, :capacity, :deadline_at)
+    end
+  end
+end

@@ -19,6 +19,25 @@ class ReviewsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, shop.reviews.count
   end
 
+  test "a review submitted while signed in as a member is linked to that member" do
+    shop = create_shop
+    member = create_member
+    sign_in member
+
+    post shop_reviews_path(shop), params: { review: { reviewer_name: "利用者A", rating: 5, body: "良かったです" } }
+
+    assert_equal member, shop.reviews.last.member
+  end
+
+  test "a review's member cannot be spoofed via the submitted params" do
+    shop = create_shop
+    other_member = create_member
+
+    post shop_reviews_path(shop), params: { review: { reviewer_name: "利用者A", rating: 5, body: "良かったです", member_id: other_member.id } }
+
+    assert_nil shop.reviews.last.member
+  end
+
   test "a second rapid submission from the same client is rejected" do
     shop = create_shop
     post shop_reviews_path(shop), params: { review: { reviewer_name: "利用者A", rating: 5, body: "1件目" } }

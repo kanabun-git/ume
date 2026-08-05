@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -132,6 +132,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
     t.index ["slug"], name: "index_genres_on_slug", unique: true
   end
 
+  create_table "member_ranks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "min_approved_count", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["min_approved_count"], name: "index_member_ranks_on_min_approved_count", unique: true
+  end
+
   create_table "members", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -154,6 +162,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "present_ticket_entries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "notified_at"
+    t.bigint "present_ticket_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_present_ticket_entries_on_member_id"
+    t.index ["present_ticket_id", "member_id"], name: "index_ticket_entries_on_ticket_and_member", unique: true
+    t.index ["present_ticket_id"], name: "index_present_ticket_entries_on_present_ticket_id"
+  end
+
+  create_table "present_tickets", force: :cascade do |t|
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "deadline_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.bigint "shop_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id"], name: "index_present_tickets_on_shop_id"
+  end
+
   create_table "review_reply_templates", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
@@ -168,6 +200,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
     t.bigint "cast_id"
     t.datetime "created_at", null: false
     t.string "ip_address"
+    t.bigint "member_id"
     t.integer "rating", null: false
     t.string "reviewer_name", null: false
     t.bigint "shop_id", null: false
@@ -176,6 +209,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["cast_id"], name: "index_reviews_on_cast_id"
+    t.index ["member_id"], name: "index_reviews_on_member_id"
     t.index ["shop_id"], name: "index_reviews_on_shop_id"
   end
 
@@ -190,6 +224,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
     t.datetime "updated_at", null: false
     t.date "work_date", null: false
     t.index ["cast_id"], name: "index_shifts_on_cast_id"
+  end
+
+  create_table "shop_favorites", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.bigint "shop_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id", "shop_id"], name: "index_shop_favorites_on_member_id_and_shop_id", unique: true
+    t.index ["member_id"], name: "index_shop_favorites_on_member_id"
+    t.index ["shop_id"], name: "index_shop_favorites_on_shop_id"
   end
 
   create_table "shop_inquiries", force: :cascade do |t|
@@ -312,10 +356,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_160502) do
   add_foreign_key "diary_entries", "casts"
   add_foreign_key "favorites", "casts"
   add_foreign_key "favorites", "members"
+  add_foreign_key "present_ticket_entries", "members"
+  add_foreign_key "present_ticket_entries", "present_tickets"
+  add_foreign_key "present_tickets", "shops"
   add_foreign_key "review_reply_templates", "shops"
   add_foreign_key "reviews", "casts"
+  add_foreign_key "reviews", "members"
   add_foreign_key "reviews", "shops"
   add_foreign_key "shifts", "casts"
+  add_foreign_key "shop_favorites", "members"
+  add_foreign_key "shop_favorites", "shops"
   add_foreign_key "shop_page_blocks", "shops"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"

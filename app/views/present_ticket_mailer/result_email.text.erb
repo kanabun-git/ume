@@ -1,0 +1,7 @@
+<%= @member.name %> 様
+
+<% if @entry.won? -%>
+<%= @present_ticket.shop.name %>の「<%= @present_ticket.name %>」にご応募いただき、当選しましたのでお知らせいたします。
+<% else -%>
+<%= @present_ticket.shop.name %>の「<%= @present_ticket.name %>」にご応募いただきありがとうございました。今回は抽選の結果、落選となりました。またの機会をお待ちしております。
+<% end -%>

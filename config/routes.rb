@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   devise_for :members
 
   resources :favorites, only: [:create, :destroy], param: :cast_id
+  resources :shop_favorites, only: [:create, :destroy], param: :shop_id
+  resources :present_ticket_entries, only: [:create, :destroy]
 
   # --- Individual member (個人会員) mypage: favorited casts + their shift
   # and diary updates --- `module: "member_portal"` mirrors the cast/
@@ -60,6 +62,12 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
     resource :shop, only: [:edit, :update]
     resources :casts
+    resources :shifts, only: [:index, :new, :create, :destroy] do
+      collection do
+        post :import
+        get :template
+      end
+    end
     resources :diary_entries, only: [:index, :show]
     resources :reviews, only: [:index] do
       member { patch :reply }
@@ -77,6 +85,12 @@ Rails.application.routes.draw do
         patch :move_up
         patch :move_down
         patch :toggle_visibility
+      end
+    end
+    resources :present_tickets do
+      member do
+        post :draw
+        post :send_result_emails
       end
     end
   end
@@ -108,6 +122,7 @@ Rails.application.routes.draw do
     resources :areas
     resources :genres
     resources :plans
+    resources :member_ranks, except: [:show]
     resources :shop_subscriptions
     resources :videos, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :shop_prospects do

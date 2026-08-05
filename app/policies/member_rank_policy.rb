@@ -1,0 +1,2 @@
+class MemberRankPolicy < PlatformAdminPolicy
+end

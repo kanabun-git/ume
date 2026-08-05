@@ -10,7 +10,9 @@ module ApplicationHelper
     "ShopProspect" => {
       "not_contacted" => "未アプローチ", "contacted" => "アプローチ済み",
       "negotiating" => "商談中", "won" => "成約", "lost" => "見送り"
-    }
+    },
+    "PresentTicket" => { "accepting" => "応募受付中", "drawn" => "抽選済み", "closed" => "終了" },
+    "PresentTicketEntry" => { "pending" => "抽選待ち", "won" => "当選", "lost" => "落選" }
   }.freeze
 
   ROLE_LABELS = {

@@ -1,5 +1,40 @@
 <% content_for :title, "お気に入り一覧 | 会員マイページ" %>
 
+<div class="card">
+  <h2>会員ランク</h2>
+  <% if current_member.rank %>
+    <p><span class="tag-badge"><%= current_member.rank.name %></span> (承認済み口コミ<%= current_member.approved_review_count %>件)</p>
+  <% else %>
+    <p>まだランクがありません。(承認済み口コミ<%= current_member.approved_review_count %>件)</p>
+  <% end %>
+  <% if current_member.next_rank %>
+    <p><small>次のランク「<%= current_member.next_rank.name %>」まであと<%= current_member.next_rank.min_approved_count - current_member.approved_review_count %>件</small></p>
+  <% end %>
+</div>
+
+<h1>お気に入りの店舗</h1>
+
+<% if @favorite_shops.any? %>
+  <div class="grid">
+    <% @favorite_shops.each do |shop| %>
+      <div class="card favorite-card">
+        <%= link_to shop_path(shop) do %>
+          <% if shop.photos.attached? %>
+            <%= image_tag shop.photos.first %>
+          <% else %>
+            <%= nowprinting_image_tag %>
+          <% end %>
+        <% end %>
+        <h3><%= link_to shop.name, shop_path(shop) %></h3>
+        <p class="diary-meta"><span class="badge"><%= shop.genre.name %></span> <span class="badge muted"><%= shop.area.name %></span></p>
+        <%= button_to "お気に入り解除", shop_favorite_path(shop), method: :delete, class: "btn secondary" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="region-note">まだお気に入りの店舗がありません。気になる店舗のページから「お気に入り店舗に追加」してみましょう。</p>
+<% end %>
+
 <h1>お気に入りの女の子</h1>
 
 <% if @favorite_casts.any? %>

@@ -1,0 +1,23 @@
+<% content_for :title, "プレゼント企画管理" %>
+
+<h1>プレゼント企画管理</h1>
+<%= link_to "新規登録", new_shop_admin_present_ticket_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>企画名</th><th>当選人数</th><th>締切</th><th>状態</th><th>応募数</th><th></th></tr></thead>
+  <tbody>
+    <% @present_tickets.each do |ticket| %>
+      <tr>
+        <td><%= link_to ticket.name, shop_admin_present_ticket_path(ticket) %></td>
+        <td><%= ticket.capacity %>名</td>
+        <td><%= ticket.deadline_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= status_label(ticket) %></td>
+        <td><%= ticket.present_ticket_entries.count %>件</td>
+        <td>
+          <%= link_to "編集", edit_shop_admin_present_ticket_path(ticket) %>
+          <%= button_to "削除", shop_admin_present_ticket_path(ticket), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

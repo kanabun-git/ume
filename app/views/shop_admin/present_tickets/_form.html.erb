@@ -1,0 +1,23 @@
+<% if present_ticket.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% present_ticket.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: present_ticket, url: url, local: true, class: "form" do |f| %>
+  <label>企画名</label>
+  <%= f.text_field :name %>
+
+  <label>説明</label>
+  <%= f.text_area :description %>
+
+  <label>当選人数</label>
+  <%= f.number_field :capacity %>
+
+  <label>応募締切日時</label>
+  <%= f.datetime_field :deadline_at %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

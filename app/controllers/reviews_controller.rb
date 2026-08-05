@@ -17,6 +17,7 @@ class ReviewsController < ApplicationController
 
     @review = @shop.reviews.build(review_params)
     @review.ip_address = request.remote_ip
+    @review.member = current_member if member_signed_in?
     authorize @review
 
     if @review.save

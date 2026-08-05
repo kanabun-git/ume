@@ -275,6 +275,10 @@ Review.find_or_create_by!(shop: shop, reviewer_name: "利用者B") do |r|
   r.status = :pending
 end
 
+MemberRank.find_or_create_by!(min_approved_count: 1) { |r| r.name = "ブロンズ会員" }
+MemberRank.find_or_create_by!(min_approved_count: 5) { |r| r.name = "シルバー会員" }
+MemberRank.find_or_create_by!(min_approved_count: 20) { |r| r.name = "ゴールド会員" }
+
 puts "Seed data created."
 puts "platform_admin: #{platform_admin.email} / password1234"
 puts "shop_admin: #{shop_admin.email} / password1234"

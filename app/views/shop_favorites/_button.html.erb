@@ -1,0 +1,9 @@
+<% if member_signed_in? %>
+  <% if current_member.favorited_shop?(shop) %>
+    <%= button_to "♥ お気に入り解除", shop_favorite_path(shop), method: :delete, class: "btn secondary favorite-btn favorited" %>
+  <% else %>
+    <%= button_to "♡ お気に入り店舗に追加", shop_favorites_path, method: :post, params: { shop_id: shop.id }, class: "btn secondary favorite-btn" %>
+  <% end %>
+<% else %>
+  <%= link_to "♡ お気に入り店舗に追加(要会員登録)", new_member_session_path, class: "btn secondary favorite-btn" %>
+<% end %>

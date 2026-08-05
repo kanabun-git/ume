@@ -10,6 +10,7 @@
 </h1>
 <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
 <p><%= @shop.catch_copy %></p>
+<%= render "shop_favorites/button", shop: @shop %>
 
 <% if @shop.online_reservation? || @shop.visit_point_program? || @shop.coupon_available? || @shop.event_ongoing? %>
   <div class="shop-badge-row">
@@ -70,13 +71,19 @@
   <% end %>
 </div>
 
+<%= render "present_tickets", shop: @shop %>
+
 <h2 id="reviews">口コミ</h2>
 <%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
 <% @reviews.each do |review| %>
   <div class="card">
     <p class="stars">評価: <%= review.rating %> / 5</p>
     <p><%= review.body %></p>
-    <p><small><%= review.reviewer_name %> - <%= review.created_at.strftime("%Y-%m-%d") %></small></p>
+    <p><small>
+      <%= review.reviewer_name %>
+      <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>
+      - <%= review.created_at.strftime("%Y-%m-%d") %>
+    </small></p>
     <% if review.shop_reply.present? %>
       <div class="shop-reply">
         <p class="shop-reply-label">店舗からの返信</p>

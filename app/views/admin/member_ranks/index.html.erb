@@ -1,0 +1,21 @@
+<% content_for :title, "会員ランク管理" %>
+
+<h1>会員ランク管理</h1>
+<p>口コミの承認数がしきい値以上になった個人会員に、自動的にランクが付与されます。</p>
+<%= link_to "新規ランク登録", new_admin_member_rank_path, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>ランク名</th><th>必要承認数</th><th></th></tr></thead>
+  <tbody>
+    <% @member_ranks.each do |member_rank| %>
+      <tr>
+        <td><%= member_rank.name %></td>
+        <td><%= member_rank.min_approved_count %>件以上</td>
+        <td>
+          <%= link_to "編集", edit_admin_member_rank_path(member_rank) %>
+          <%= button_to "削除", admin_member_rank_path(member_rank), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

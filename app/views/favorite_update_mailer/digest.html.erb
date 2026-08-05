@@ -1,0 +1,21 @@
+<p><%= @member.name %> 様</p>
+
+<p>お気に入り登録している女の子の更新情報をお届けします。</p>
+
+<% if @diary_entries.any? %>
+  <h3>新着写メ日記</h3>
+  <ul>
+    <% @diary_entries.each do |entry| %>
+      <li><%= entry.cast.name %>(<%= entry.cast.shop.name %>): <%= entry.title %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if @shifts.any? %>
+  <h3>本日の出勤予定</h3>
+  <ul>
+    <% @shifts.each do |shift| %>
+      <li><%= shift.cast.name %>(<%= shift.cast.shop.name %>): <%= shift.formatted_time_range %></li>
+    <% end %>
+  </ul>
+<% end %>

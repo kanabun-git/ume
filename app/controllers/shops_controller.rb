@@ -20,6 +20,7 @@ class ShopsController < ApplicationController
   def show
     @shop = Shop.visible.find(params[:id])
     @shop.increment!(:view_count)
+    ShopDailyView.record!(@shop)
     @casts = @shop.casts.visible
     @reviews = @shop.approved_reviews.limit(10)
   end

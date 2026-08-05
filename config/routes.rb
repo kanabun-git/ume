@@ -39,7 +39,9 @@ Rails.application.routes.draw do
   resources :genres, only: [:show], param: :slug
   resources :casts, only: [:index, :show]
   resources :shops, only: [:index, :show] do
-    resources :reviews, only: [:new, :create]
+    resources :reviews, only: [:new, :create] do
+      member { post :helpful }
+    end
   end
   resources :shop_inquiries, only: [:new, :create]
 
@@ -157,6 +159,8 @@ Rails.application.routes.draw do
     resources :shop_inquiries, only: [:index, :show] do
       member { patch :update_status }
     end
+
+    get "analytics", to: "analytics#index", as: :analytics
 
     resource :setting, only: [:edit, :update]
 

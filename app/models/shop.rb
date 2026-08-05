@@ -71,6 +71,14 @@ class Shop < ApplicationRecord
     approved_reviews.average(:rating)&.round(1)
   end
 
+  # "PR" badge: unlike zero_recommended_badge? (an editorial call the
+  # platform admin makes), this one the shop admin sets on themselves —
+  # a time-boxed self-promotion slot with no billing enforcement yet
+  # (see ShopSubscription's note in docs/architecture.md).
+  def pr_badge_active?
+    pr_badge_until.present? && pr_badge_until > Time.current
+  end
+
   # The default page composition for a newly created shop. Shop admins can
   # freely add/remove/reorder/hide blocks afterwards from their dashboard —
   # this just avoids a blank page on day one.

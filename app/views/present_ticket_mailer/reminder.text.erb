@@ -1,0 +1,7 @@
+<%= @member.name %> 様
+
+お気に入り登録している店舗のプレゼント企画が、まもなく応募締切となります。
+
+<% @tickets.each do |ticket| -%>
+・<%= ticket.shop.name %>「<%= ticket.name %>」応募締切: <%= ticket.deadline_at.strftime("%Y-%m-%d %H:%M") %>
+<% end -%>

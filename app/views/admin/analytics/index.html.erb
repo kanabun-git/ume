@@ -1,0 +1,46 @@
+<% content_for :title, "アクセス解析" %>
+
+<h1>アクセス解析</h1>
+
+<%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
+  <label>店舗で絞り込む</label>
+  <%= select_tag :shop_id, options_from_collection_for_select(Shop.order(:name), :id, :name, params[:shop_id]), include_blank: "全店舗合計" %>
+  <button type="submit" class="btn secondary">表示</button>
+<% end %>
+
+<h2>
+  <%= @selected_shop ? "#{@selected_shop.name} の閲覧数推移" : "全店舗合計の閲覧数推移" %>
+  (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
+</h2>
+
+<% max = @daily_totals.values.max || 0 %>
+<div class="analytics-chart">
+  <% @dates.each do |date| %>
+    <% count = @daily_totals[date] || 0 %>
+    <div class="analytics-bar-col" title="<%= date.strftime('%Y-%m-%d') %>: <%= count %>件">
+      <div class="analytics-bar" style="height: <%= max.zero? ? 0 : (count.to_f / max * 100).round(1) %>%"></div>
+    </div>
+  <% end %>
+</div>
+<p><small>棒にカーソルを合わせると日付ごとの閲覧数が表示されます。合計: <%= @daily_totals.values.sum %>件</small></p>
+
+<% if @selected_shop %>
+  <%= link_to "全店舗合計に戻る", admin_analytics_path, class: "btn secondary" %>
+<% else %>
+  <h2>店舗別閲覧数ランキング</h2>
+  <% if @top_shops.any? %>
+    <table class="admin-table">
+      <thead><tr><th>店舗名</th><th>閲覧数</th></tr></thead>
+      <tbody>
+        <% @top_shops.each do |shop, count| %>
+          <tr>
+            <td><%= link_to shop.name, admin_analytics_path(shop_id: shop.id) %></td>
+            <td><%= count %>件</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="region-note">この期間の閲覧データがまだありません。</p>
+  <% end %>
+<% end %>

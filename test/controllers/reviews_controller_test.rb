@@ -38,6 +38,26 @@ class ReviewsControllerTest < ActionDispatch::IntegrationTest
     assert_nil shop.reviews.last.member
   end
 
+  test "a visitor can mark a review as helpful" do
+    shop = create_shop
+    review = shop.reviews.create!(reviewer_name: "A", rating: 5, body: "良い店でした", status: :approved)
+
+    post helpful_shop_review_path(shop, review)
+
+    assert_redirected_to shop_path(shop)
+    assert_equal 1, review.reload.review_helpful_votes.count
+  end
+
+  test "voting helpful on the same review twice from the same client only counts once" do
+    shop = create_shop
+    review = shop.reviews.create!(reviewer_name: "A", rating: 5, body: "良い店でした", status: :approved)
+
+    post helpful_shop_review_path(shop, review)
+    post helpful_shop_review_path(shop, review)
+
+    assert_equal 1, review.reload.review_helpful_votes.count
+  end
+
   test "a second rapid submission from the same client is rejected" do
     shop = create_shop
     post shop_reviews_path(shop), params: { review: { reviewer_name: "利用者A", rating: 5, body: "1件目" } }

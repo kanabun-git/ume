@@ -27,6 +27,12 @@ class ReviewsController < ApplicationController
     end
   end
 
+  def helpful
+    review = @shop.reviews.visible.find(params[:id])
+    ReviewHelpfulVote.find_or_create_by(review: review, ip_address: request.remote_ip)
+    redirect_back fallback_location: shop_path(@shop), notice: "評価ありがとうございます。"
+  end
+
   private
 
   def set_shop

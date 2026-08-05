@@ -7,6 +7,7 @@
 <h1>
   <%= @shop.name %><% if @shop.chain_name.present? %><span class="shop-listing-chain">(<%= @shop.chain_name %>)</span><% end %>
   <% if @shop.zero_recommended_badge? %><span class="tag-badge zero-recommend">Zeroお勧め</span><% end %>
+  <% if @shop.pr_badge_active? %><span class="tag-badge pr-badge">PR</span><% end %>
 </h1>
 <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
 <p><%= @shop.catch_copy %></p>
@@ -90,5 +91,6 @@
         <p><%= review.shop_reply %></p>
       </div>
     <% end %>
+    <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
   </div>
 <% end %>

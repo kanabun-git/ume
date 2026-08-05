@@ -43,6 +43,9 @@
   <label>対応エリア(例: 柏駅発着、流山、松戸、野田)</label>
   <%= f.text_field :coverage_area_note %>
 
+  <label>PRバッジ表示期限(この日時まで「PR」バッジが店舗一覧・詳細ページに表示されます。空欄にすると非表示になります)</label>
+  <%= f.datetime_field :pr_badge_until %>
+
   <label>掲載バッジ</label>
   <label><%= f.check_box :online_reservation %> ネット予約</label>
   <label><%= f.check_box :visit_point_program %> 来店ポイント</label>

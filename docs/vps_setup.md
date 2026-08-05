@@ -314,6 +314,48 @@ RAILS_ENV=production UME_DATABASE_PASSWORD='(パスワード)' bin/rails backup:
 
 **破壊的な操作(現在のDB・添付ファイルを上書き)なので、本当に必要な時以外は実行しないこと。**
 
+### 9-2. お気に入り更新・プレゼント企画リマインドメール
+
+`bin/rails notifications:send_daily`は、お気に入り登録している女の子の新着日記・本日の出勤予定と、お気に入り店舗のプレゼント企画の締切間近リマインドを、対象の個人会員へメール送信するコマンドです。バックアップと同様、**systemdタイマーを設定しないと自動実行されません。**
+
+```bash
+sudo tee /etc/systemd/system/ume-notifications.service > /dev/null << 'EOF'
+[Unit]
+Description=Daily favorite/present-ticket notification emails for ume
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/home/deploy/ume
+Environment=RAILS_ENV=production
+Environment=UME_DATABASE_PASSWORD=(3で設定したパスワード)
+ExecStart=/home/deploy/.rbenv/shims/bundle exec rails notifications:send_daily
+EOF
+
+sudo tee /etc/systemd/system/ume-notifications.timer > /dev/null << 'EOF'
+[Unit]
+Description=Run ume-notifications daily
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now ume-notifications.timer
+```
+
+設定後、必ず一度手動実行して動作確認してください。
+
+```bash
+sudo systemctl start ume-notifications.service
+sudo systemctl status ume-notifications.service --no-pager
+```
+
 ---
 
 ## 10. OS・ミドルウェアの更新

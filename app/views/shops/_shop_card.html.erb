@@ -5,6 +5,7 @@
         <%= shop.name %><% if shop.chain_name.present? %><span class="shop-listing-chain">(<%= shop.chain_name %>)</span><% end %>
       <% end %>
       <% if shop.zero_recommended_badge? %><span class="tag-badge zero-recommend">Zeroお勧め</span><% end %>
+      <% if shop.pr_badge_active? %><span class="tag-badge pr-badge">PR</span><% end %>
       <div class="shop-listing-subtitle">
         <span class="badge"><%= shop.genre.name %></span>
         <span class="badge muted"><%= shop.area.name %></span>

@@ -156,6 +156,7 @@ main { padding: 24px 0 60px; }
 .tag-badge.highlight { background: #b5204f; color: #fff; border-color: #b5204f; }
 .tag-badge.recruit { background: #fff8e1; color: #9a6b00; border-color: #e0b23a; }
 .tag-badge.zero-recommend { background: #e8b923; color: #fff; border-color: #e8b923; font-weight: bold; }
+.tag-badge.pr-badge { background: #607d8b; color: #fff; border-color: #607d8b; font-weight: bold; }
 
 .shop-listing-body { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
 .shop-listing-photos { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; width: 240px; flex: 0 0 auto; }
@@ -211,6 +212,9 @@ form.form select, form.form textarea {
   width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: .95rem;
 }
 form.form textarea { min-height: 120px; }
+.analytics-chart { display: flex; align-items: flex-end; gap: 2px; height: 160px; border-bottom: 1px solid var(--border); padding: 8px 4px 0; margin-bottom: 8px; background: #fff; border-radius: var(--radius); }
+.analytics-bar-col { flex: 1; display: flex; align-items: flex-end; height: 100%; }
+.analytics-bar { width: 100%; background: var(--brand); border-radius: 2px 2px 0 0; min-height: 1px; }
 .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .checkbox-inline { display: inline-flex !important; align-items: center; gap: 4px; font-weight: normal !important; margin: 0 !important; }
 .image-setting-preview { margin-bottom: 8px; }

@@ -32,4 +32,10 @@ class ShopTest < ActiveSupport::TestCase
 
     assert_equal "中部", shop.region
   end
+
+  test "#pr_badge_active? is true only while pr_badge_until is in the future" do
+    assert_not create_shop(pr_badge_until: nil).pr_badge_active?
+    assert_not create_shop(pr_badge_until: 1.day.ago).pr_badge_active?
+    assert create_shop(pr_badge_until: 1.day.from_now).pr_badge_active?
+  end
 end

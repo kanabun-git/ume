@@ -1,0 +1,17 @@
+<%= @member.name %> 様
+
+お気に入り登録している女の子の更新情報をお届けします。
+
+<% if @diary_entries.any? -%>
+■新着写メ日記
+<% @diary_entries.each do |entry| -%>
+・<%= entry.cast.name %>(<%= entry.cast.shop.name %>): <%= entry.title %>
+<% end -%>
+
+<% end -%>
+<% if @shifts.any? -%>
+■本日の出勤予定
+<% @shifts.each do |shift| -%>
+・<%= shift.cast.name %>(<%= shift.cast.shop.name %>): <%= shift.formatted_time_range %>
+<% end -%>
+<% end -%>

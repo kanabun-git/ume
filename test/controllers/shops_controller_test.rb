@@ -39,4 +39,14 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "viewing a shop records a daily view" do
+    shop = create_shop
+
+    get shop_path(shop)
+    get shop_path(shop)
+
+    daily_view = ShopDailyView.find_by(shop: shop, view_date: Date.current)
+    assert_equal 2, daily_view.views_count
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_135358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -106,6 +106,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
     t.text "body"
     t.bigint "cast_id", null: false
     t.datetime "created_at", null: false
+    t.datetime "favorite_notified_at"
     t.datetime "published_at"
     t.integer "status", default: 0, null: false
     t.string "title", null: false
@@ -186,6 +187,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
     t.index ["shop_id"], name: "index_present_tickets_on_shop_id"
   end
 
+  create_table "review_helpful_votes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address", null: false
+    t.bigint "review_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id", "ip_address"], name: "index_review_helpful_votes_on_review_id_and_ip_address", unique: true
+    t.index ["review_id"], name: "index_review_helpful_votes_on_review_id"
+  end
+
   create_table "review_reply_templates", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
@@ -224,6 +234,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
     t.datetime "updated_at", null: false
     t.date "work_date", null: false
     t.index ["cast_id"], name: "index_shifts_on_cast_id"
+  end
+
+  create_table "shop_daily_views", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "shop_id", null: false
+    t.datetime "updated_at", null: false
+    t.date "view_date", null: false
+    t.integer "views_count", default: 0, null: false
+    t.index ["shop_id", "view_date"], name: "index_shop_daily_views_on_shop_id_and_view_date", unique: true
+    t.index ["shop_id"], name: "index_shop_daily_views_on_shop_id"
   end
 
   create_table "shop_favorites", force: :cascade do |t|
@@ -307,6 +327,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
     t.boolean "online_reservation", default: false, null: false
     t.string "phone"
     t.bigint "plan_id", null: false
+    t.datetime "pr_badge_until"
     t.string "price_note"
     t.boolean "recruiting_cast", default: false, null: false
     t.text "recruiting_message"
@@ -359,11 +380,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_125328) do
   add_foreign_key "present_ticket_entries", "members"
   add_foreign_key "present_ticket_entries", "present_tickets"
   add_foreign_key "present_tickets", "shops"
+  add_foreign_key "review_helpful_votes", "reviews"
   add_foreign_key "review_reply_templates", "shops"
   add_foreign_key "reviews", "casts"
   add_foreign_key "reviews", "members"
   add_foreign_key "reviews", "shops"
   add_foreign_key "shifts", "casts"
+  add_foreign_key "shop_daily_views", "shops"
   add_foreign_key "shop_favorites", "members"
   add_foreign_key "shop_favorites", "shops"
   add_foreign_key "shop_page_blocks", "shops"

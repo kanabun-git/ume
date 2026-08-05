@@ -11,4 +11,14 @@ class PresentTicketMailer < ApplicationMailer
     subject = entry.won? ? "【当選】#{@present_ticket.name}" : "【落選】#{@present_ticket.name}"
     mail(to: @member.email, subject: subject)
   end
+
+  # Sent automatically (see lib/tasks/notifications.rake), unlike
+  # result_email above — a reminder that a favorited shop's present ticket
+  # is closing soon is time-sensitive in a way manual send doesn't fit.
+  def reminder(member, tickets:)
+    @member = member
+    @tickets = tickets
+
+    mail(to: @member.email, subject: "【まもなく締切】プレゼント企画のお知らせ | FuzokuZero")
+  end
 end

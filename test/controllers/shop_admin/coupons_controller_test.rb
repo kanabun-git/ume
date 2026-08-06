@@ -36,6 +36,25 @@ module ShopAdmin
       assert_response :not_found
     end
 
+    test "a shop admin can set a coupon number and link a cast from their own shop" do
+      shop = create_shop
+      cast = create_cast(shop: shop, name: "テストキャスト")
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      post shop_admin_coupons_path, params: {
+        coupon: {
+          title: "テストクーポン", course_name: "60分コース",
+          regular_price: 20000, discounted_price: 14000, valid_from: Date.current,
+          coupon_number: "C-001", cast_id: cast.id
+        }
+      }
+
+      coupon = shop.coupons.find_by(title: "テストクーポン")
+      assert_equal "C-001", coupon.coupon_number
+      assert_equal cast, coupon.cast
+    end
+
     test "invalid coupon params re-render the form with errors" do
       shop = create_shop
       user = create_user(role: :shop_admin, shop: shop)

@@ -14,6 +14,6 @@ class HomeController < ApplicationController
       .joins(cast: :shop).merge(Cast.visible).merge(Shop.visible).merge(Shop.in_region(@region))
       .includes(cast: :shop)
       .reorder(:start_time).limit(8)
-    @coupon_shops = Shop.ranked.in_region(@region).where(coupon_available: true).limit(4)
+    @coupons = Coupon.active.includes(:shop).joins(:shop).merge(Shop.ranked.in_region(@region)).limit(4)
   end
 end

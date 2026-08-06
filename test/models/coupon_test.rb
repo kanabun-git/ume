@@ -44,6 +44,39 @@ class CouponTest < ActiveSupport::TestCase
     assert_includes Coupon.active, coupon
   end
 
+  test "rejects a cast that belongs to a different shop" do
+    other_shop_cast = create_cast
+
+    coupon = build_coupon(cast: other_shop_cast)
+
+    assert_not coupon.valid?
+    assert_includes coupon.errors.attribute_names, :cast
+  end
+
+  test "accepts a cast that belongs to the same shop" do
+    shop = create_shop
+    cast = create_cast(shop: shop)
+
+    coupon = shop.coupons.build(
+      title: "テストクーポン", course_name: "60分コース",
+      regular_price: 20000, discounted_price: 14000, valid_from: Date.current, cast: cast
+    )
+
+    assert coupon.valid?
+  end
+
+  test ".cheapest_ids_by_course picks the lowest discounted_price per course name across shops" do
+    cheap = create_coupon(course_name: "60分コース", discounted_price: 8000)
+    create_coupon(course_name: "60分コース", discounted_price: 12000)
+    other_course = create_coupon(course_name: "90分コース", discounted_price: 15000)
+
+    ids = Coupon.cheapest_ids_by_course
+
+    assert_includes ids, cheap.id
+    assert_includes ids, other_course.id
+    assert_equal 2, ids.size
+  end
+
   private
 
   def build_coupon(**attrs)

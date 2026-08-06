@@ -276,15 +276,18 @@ Review.find_or_create_by!(shop: shop, reviewer_name: "利用者B") do |r|
 end
 
 Coupon.find_or_create_by!(shop: shop, title: "【WEB予約限定】フリー割") do |c|
+  c.coupon_number = "A-101"
+  c.cast = cast1
   c.course_name = "45分コース"
   c.regular_price = 20000
   c.discounted_price = 14000
   c.valid_from = Date.current - 30
-  c.conditions = "ご新規様は別途入会金2000円頂戴しております。曜日や時間帯によって金額に変動がございます。"
+  c.conditions = "ご新規様は別途入会金2000円頂戴しております。\n曜日や時間帯によって金額に変動がございます。"
   c.net_reservation_only = true
 end
 
 Coupon.find_or_create_by!(shop: shop, title: "新人割引60分クーポン!") do |c|
+  c.coupon_number = "A-102"
   c.course_name = "60分コース"
   c.regular_price = 12500
   c.discounted_price = 10500

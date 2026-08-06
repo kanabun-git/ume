@@ -75,12 +75,16 @@
 <%= render "present_tickets", shop: @shop %>
 
 <% if @coupons.any? %>
-  <h2>実施中のクーポン</h2>
-  <div class="coupon-grid">
-    <% @coupons.each do |coupon| %>
-      <%= render "coupons/coupon_card", coupon: coupon, cheapest: false, show_shop: false %>
-    <% end %>
+  <h2 id="coupons">クーポン</h2>
+  <div class="coupon-detail-actions">
+    <button type="button" class="btn coupon-print-btn" onclick="window.print()">🖨️ このページを印刷する</button>
+    <%= mail_to "", "✉️ このページのURLを送る", subject: "#{@shop.name}のクーポン", body: request.original_url, class: "btn secondary" %>
   </div>
+  <p class="coupon-detail-warning">※各クーポンの利用条件を必ずご確認ください。</p>
+
+  <% @coupons.each do |coupon| %>
+    <%= render "coupons/coupon_detail", coupon: coupon, cheapest: @cheapest_coupon_ids.include?(coupon.id), show_shop: true %>
+  <% end %>
 <% end %>
 
 <h2 id="reviews">口コミ</h2>

@@ -7,8 +7,14 @@
 <% end %>
 
 <%= form_with model: coupon, url: url, local: true, class: "form" do |f| %>
+  <label>クーポン番号(会員様への案内・お電話でのご確認用)</label>
+  <%= f.text_field :coupon_number %>
+
   <label>クーポンタイトル(例: 【WEB予約限定】フリー割)</label>
   <%= f.text_field :title %>
+
+  <label>対象キャスト(任意。指定するとクーポン詳細に写真・プロフィールが表示されます)</label>
+  <%= f.collection_select :cast_id, @casts, :id, :name, include_blank: "指定しない" %>
 
   <label>コース名(例: 45分コース)</label>
   <%= f.text_field :course_name %>

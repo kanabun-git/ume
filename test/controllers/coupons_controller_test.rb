@@ -31,6 +31,21 @@ class CouponsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match coupon.title, response.body
   end
 
+  test "filtering by a prefecture-level area also matches shops under its child areas" do
+    tokyo = create_area
+    shinjuku = create_area(parent: tokyo)
+    other_pref = create_area
+    shop_in_child = create_shop(area: shinjuku, name: "新宿店舗")
+    shop_elsewhere = create_shop(area: other_pref, name: "対象外店舗")
+    shop_in_child.coupons.create!(title: "新宿クーポン", course_name: "60分", regular_price: 20000, discounted_price: 14000, valid_from: 1.day.ago.to_date)
+    shop_elsewhere.coupons.create!(title: "対象外クーポン", course_name: "60分", regular_price: 20000, discounted_price: 14000, valid_from: 1.day.ago.to_date)
+
+    get coupons_path(area_id: tokyo.id)
+
+    assert_match shop_in_child.name, response.body
+    assert_no_match shop_elsewhere.name, response.body
+  end
+
   test "filters by genre_id" do
     matching_genre = create_genre
     other_genre = create_genre

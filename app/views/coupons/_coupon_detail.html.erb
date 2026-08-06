@@ -1,0 +1,81 @@
+<div class="coupon-detail" id="coupon-<%= coupon.id %>">
+  <% if cheapest %>
+    <div class="coupon-detail-ribbon">
+      <span class="coupon-detail-ribbon-main">業界最安クーポン</span>
+      <span class="coupon-detail-ribbon-sub">どこよりもお得な提案</span>
+    </div>
+  <% end %>
+
+  <div class="coupon-card-header coupon-detail-header">
+    <span class="coupon-card-title"><%= coupon.title %></span>
+  </div>
+
+  <div class="coupon-detail-body">
+    <% if coupon.cast.present? %>
+      <div class="coupon-detail-cast">
+        <%= link_to cast_path(coupon.cast) do %>
+          <%= photo_or_placeholder_tag coupon.cast.visible_photos.first, removed: coupon.cast.photos_removed_by_moderation? %>
+        <% end %>
+        <p class="coupon-detail-cast-name"><%= link_to "#{coupon.cast.alias_name.presence || coupon.cast.name}(#{coupon.cast.age})", cast_path(coupon.cast) %></p>
+        <p class="coupon-detail-cast-size">T<%= coupon.cast.height %>・<%= coupon.cast.bust %>(<%= coupon.cast.cup %>)・<%= coupon.cast.waist %>・<%= coupon.cast.hip %></p>
+      </div>
+    <% end %>
+
+    <div class="coupon-detail-info">
+      <p class="coupon-card-validity">
+        有効期限: <%= coupon.valid_from.strftime("%Y/%m/%d") %>(<%= %w[日 月 火 水 木 金 土][coupon.valid_from.wday] %>)〜<%= coupon.unlimited? ? "無期限" : coupon.valid_until.strftime("%Y/%m/%d") %>
+        <% if coupon.coupon_number.present? %>
+          <span class="coupon-detail-number">クーポンNo. <%= coupon.coupon_number %></span>
+        <% end %>
+      </p>
+
+      <div class="coupon-card-price-row">
+        <div class="coupon-card-discount-badge">
+          <span class="coupon-card-discount-pct"><%= coupon.discount_percent %>%</span>
+          <span class="coupon-card-discount-off">OFF!</span>
+        </div>
+        <div class="coupon-card-price-info">
+          <p class="coupon-card-course"><%= coupon.course_name %></p>
+          <p class="coupon-card-final-price">
+            <%= number_to_currency(coupon.discounted_price, unit: "", precision: 0) %><span class="coupon-card-final-price-unit">円</span>
+          </p>
+        </div>
+      </div>
+
+      <% if coupon.conditions.present? %>
+        <div class="coupon-card-conditions">
+          <p class="coupon-card-conditions-label">【利用条件】</p>
+          <ul class="coupon-detail-conditions-list">
+            <% coupon.conditions.to_s.each_line do |line| %>
+              <% line = line.strip %>
+              <% next if line.blank? %>
+              <li>※<%= line %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if coupon.net_reservation_only? && show_shop %>
+        <%= link_to "ネット予約はこちら", shop_path(coupon.shop), class: "btn coupon-detail-reserve-btn" %>
+      <% end %>
+    </div>
+  </div>
+
+  <table class="coupon-detail-table">
+    <thead><tr><th></th><th>通常</th><th></th><th>クーポン利用時</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><%= coupon.course_name %></td>
+        <td><%= number_to_currency(coupon.regular_price, unit: "", precision: 0) %>円</td>
+        <td class="coupon-detail-table-arrow">➡</td>
+        <td><%= number_to_currency(coupon.discounted_price, unit: "", precision: 0) %>円</td>
+      </tr>
+      <tr class="coupon-detail-table-total">
+        <td>合計</td>
+        <td><%= number_to_currency(coupon.regular_price, unit: "", precision: 0) %>円</td>
+        <td class="coupon-detail-table-arrow">➡</td>
+        <td><%= number_to_currency(coupon.discounted_price, unit: "", precision: 0) %>円</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

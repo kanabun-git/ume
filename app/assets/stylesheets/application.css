@@ -767,3 +767,56 @@ img, video, iframe { max-width: 100%; }
   .coupon-filter-row { flex-direction: column; align-items: stretch; }
   .coupon-grid { grid-template-columns: 1fr; }
 }
+
+/* --- Coupon detail (shop page's own クーポン section) --------------------- */
+.coupon-detail-actions { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+.coupon-detail-warning { font-size: .8rem; color: var(--muted); margin-bottom: 12px; }
+
+.coupon-detail { position: relative; margin: 44px 0 0; }
+.coupon-detail-ribbon {
+  position: absolute; top: -34px; left: 14px; z-index: 2;
+  background: #1a1a1a; color: #ffd54a; padding: 6px 14px; border: 2px solid #ffd54a; border-radius: 4px;
+  display: inline-flex; flex-direction: column; line-height: 1.15; transform: rotate(-3deg);
+  box-shadow: var(--shadow-sm); white-space: nowrap;
+}
+.coupon-detail-ribbon-main { font-weight: bold; font-size: .82rem; }
+.coupon-detail-ribbon-sub { font-size: .58rem; color: #fff; }
+
+.coupon-detail-header { border-radius: 10px 10px 0 0; }
+.coupon-detail-body { display: flex; gap: 20px; padding: 20px 18px; background: #fff; border: 1px solid var(--border); border-top: none; flex-wrap: wrap; }
+.coupon-detail-cast { flex: 0 0 140px; text-align: center; }
+.coupon-detail-cast img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; display: block; }
+.coupon-detail-cast-name { font-weight: bold; margin: 6px 0 2px; font-size: .9rem; }
+.coupon-detail-cast-size { font-size: .78rem; color: var(--muted); margin: 0; }
+.coupon-detail-info { flex: 1; min-width: 240px; }
+.coupon-detail-number { display: inline-block; margin-left: 10px; font-size: .78rem; color: var(--brand-dark); font-weight: bold; }
+.coupon-detail-conditions-list { margin: 0; padding-left: 0; list-style: none; font-size: .78rem; color: var(--muted); }
+.coupon-detail-conditions-list li { margin-bottom: 3px; }
+.coupon-detail-reserve-btn { background: linear-gradient(135deg, #ffb648, #ff8f1f); margin-top: 10px; }
+
+.coupon-detail-table { width: 100%; border-collapse: collapse; }
+.coupon-detail-table th, .coupon-detail-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: center; font-size: .85rem; }
+.coupon-detail-table thead th { background: #faf6f7; font-weight: bold; }
+.coupon-detail-table-arrow { color: var(--brand-dark); font-weight: bold; }
+.coupon-detail-table-total td { background: #fafafa; font-weight: bold; }
+
+@media print {
+  .site-header, .coupon-detail-actions, .favorite-btn, .btn.secondary { display: none !important; }
+}
+
+/* --- Simple coupon highlights row on the region top page ------------------ */
+.coupon-simple-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.coupon-simple-item a {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+}
+.coupon-simple-item a:hover { border-color: var(--brand); }
+.coupon-simple-pct { flex: 0 0 auto; background: var(--brand-dark); color: #fff; font-weight: bold; font-size: .8rem; padding: 4px 8px; border-radius: 4px; }
+.coupon-simple-title { flex: 1; min-width: 0; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.coupon-simple-shop { flex: 0 0 auto; color: var(--muted); font-size: .82rem; }
+.coupon-simple-price { flex: 0 0 auto; font-weight: bold; color: var(--brand-dark); }
+
+@media (max-width: 560px) {
+  .coupon-simple-item a { flex-wrap: wrap; }
+  .coupon-simple-shop { order: 4; width: 100%; }
+}

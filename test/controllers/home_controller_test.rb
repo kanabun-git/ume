@@ -62,8 +62,10 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   test "coupon preview is filtered to the current region" do
     kanto_area = create_area(region: "関東")
     chubu_area = create_area(region: "中部")
-    kanto_shop = create_shop(area: kanto_area, name: "カントウクーポン店舗", coupon_available: true)
-    chubu_shop = create_shop(area: chubu_area, name: "チュウブクーポン店舗", coupon_available: true)
+    kanto_shop = create_shop(area: kanto_area, name: "カントウクーポン店舗")
+    chubu_shop = create_shop(area: chubu_area, name: "チュウブクーポン店舗")
+    kanto_shop.coupons.create!(title: "カントウクーポン", course_name: "60分", regular_price: 20000, discounted_price: 14000, valid_from: 1.day.ago.to_date)
+    chubu_shop.coupons.create!(title: "チュウブクーポン", course_name: "60分", regular_price: 20000, discounted_price: 14000, valid_from: 1.day.ago.to_date)
 
     get kanto_home_path
 

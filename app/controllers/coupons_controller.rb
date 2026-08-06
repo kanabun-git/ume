@@ -2,12 +2,18 @@ class CouponsController < ApplicationController
   PER_PAGE = 30
 
   def index
-    @areas = Area.all
+    @areas = Area.where(parent_id: nil).includes(:children)
     @genres = Genre.all
     @sort = params[:sort].presence_in(%w[discount price]) || "recommended"
 
     @coupons = Coupon.active.joins(:shop).merge(Shop.visible).includes(shop: [:area, :genre])
-    @coupons = @coupons.where(shops: { area_id: params[:area_id] }) if params[:area_id].present?
+    if params[:area_id].present? && (area = Area.find_by(id: params[:area_id]))
+      # A prefecture-level area has no shops of its own -- every shop sits
+      # under one of its children -- so selecting it must match those
+      # children's ids too, or it silently returns zero results.
+      area_ids = area.prefecture? ? [area.id] + area.children.ids : [area.id]
+      @coupons = @coupons.where(shops: { area_id: area_ids })
+    end
     @coupons = @coupons.where(shops: { genre_id: params[:genre_id] }) if params[:genre_id].present?
     @coupons = @coupons.where(net_reservation_only: true) if params[:net_reservation_only].present?
     if params[:reviewed_only].present?
@@ -27,11 +33,8 @@ class CouponsController < ApplicationController
     @total_count = @coupons.count
     @coupons = @coupons.page(params[:page]).per(PER_PAGE)
 
-    # "最安値" badge: the single cheapest active coupon for each course name,
-    # computed across the whole site regardless of the filters/sort above,
+    # Computed across the whole site regardless of the filters/sort above,
     # so it stays meaningful (and stable) no matter how this page is narrowed.
-    @cheapest_coupon_ids = Coupon.active.joins(:shop).merge(Shop.visible)
-      .group_by(&:course_name)
-      .values.map { |list| list.min_by(&:discounted_price).id }
+    @cheapest_coupon_ids = Coupon.cheapest_ids_by_course
   end
 end

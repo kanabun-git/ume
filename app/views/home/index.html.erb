@@ -104,12 +104,19 @@
     <h2>クーポン</h2>
     <%= link_to "クーポン一覧を見る >", coupons_path, class: "home-section-more" %>
   </div>
-  <% if @coupon_shops.any? %>
-    <div class="shop-listing">
-      <% @coupon_shops.each do |shop| %>
-        <%= render "shops/shop_card", shop: shop %>
+  <% if @coupons.any? %>
+    <ul class="coupon-simple-list">
+      <% @coupons.each do |coupon| %>
+        <li class="coupon-simple-item">
+          <%= link_to shop_path(coupon.shop, anchor: "coupon-#{coupon.id}") do %>
+            <span class="coupon-simple-pct"><%= coupon.discount_percent %>%OFF</span>
+            <span class="coupon-simple-title"><%= coupon.title %></span>
+            <span class="coupon-simple-shop"><%= coupon.shop.name %></span>
+            <span class="coupon-simple-price"><%= number_to_currency(coupon.discounted_price, unit: "", precision: 0) %>円〜</span>
+          <% end %>
+        </li>
       <% end %>
-    </div>
+    </ul>
   <% else %>
     <p class="region-note">現在クーポンを実施中の店舗はありません。</p>
   <% end %>

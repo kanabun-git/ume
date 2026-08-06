@@ -4,10 +4,11 @@
 <%= link_to "新規クーポン登録", new_shop_admin_coupon_path, class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th></th></tr></thead>
+  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th></th></tr></thead>
   <tbody>
     <% @coupons.each do |coupon| %>
       <tr>
+        <td><%= coupon.coupon_number %></td>
         <td><%= coupon.title %></td>
         <td><%= coupon.course_name %></td>
         <td><%= number_to_currency(coupon.regular_price, unit: "¥", precision: 0) %> → <%= number_to_currency(coupon.discounted_price, unit: "¥", precision: 0) %></td>

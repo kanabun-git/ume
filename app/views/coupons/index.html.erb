@@ -11,8 +11,11 @@
         <label>エリア</label>
         <select name="area_id">
           <option value="">すべて</option>
-          <% @areas.each do |area| %>
-            <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+          <% @areas.each do |pref| %>
+            <option value="<%= pref.id %>" <%= "selected" if params[:area_id].to_s == pref.id.to_s %>><%= pref.name %></option>
+            <% pref.children.each do |child| %>
+              <option value="<%= child.id %>" <%= "selected" if params[:area_id].to_s == child.id.to_s %>>　<%= child.name %></option>
+            <% end %>
           <% end %>
         </select>
       </div>

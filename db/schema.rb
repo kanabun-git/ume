@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_000806) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_004354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -103,7 +103,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000806) do
   end
 
   create_table "coupons", force: :cascade do |t|
+    t.bigint "cast_id"
     t.text "conditions"
+    t.string "coupon_number"
     t.string "course_name", null: false
     t.datetime "created_at", null: false
     t.integer "discounted_price", null: false
@@ -115,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000806) do
     t.datetime "updated_at", null: false
     t.date "valid_from", null: false
     t.date "valid_until"
+    t.index ["cast_id"], name: "index_coupons_on_cast_id"
     t.index ["shop_id"], name: "index_coupons_on_shop_id"
   end
 
@@ -390,6 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000806) do
   add_foreign_key "cast_page_blocks", "shops"
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
+  add_foreign_key "coupons", "casts"
   add_foreign_key "coupons", "shops"
   add_foreign_key "diary_entries", "casts"
   add_foreign_key "favorites", "casts"

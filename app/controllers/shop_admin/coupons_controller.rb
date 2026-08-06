@@ -8,6 +8,7 @@ module ShopAdmin
 
     def new
       @coupon = current_shop.coupons.build(valid_from: Date.current)
+      @casts = current_shop.casts.visible
       authorize @coupon
     end
 
@@ -18,17 +19,20 @@ module ShopAdmin
       if @coupon.save
         redirect_to shop_admin_coupons_path, notice: "クーポンを登録しました。"
       else
+        @casts = current_shop.casts.visible
         render :new, status: :unprocessable_entity
       end
     end
 
     def edit
+      @casts = current_shop.casts.visible
     end
 
     def update
       if @coupon.update(coupon_params)
         redirect_to shop_admin_coupons_path, notice: "クーポンを更新しました。"
       else
+        @casts = current_shop.casts.visible
         render :edit, status: :unprocessable_entity
       end
     end
@@ -48,7 +52,8 @@ module ShopAdmin
     def coupon_params
       params.require(:coupon).permit(
         :title, :course_name, :regular_price, :discounted_price,
-        :valid_from, :valid_until, :conditions, :net_reservation_only, :position
+        :valid_from, :valid_until, :conditions, :net_reservation_only, :position,
+        :cast_id, :coupon_number
       )
     end
   end

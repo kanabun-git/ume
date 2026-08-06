@@ -275,6 +275,23 @@ Review.find_or_create_by!(shop: shop, reviewer_name: "利用者B") do |r|
   r.status = :pending
 end
 
+Coupon.find_or_create_by!(shop: shop, title: "【WEB予約限定】フリー割") do |c|
+  c.course_name = "45分コース"
+  c.regular_price = 20000
+  c.discounted_price = 14000
+  c.valid_from = Date.current - 30
+  c.conditions = "ご新規様は別途入会金2000円頂戴しております。曜日や時間帯によって金額に変動がございます。"
+  c.net_reservation_only = true
+end
+
+Coupon.find_or_create_by!(shop: shop, title: "新人割引60分クーポン!") do |c|
+  c.course_name = "60分コース"
+  c.regular_price = 12500
+  c.discounted_price = 10500
+  c.valid_from = Date.current - 5
+  c.conditions = "入店間もない新人さんをご指名頂きますと最大2,000円値引きいたします!"
+end
+
 MemberRank.find_or_create_by!(min_approved_count: 1) { |r| r.name = "ブロンズ会員" }
 MemberRank.find_or_create_by!(min_approved_count: 5) { |r| r.name = "シルバー会員" }
 MemberRank.find_or_create_by!(min_approved_count: 20) { |r| r.name = "ゴールド会員" }

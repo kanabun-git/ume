@@ -1,34 +1,60 @@
-<% content_for :title, "クーポン一覧 | FuzokuZero" %>
+<% content_for :title, "クーポンで探す | FuzokuZero" %>
 <% content_for :meta_description, "お得なクーポンを実施中の風俗店を、エリア・ジャンルから絞り込んで探せます。" %>
 
-<h1>クーポン一覧</h1>
+<h1>クーポンで探す</h1>
+<p class="coupon-page-count"><%= Shop.visible.joins(:coupons).merge(Coupon.active).distinct.count %>店舗が<%= @total_count %>件のクーポンを実施中</p>
 
-<form class="form" method="get">
-  <label>エリア</label>
-  <select name="area_id">
-    <option value="">すべて</option>
-    <% @areas.each do |area| %>
-      <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
-    <% end %>
-  </select>
-  <label>ジャンル</label>
-  <select name="genre_id">
-    <option value="">すべて</option>
-    <% @genres.each do |genre| %>
-      <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
-    <% end %>
-  </select>
-  <button type="submit" class="btn">絞り込む</button>
-</form>
+<div class="card coupon-filter-bar">
+  <%= form_with url: coupons_path, method: :get, local: true, class: "form coupon-filter-form" do %>
+    <div class="coupon-filter-row">
+      <div class="coupon-filter-field">
+        <label>エリア</label>
+        <select name="area_id">
+          <option value="">すべて</option>
+          <% @areas.each do |area| %>
+            <option value="<%= area.id %>" <%= "selected" if params[:area_id].to_s == area.id.to_s %>><%= area.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="coupon-filter-field">
+        <label>ジャンル</label>
+        <select name="genre_id">
+          <option value="">すべて</option>
+          <% @genres.each do |genre| %>
+            <option value="<%= genre.id %>" <%= "selected" if params[:genre_id].to_s == genre.id.to_s %>><%= genre.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="coupon-filter-field coupon-filter-checkboxes">
+        <label class="checkbox-inline"><%= check_box_tag :net_reservation_only, "1", params[:net_reservation_only].present? %> ネット予約限定</label>
+        <label class="checkbox-inline"><%= check_box_tag :reviewed_only, "1", params[:reviewed_only].present? %> 口コミあり店舗のみ</label>
+      </div>
+      <button type="submit" class="btn">この条件で絞り込む</button>
+    </div>
+  <% end %>
 
-<% if @shops.any? %>
-  <div class="shop-listing">
-    <% @shops.each do |shop| %>
-      <%= render "shops/shop_card", shop: shop %>
+  <div class="coupon-sort-row">
+    <span class="coupon-sort-label">並び替え:</span>
+    <%= link_to "おすすめ順", coupons_path(request.query_parameters.merge(sort: nil)), class: "coupon-sort-link#{' active' unless @sort != 'recommended'}" %>
+    <%= link_to "割引率が高い順", coupons_path(request.query_parameters.merge(sort: "discount")), class: "coupon-sort-link#{' active' if @sort == 'discount'}" %>
+    <%= link_to "料金が安い順", coupons_path(request.query_parameters.merge(sort: "price")), class: "coupon-sort-link#{' active' if @sort == 'price'}" %>
+  </div>
+</div>
+
+<p class="coupon-note">クーポンご利用の際は「FuzokuZeroのクーポンを見た」とお伝えいただくとスムーズです。</p>
+
+<% if @coupons.any? %>
+  <% first_item = (@coupons.current_page - 1) * @coupons.limit_value + 1 %>
+  <% last_item = [first_item + @coupons.limit_value - 1, @total_count].min %>
+  <p class="coupon-page-info"><%= first_item %>〜<%= last_item %>件を表示 / 全<%= @total_count %>件</p>
+
+  <div class="coupon-grid">
+    <% @coupons.each do |coupon| %>
+      <%= render "coupons/coupon_card", coupon: coupon, cheapest: @cheapest_coupon_ids.include?(coupon.id), show_shop: true %>
     <% end %>
   </div>
-<% else %>
-  <p class="region-note">現在クーポンを実施中の店舗はありません。</p>
-<% end %>
 
-<%= paginate @shops %>
+  <%= paginate @coupons %>
+<% else %>
+  <p class="region-note">現在条件に合うクーポンはありません。</p>
+<% end %>

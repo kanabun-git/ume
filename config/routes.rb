@@ -64,6 +64,7 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
     resource :shop, only: [:edit, :update]
     resources :casts
+    resources :coupons
     resources :shifts, only: [:index, :new, :create, :destroy] do
       collection do
         post :import

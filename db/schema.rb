@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_135358) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_000806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_135358) do
     t.string "zodiac_sign"
     t.index ["shop_id"], name: "index_casts_on_shop_id"
     t.index ["user_id"], name: "index_casts_on_user_id", unique: true
+  end
+
+  create_table "coupons", force: :cascade do |t|
+    t.text "conditions"
+    t.string "course_name", null: false
+    t.datetime "created_at", null: false
+    t.integer "discounted_price", null: false
+    t.boolean "net_reservation_only", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.integer "regular_price", null: false
+    t.bigint "shop_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.date "valid_from", null: false
+    t.date "valid_until"
+    t.index ["shop_id"], name: "index_coupons_on_shop_id"
   end
 
   create_table "diary_entries", force: :cascade do |t|
@@ -374,6 +390,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_135358) do
   add_foreign_key "cast_page_blocks", "shops"
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
+  add_foreign_key "coupons", "shops"
   add_foreign_key "diary_entries", "casts"
   add_foreign_key "favorites", "casts"
   add_foreign_key "favorites", "members"

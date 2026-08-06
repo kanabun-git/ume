@@ -1,0 +1,62 @@
+<div class="coupon-card" id="coupon-<%= coupon.id %>">
+  <div class="coupon-card-header">
+    <span class="coupon-card-title"><%= coupon.title %></span>
+  </div>
+  <div class="coupon-card-body">
+    <p class="coupon-card-validity">
+      有効期限: <%= coupon.valid_from.strftime("%Y/%m/%d") %>〜<%= coupon.unlimited? ? "無期限" : coupon.valid_until.strftime("%Y/%m/%d") %>
+    </p>
+
+    <div class="coupon-card-price-row">
+      <div class="coupon-card-discount-badge">
+        <span class="coupon-card-discount-pct"><%= coupon.discount_percent %>%</span>
+        <span class="coupon-card-discount-off">OFF!</span>
+      </div>
+      <div class="coupon-card-price-info">
+        <p class="coupon-card-course"><%= coupon.course_name %></p>
+        <p class="coupon-card-regular-price">
+          通常料金 <span class="coupon-card-strike"><%= number_to_currency(coupon.regular_price, unit: "", precision: 0) %>円</span>
+        </p>
+        <p class="coupon-card-final-price">
+          <%= number_to_currency(coupon.discounted_price, unit: "", precision: 0) %><span class="coupon-card-final-price-unit">円</span>
+        </p>
+      </div>
+      <% if cheapest %>
+        <span class="coupon-card-cheapest">👑 最安値</span>
+      <% end %>
+    </div>
+
+    <% if coupon.net_reservation_only? %>
+      <span class="tag-badge">ネット予約限定</span>
+    <% end %>
+
+    <% if coupon.conditions.present? %>
+      <div class="coupon-card-conditions">
+        <p class="coupon-card-conditions-label">【利用条件】</p>
+        <p><%= truncate(coupon.conditions, length: 80) %></p>
+      </div>
+    <% end %>
+
+    <% if show_shop %>
+      <%= link_to "詳細を見る", shop_path(coupon.shop, anchor: "coupon-#{coupon.id}"), class: "coupon-card-more" %>
+    <% end %>
+  </div>
+
+  <% if show_shop %>
+    <div class="coupon-card-shop">
+      <%= link_to shop_path(coupon.shop), class: "coupon-card-shop-photo" do %>
+        <% if coupon.shop.photos.attached? %>
+          <%= image_tag coupon.shop.photos.first %>
+        <% else %>
+          <%= nowprinting_image_tag %>
+        <% end %>
+      <% end %>
+      <div class="coupon-card-shop-info">
+        <%= link_to coupon.shop.name, shop_path(coupon.shop), class: "coupon-card-shop-name" %>
+        <div><span class="badge"><%= coupon.shop.genre.name %></span> <span class="badge muted"><%= coupon.shop.area.name %></span></div>
+        <p class="coupon-card-shop-phone"><%= coupon.shop.phone %></p>
+        <p class="coupon-card-shop-hours"><%= coupon.shop.business_hours %></p>
+      </div>
+    </div>
+  <% end %>
+</div>

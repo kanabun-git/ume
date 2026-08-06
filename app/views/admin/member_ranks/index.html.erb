@@ -2,6 +2,18 @@
 
 <h1>会員ランク管理</h1>
 <p>口コミの承認数がしきい値以上になった個人会員に、自動的にランクが付与されます。</p>
+<div class="card">
+  <h2>CSV一括登録</h2>
+  <p>
+    <%= link_to "CSVテンプレートをダウンロード", template_admin_member_ranks_path, class: "btn secondary" %>
+  </p>
+  <%= form_with url: import_admin_member_ranks_path, method: :post, local: true, multipart: true, class: "form" do %>
+    <label>CSVファイル(ランク名,必要承認件数)</label>
+    <%= file_field_tag :file, accept: ".csv,text/csv" %>
+    <%= submit_tag "アップロードして登録する", class: "btn" %>
+  <% end %>
+</div>
+
 <%= link_to "新規ランク登録", new_admin_member_rank_path, class: "btn" %>
 
 <table class="admin-table">

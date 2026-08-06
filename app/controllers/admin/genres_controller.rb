@@ -41,6 +41,23 @@ module Admin
       redirect_to admin_genres_path, notice: "ジャンルを削除しました。"
     end
 
+    def import
+      authorize ::Genre.new, :import?
+
+      if params[:file].blank?
+        redirect_to admin_genres_path, alert: "CSVファイルを選択してください。"
+        return
+      end
+
+      result = ::GenreImport.call(params[:file])
+      redirect_to admin_genres_path, notice: import_notice(result)
+    end
+
+    def template
+      authorize ::Genre.new, :import?
+      send_data ::GenreImport::TEMPLATE_CSV, filename: "genres_template.csv", type: "text/csv"
+    end
+
     private
 
     def set_genre

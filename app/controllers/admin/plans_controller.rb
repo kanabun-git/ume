@@ -41,6 +41,23 @@ module Admin
       redirect_to admin_plans_path, notice: "プランを削除しました。"
     end
 
+    def import
+      authorize ::Plan.new, :import?
+
+      if params[:file].blank?
+        redirect_to admin_plans_path, alert: "CSVファイルを選択してください。"
+        return
+      end
+
+      result = ::PlanImport.call(params[:file])
+      redirect_to admin_plans_path, notice: import_notice(result)
+    end
+
+    def template
+      authorize ::Plan.new, :import?
+      send_data ::PlanImport::TEMPLATE_CSV, filename: "plans_template.csv", type: "text/csv"
+    end
+
     private
 
     def set_plan

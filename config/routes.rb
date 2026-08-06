@@ -122,10 +122,30 @@ Rails.application.routes.draw do
       end
       resources :review_reply_templates
     end
-    resources :areas
-    resources :genres
-    resources :plans
-    resources :member_ranks, except: [:show]
+    resources :areas do
+      collection do
+        post :import
+        get :template
+      end
+    end
+    resources :genres do
+      collection do
+        post :import
+        get :template
+      end
+    end
+    resources :plans do
+      collection do
+        post :import
+        get :template
+      end
+    end
+    resources :member_ranks, except: [:show] do
+      collection do
+        post :import
+        get :template
+      end
+    end
     resources :shop_subscriptions
     resources :videos, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :shop_prospects do

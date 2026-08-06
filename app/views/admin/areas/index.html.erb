@@ -1,6 +1,20 @@
 <% content_for :title, "エリア管理" %>
 
 <h1>エリア管理</h1>
+
+<div class="card">
+  <h2>CSV一括登録</h2>
+  <p>
+    <%= link_to "CSVテンプレートをダウンロード", template_admin_areas_path, class: "btn secondary" %>
+  </p>
+  <%= form_with url: import_admin_areas_path, method: :post, local: true, multipart: true, class: "form" do %>
+    <label>CSVファイル(名前,カナ,スラッグ,地方,表示順,親エリアのスラッグ)</label>
+    <p>都道府県の行は「親エリアのスラッグ」を空欄にしてください。子エリアの行は、対象の都道府県より後の行に置いてください。</p>
+    <%= file_field_tag :file, accept: ".csv,text/csv" %>
+    <%= submit_tag "アップロードして登録する", class: "btn" %>
+  <% end %>
+</div>
+
 <%= link_to "新規エリア登録", new_admin_area_path, class: "btn" %>
 
 <table class="admin-table">
@@ -13,8 +27,8 @@
         <td><%= area.parent&.name %></td>
         <td><%= area.position %></td>
         <td>
-          <%= link_to "編集", edit_admin_area_path(area) %>
-          <%= button_to "削除", admin_area_path(area), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+          <%= link_to "編集", edit_admin_area_path(area.id) %>
+          <%= button_to "削除", admin_area_path(area.id), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
         </td>
       </tr>
     <% end %>

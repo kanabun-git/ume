@@ -41,6 +41,23 @@ module Admin
       redirect_to admin_areas_path, notice: "エリアを削除しました。"
     end
 
+    def import
+      authorize ::Area.new, :import?
+
+      if params[:file].blank?
+        redirect_to admin_areas_path, alert: "CSVファイルを選択してください。"
+        return
+      end
+
+      result = ::AreaImport.call(params[:file])
+      redirect_to admin_areas_path, notice: import_notice(result)
+    end
+
+    def template
+      authorize ::Area.new, :import?
+      send_data ::AreaImport::TEMPLATE_CSV, filename: "areas_template.csv", type: "text/csv"
+    end
+
     private
 
     def set_area

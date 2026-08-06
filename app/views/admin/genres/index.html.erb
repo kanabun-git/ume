@@ -1,6 +1,19 @@
 <% content_for :title, "ジャンル管理" %>
 
 <h1>ジャンル管理</h1>
+
+<div class="card">
+  <h2>CSV一括登録</h2>
+  <p>
+    <%= link_to "CSVテンプレートをダウンロード", template_admin_genres_path, class: "btn secondary" %>
+  </p>
+  <%= form_with url: import_admin_genres_path, method: :post, local: true, multipart: true, class: "form" do %>
+    <label>CSVファイル(名前,スラッグ,表示順)</label>
+    <%= file_field_tag :file, accept: ".csv,text/csv" %>
+    <%= submit_tag "アップロードして登録する", class: "btn" %>
+  <% end %>
+</div>
+
 <%= link_to "新規ジャンル登録", new_admin_genre_path, class: "btn" %>
 
 <table class="admin-table">
@@ -11,8 +24,8 @@
         <td><%= genre.name %></td>
         <td><%= genre.position %></td>
         <td>
-          <%= link_to "編集", edit_admin_genre_path(genre) %>
-          <%= button_to "削除", admin_genre_path(genre), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+          <%= link_to "編集", edit_admin_genre_path(genre.id) %>
+          <%= button_to "削除", admin_genre_path(genre.id), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
         </td>
       </tr>
     <% end %>

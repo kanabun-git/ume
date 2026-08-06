@@ -22,6 +22,10 @@ class PlatformAdminPolicy < ApplicationPolicy
     index?
   end
 
+  def import?
+    create?
+  end
+
   class Scope < Scope
     def resolve
       user&.platform_admin? ? scope.all : scope.none

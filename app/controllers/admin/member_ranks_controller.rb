@@ -38,6 +38,23 @@ module Admin
       redirect_to admin_member_ranks_path, notice: "会員ランクを削除しました。"
     end
 
+    def import
+      authorize ::MemberRank.new, :import?
+
+      if params[:file].blank?
+        redirect_to admin_member_ranks_path, alert: "CSVファイルを選択してください。"
+        return
+      end
+
+      result = ::MemberRankImport.call(params[:file])
+      redirect_to admin_member_ranks_path, notice: import_notice(result)
+    end
+
+    def template
+      authorize ::MemberRank.new, :import?
+      send_data ::MemberRankImport::TEMPLATE_CSV, filename: "member_ranks_template.csv", type: "text/csv"
+    end
+
     private
 
     def set_member_rank

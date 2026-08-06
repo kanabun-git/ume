@@ -1,6 +1,19 @@
 <% content_for :title, "プラン管理" %>
 
 <h1>プラン管理</h1>
+
+<div class="card">
+  <h2>CSV一括登録</h2>
+  <p>
+    <%= link_to "CSVテンプレートをダウンロード", template_admin_plans_path, class: "btn secondary" %>
+  </p>
+  <%= form_with url: import_admin_plans_path, method: :post, local: true, multipart: true, class: "form" do %>
+    <label>CSVファイル(名前,月額料金,表示優先度,表示順)</label>
+    <%= file_field_tag :file, accept: ".csv,text/csv" %>
+    <%= submit_tag "アップロードして登録する", class: "btn" %>
+  <% end %>
+</div>
+
 <%= link_to "新規プラン登録", new_admin_plan_path, class: "btn" %>
 
 <table class="admin-table">

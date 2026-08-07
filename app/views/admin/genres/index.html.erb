@@ -12,6 +12,9 @@
     <%= file_field_tag :file, accept: ".csv,text/csv" %>
     <%= submit_tag "アップロードして登録する", class: "btn" %>
   <% end %>
+  <p>
+    <%= link_to "登録済みのジャンルをCSVダウンロード", export_admin_genres_path, class: "btn secondary" %>
+  </p>
 </div>
 
 <%= link_to "新規ジャンル登録", new_admin_genre_path, class: "btn" %>

@@ -55,6 +55,11 @@ module Admin
       send_data ::MemberRankImport::TEMPLATE_CSV, filename: "member_ranks_template.csv", type: "text/csv"
     end
 
+    def export
+      authorize ::MemberRank.new, :export?
+      send_data ::MemberRankImport.export(policy_scope(::MemberRank)), filename: "member_ranks_#{Date.current}.csv", type: "text/csv"
+    end
+
     private
 
     def set_member_rank

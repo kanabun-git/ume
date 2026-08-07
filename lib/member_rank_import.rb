@@ -1,8 +1,9 @@
 require "csv"
 require "admin_csv_import"
+require "admin_csv_export"
 
-# Bulk-imports MemberRank rows from an admin-uploaded CSV (see
-# Admin::MemberRanksController#import).
+# Bulk-imports/exports MemberRank rows as CSV (see
+# Admin::MemberRanksController#import/#export).
 module MemberRankImport
   HEADERS = %w[ランク名 必要承認件数].freeze
 
@@ -20,5 +21,9 @@ module MemberRankImport
 
   def call(file)
     AdminCsvImport.call(::MemberRank, file, HEADER_TO_ATTRIBUTE)
+  end
+
+  def export(records)
+    AdminCsvExport.call(records, HEADERS, HEADER_TO_ATTRIBUTE)
   end
 end

@@ -32,4 +32,13 @@ class GenreImportTest < ActiveSupport::TestCase
     assert Genre.exists?(name: "正常ジャンル")
     assert_not Genre.exists?(name: "不正ジャンル")
   end
+
+  test "exports genres as a CSV that round-trips through the importer" do
+    genre = Genre.create!(name: "ソープ", slug: "soap", position: 3)
+
+    csv = GenreImport.export(Genre.where(id: genre.id))
+
+    rows = CSV.parse(csv, headers: true)
+    assert_equal ["ソープ", "soap", "3"], rows.first.fields
+  end
 end

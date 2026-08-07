@@ -31,4 +31,13 @@ class PlanImportTest < ActiveSupport::TestCase
     assert_equal 2, result.error_rows.first[:line]
     assert Plan.exists?(name: "正常プラン")
   end
+
+  test "exports plans as a CSV that round-trips through the importer" do
+    plan = Plan.create!(name: "プレミアムプラン", monthly_fee: 50000, priority_weight: 2, position: 1)
+
+    csv = PlanImport.export(Plan.where(id: plan.id))
+
+    rows = CSV.parse(csv, headers: true)
+    assert_equal ["プレミアムプラン", "50000", "2", "1"], rows.first.fields
+  end
 end

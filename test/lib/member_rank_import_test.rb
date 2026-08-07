@@ -34,4 +34,13 @@ class MemberRankImportTest < ActiveSupport::TestCase
     assert MemberRank.exists?(name: "新規ランク")
     assert_not MemberRank.exists?(name: "重複ランク")
   end
+
+  test "exports member ranks as a CSV that round-trips through the importer" do
+    rank = MemberRank.create!(name: "ブロンズ会員", min_approved_count: 1)
+
+    csv = MemberRankImport.export(MemberRank.where(id: rank.id))
+
+    rows = CSV.parse(csv, headers: true)
+    assert_equal ["ブロンズ会員", "1"], rows.first.fields
+  end
 end

@@ -4,7 +4,7 @@
 <%= link_to "新規クーポン登録", new_shop_admin_coupon_path, class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th></th></tr></thead>
+  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th>利用実績</th><th></th></tr></thead>
   <tbody>
     <% @coupons.each do |coupon| %>
       <tr>
@@ -14,6 +14,7 @@
         <td><%= number_to_currency(coupon.regular_price, unit: "¥", precision: 0) %> → <%= number_to_currency(coupon.discounted_price, unit: "¥", precision: 0) %></td>
         <td><%= coupon.discount_percent %>%OFF</td>
         <td><%= coupon.valid_from.strftime("%Y-%m-%d") %>〜<%= coupon.unlimited? ? "無期限" : coupon.valid_until.strftime("%Y-%m-%d") %></td>
+        <td><%= link_to "#{coupon.coupon_usages.count}件", shop_admin_coupon_usages_path(coupon) %></td>
         <td>
           <%= link_to "編集", edit_shop_admin_coupon_path(coupon) %>
           <%= button_to "削除", shop_admin_coupon_path(coupon), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>

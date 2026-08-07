@@ -80,4 +80,16 @@ class CouponsControllerTest < ActionDispatch::IntegrationTest
 
     assert_operator response.body.index(cheap.title), :<, response.body.index(expensive.title)
   end
+
+  test "click_reservation logs a net_reservation usage and redirects to the shop page" do
+    shop = create_shop
+    coupon = shop.coupons.create!(title: "テストクーポン", course_name: "60分", regular_price: 20000, discounted_price: 14000, valid_from: 1.day.ago.to_date)
+
+    assert_difference -> { coupon.coupon_usages.count }, 1 do
+      get click_reservation_coupon_path(coupon)
+    end
+
+    assert_redirected_to shop_path(shop, anchor: "coupon-#{coupon.id}")
+    assert coupon.coupon_usages.last.net_reservation?
+  end
 end

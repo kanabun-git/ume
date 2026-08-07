@@ -1,8 +1,9 @@
 require "csv"
 require "admin_csv_import"
+require "admin_csv_export"
 
-# Bulk-imports Plan rows from an admin-uploaded CSV (see
-# Admin::PlansController#import).
+# Bulk-imports/exports Plan rows as CSV (see Admin::PlansController
+# #import/#export).
 module PlanImport
   HEADERS = %w[名前 月額料金 表示優先度 表示順].freeze
 
@@ -22,5 +23,9 @@ module PlanImport
 
   def call(file)
     AdminCsvImport.call(::Plan, file, HEADER_TO_ATTRIBUTE)
+  end
+
+  def export(records)
+    AdminCsvExport.call(records, HEADERS, HEADER_TO_ATTRIBUTE)
   end
 end

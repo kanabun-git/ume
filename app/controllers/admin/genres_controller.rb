@@ -58,6 +58,11 @@ module Admin
       send_data ::GenreImport::TEMPLATE_CSV, filename: "genres_template.csv", type: "text/csv"
     end
 
+    def export
+      authorize ::Genre.new, :export?
+      send_data ::GenreImport.export(policy_scope(::Genre)), filename: "genres_#{Date.current}.csv", type: "text/csv"
+    end
+
     private
 
     def set_genre

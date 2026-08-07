@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_004354) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_004354) do
     t.string "zodiac_sign"
     t.index ["shop_id"], name: "index_casts_on_shop_id"
     t.index ["user_id"], name: "index_casts_on_user_id", unique: true
+  end
+
+  create_table "coupon_usages", force: :cascade do |t|
+    t.bigint "coupon_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "usage_type", default: 0, null: false
+    t.index ["coupon_id"], name: "index_coupon_usages_on_coupon_id"
   end
 
   create_table "coupons", force: :cascade do |t|
@@ -393,6 +401,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_004354) do
   add_foreign_key "cast_page_blocks", "shops"
   add_foreign_key "casts", "shops"
   add_foreign_key "casts", "users"
+  add_foreign_key "coupon_usages", "coupons"
   add_foreign_key "coupons", "casts"
   add_foreign_key "coupons", "shops"
   add_foreign_key "diary_entries", "casts"

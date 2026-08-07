@@ -56,7 +56,7 @@
       <% end %>
 
       <% if coupon.net_reservation_only? && show_shop %>
-        <%= link_to "ネット予約はこちら", shop_path(coupon.shop), class: "btn coupon-detail-reserve-btn" %>
+        <%= link_to "ネット予約はこちら", click_reservation_coupon_path(coupon), class: "btn coupon-detail-reserve-btn" %>
       <% end %>
     </div>
   </div>

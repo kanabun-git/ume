@@ -1,8 +1,9 @@
 require "csv"
 require "admin_csv_import"
+require "admin_csv_export"
 
-# Bulk-imports Genre rows from an admin-uploaded CSV (see
-# Admin::GenresController#import).
+# Bulk-imports/exports Genre rows as CSV (see Admin::GenresController
+# #import/#export).
 module GenreImport
   HEADERS = %w[名前 スラッグ 表示順].freeze
 
@@ -21,5 +22,9 @@ module GenreImport
 
   def call(file)
     AdminCsvImport.call(::Genre, file, HEADER_TO_ATTRIBUTE)
+  end
+
+  def export(records)
+    AdminCsvExport.call(records, HEADERS, HEADER_TO_ATTRIBUTE)
   end
 end

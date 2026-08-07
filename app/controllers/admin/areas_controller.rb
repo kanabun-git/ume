@@ -58,6 +58,11 @@ module Admin
       send_data ::AreaImport::TEMPLATE_CSV, filename: "areas_template.csv", type: "text/csv"
     end
 
+    def export
+      authorize ::Area.new, :export?
+      send_data ::AreaImport.export(policy_scope(::Area)), filename: "areas_#{Date.current}.csv", type: "text/csv"
+    end
+
     private
 
     def set_area

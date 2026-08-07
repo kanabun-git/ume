@@ -1,0 +1,24 @@
+<% content_for :title, "#{@coupon.title}の利用実績" %>
+
+<h1><%= @coupon.title %>の利用実績</h1>
+<p>
+  ネット予約経由: <%= @usages.net_reservation.count %>件 /
+  手動記録: <%= @usages.manual.count %>件 /
+  合計: <%= @usages.count %>件
+</p>
+
+<%= button_to "来店・電話予約などの利用実績を記録する", shop_admin_coupon_usages_path(@coupon), method: :post, class: "btn" %>
+
+<table class="admin-table">
+  <thead><tr><th>日時</th><th>種別</th></tr></thead>
+  <tbody>
+    <% @usages.each do |usage| %>
+      <tr>
+        <td><%= usage.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= usage.net_reservation? ? "ネット予約" : "手動記録" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "クーポン管理に戻る", shop_admin_coupons_path %>

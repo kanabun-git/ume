@@ -52,5 +52,16 @@ module Admin
       assert_response :success
       assert_match "ランク名", response.body
     end
+
+    test "export downloads a CSV of the current member ranks" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      MemberRank.create!(name: "エクスポート対象ランク", min_approved_count: 20)
+
+      get export_admin_member_ranks_path
+
+      assert_response :success
+      assert_match "エクスポート対象ランク", response.body
+    end
   end
 end

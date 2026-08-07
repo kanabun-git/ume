@@ -37,4 +37,13 @@ class CouponsController < ApplicationController
     # so it stays meaningful (and stable) no matter how this page is narrowed.
     @cheapest_coupon_ids = Coupon.cheapest_ids_by_course
   end
+
+  # Logs a net-reservation click before sending the visitor on to the
+  # shop page, so shop admins can see how many reservations a coupon is
+  # actually driving (see #9 in the feature backlog: coupon usage tracking).
+  def click_reservation
+    coupon = Coupon.find(params[:id])
+    coupon.coupon_usages.create!(usage_type: :net_reservation)
+    redirect_to shop_path(coupon.shop, anchor: "coupon-#{coupon.id}")
+  end
 end

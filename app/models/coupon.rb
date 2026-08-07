@@ -1,6 +1,7 @@
 class Coupon < ApplicationRecord
   belongs_to :shop
   belongs_to :cast, optional: true
+  has_many :coupon_usages, dependent: :destroy
 
   validates :title, presence: true
   validates :course_name, presence: true

@@ -33,7 +33,9 @@ Rails.application.routes.draw do
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: "xml" }
 
   resources :videos, only: [:index]
-  resources :coupons, only: [:index]
+  resources :coupons, only: [:index] do
+    member { get :click_reservation }
+  end
   resources :diary_entries, only: [:index]
   resources :areas, only: [:show], param: :slug
   resources :genres, only: [:show], param: :slug
@@ -64,7 +66,9 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
     resource :shop, only: [:edit, :update]
     resources :casts
-    resources :coupons
+    resources :coupons do
+      resources :usages, only: [:index, :create], controller: "coupon_usages"
+    end
     resources :shifts, only: [:index, :new, :create, :destroy] do
       collection do
         post :import
@@ -126,24 +130,28 @@ Rails.application.routes.draw do
       collection do
         post :import
         get :template
+        get :export
       end
     end
     resources :genres do
       collection do
         post :import
         get :template
+        get :export
       end
     end
     resources :plans do
       collection do
         post :import
         get :template
+        get :export
       end
     end
     resources :member_ranks, except: [:show] do
       collection do
         post :import
         get :template
+        get :export
       end
     end
     resources :shop_subscriptions

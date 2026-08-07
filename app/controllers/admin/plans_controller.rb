@@ -58,6 +58,11 @@ module Admin
       send_data ::PlanImport::TEMPLATE_CSV, filename: "plans_template.csv", type: "text/csv"
     end
 
+    def export
+      authorize ::Plan.new, :export?
+      send_data ::PlanImport.export(policy_scope(::Plan)), filename: "plans_#{Date.current}.csv", type: "text/csv"
+    end
+
     private
 
     def set_plan

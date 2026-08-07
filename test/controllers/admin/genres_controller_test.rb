@@ -52,5 +52,16 @@ module Admin
       assert_response :success
       assert_match "スラッグ", response.body
     end
+
+    test "export downloads a CSV of the current genres" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      create_genre(slug: "export-target")
+
+      get export_admin_genres_path
+
+      assert_response :success
+      assert_match "export-target", response.body
+    end
   end
 end

@@ -1,10 +1,11 @@
 require "csv"
 require "admin_csv_import"
+require "admin_csv_export"
 
-# Bulk-imports Area rows from an admin-uploaded CSV (see
-# Admin::AreasController#import). A spreadsheet can't reference a parent
-# row by database id, so the parent is looked up by its slug instead --
-# leave it blank for a prefecture-level row.
+# Bulk-imports/exports Area rows as CSV (see Admin::AreasController
+# #import/#export). A spreadsheet can't reference a parent row by database
+# id, so the parent is looked up/written by its slug instead -- blank for a
+# prefecture-level row.
 module AreaImport
   HEADERS = %w[名前 カナ スラッグ 地方 表示順 親エリアのスラッグ].freeze
 
@@ -29,6 +30,13 @@ module AreaImport
       parent_slug = row["親エリアのスラッグ"].presence
       attrs[:parent_id] = ::Area.find_by(slug: parent_slug)&.id if parent_slug
       attrs
+    end
+  end
+
+  def export(records)
+    AdminCsvExport.call(records, HEADERS, HEADER_TO_ATTRIBUTE) do |row, record|
+      row[HEADERS.index("親エリアのスラッグ")] = record.parent&.slug
+      row
     end
   end
 end

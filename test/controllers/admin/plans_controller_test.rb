@@ -52,5 +52,16 @@ module Admin
       assert_response :success
       assert_match "月額料金", response.body
     end
+
+    test "export downloads a CSV of the current plans" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      Plan.create!(name: "エクスポート対象プラン", monthly_fee: 1000, priority_weight: 1)
+
+      get export_admin_plans_path
+
+      assert_response :success
+      assert_match "エクスポート対象プラン", response.body
+    end
   end
 end

@@ -34,4 +34,17 @@ class AreaImportTest < ActiveSupport::TestCase
     assert Area.exists?(slug: "valid-area")
     assert_not Area.exists?(slug: "invalid-area")
   end
+
+  test "exports areas as a CSV, writing a child's parent as its slug" do
+    tokyo = Area.create!(name: "東京都", slug: "tokyo", region: "関東")
+    shinjuku = Area.create!(name: "新宿", slug: "shinjuku", parent: tokyo)
+
+    csv = AreaImport.export(Area.where(id: [tokyo.id, shinjuku.id]))
+
+    rows = CSV.parse(csv, headers: true)
+    tokyo_row = rows.find { |r| r["スラッグ"] == "tokyo" }
+    shinjuku_row = rows.find { |r| r["スラッグ"] == "shinjuku" }
+    assert_equal "", tokyo_row["親エリアのスラッグ"].to_s
+    assert_equal "tokyo", shinjuku_row["親エリアのスラッグ"]
+  end
 end

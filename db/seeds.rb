@@ -299,6 +299,18 @@ MemberRank.find_or_create_by!(min_approved_count: 1) { |r| r.name = "ブロン�
 MemberRank.find_or_create_by!(min_approved_count: 5) { |r| r.name = "シルバー会員" }
 MemberRank.find_or_create_by!(min_approved_count: 20) { |r| r.name = "ゴールド会員" }
 
+regular_rank = ShopMemberRank.find_or_create_by!(shop: shop, min_visit_count: 3) { |r| r.name = "レギュラー会員" }
+ShopMemberBenefit.find_or_create_by!(shop_member_rank: regular_rank, name: "500円割引券") do |b|
+  b.benefit_type = :discount_ticket
+  b.description = "次回来店時のご利用料金から500円引きになります。"
+end
+
+gold_rank = ShopMemberRank.find_or_create_by!(shop: shop, min_visit_count: 10) { |r| r.name = "ゴールド会員" }
+ShopMemberBenefit.find_or_create_by!(shop_member_rank: gold_rank, name: "指名料無料券") do |b|
+  b.benefit_type = :free_ticket
+  b.description = "次回ご指名時の指名料が無料になります。"
+end
+
 puts "Seed data created."
 puts "platform_admin: #{platform_admin.email} / password1234"
 puts "shop_admin: #{shop_admin.email} / password1234"

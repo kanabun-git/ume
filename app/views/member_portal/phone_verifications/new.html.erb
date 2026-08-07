@@ -1,0 +1,11 @@
+<% content_for :title, "SMS認証 | 会員マイページ" %>
+
+<h1>SMS認証</h1>
+<p>店舗会員証への登録・プレゼント企画への応募には、電話番号のSMS認証が必要です。</p>
+
+<%= form_with url: member_phone_verification_path, method: :post, local: true, class: "form" do %>
+  <label>電話番号(ハイフンなし)</label>
+  <%= text_field_tag :phone_number, nil, placeholder: "09012345678" %>
+
+  <%= submit_tag "認証コードを送信する", class: "btn" %>
+<% end %>

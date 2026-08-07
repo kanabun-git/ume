@@ -13,8 +13,14 @@ class Member < ApplicationRecord
   has_many :favorite_shops, through: :shop_favorites, source: :shop
   has_many :reviews, dependent: :nullify
   has_many :present_ticket_entries, dependent: :destroy
+  has_many :phone_verification_codes, dependent: :destroy
+  has_many :shop_memberships, dependent: :destroy
 
   validates :name, presence: true
+
+  def phone_verified?
+    phone_verified_at.present?
+  end
 
   def favorited?(cast)
     favorite_casts.include?(cast)

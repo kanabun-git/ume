@@ -1,0 +1,4 @@
+<% content_for :title, "特典新規登録" %>
+
+<h1><%= @shop_member_rank.name %>の特典を追加</h1>
+<%= render "form", shop_member_benefit: @shop_member_benefit, url: shop_admin_shop_member_rank_shop_member_benefits_path(@shop_member_rank) %>

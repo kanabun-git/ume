@@ -1,7 +1,18 @@
 require "test_helper"
 
 class PresentTicketEntriesControllerTest < ActionDispatch::IntegrationTest
-  test "a signed-in member can apply to an open present ticket" do
+  test "a signed-in, phone-verified member can apply to an open present ticket" do
+    shop = create_shop
+    ticket = PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    member = create_member(phone_verified_at: Time.current)
+    sign_in member
+
+    post present_ticket_entries_path, params: { present_ticket_id: ticket.id }
+
+    assert_equal 1, ticket.present_ticket_entries.where(member: member).count
+  end
+
+  test "a member who hasn't completed SMS verification is redirected to verify instead of applying" do
     shop = create_shop
     ticket = PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
     member = create_member
@@ -9,7 +20,8 @@ class PresentTicketEntriesControllerTest < ActionDispatch::IntegrationTest
 
     post present_ticket_entries_path, params: { present_ticket_id: ticket.id }
 
-    assert_equal 1, ticket.present_ticket_entries.where(member: member).count
+    assert_redirected_to new_member_phone_verification_path(return_to: shop_path(shop))
+    assert_equal 0, ticket.present_ticket_entries.where(member: member).count
   end
 
   test "cannot apply to a ticket past its deadline" do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_040007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -173,12 +173,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "name", default: "", null: false
+    t.string "phone_number"
+    t.datetime "phone_verified_at"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_members_on_email", unique: true
     t.index ["reset_password_token"], name: "index_members_on_reset_password_token", unique: true
+  end
+
+  create_table "phone_verification_codes", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "member_id", null: false
+    t.string "phone_number", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_phone_verification_codes_on_member_id"
   end
 
   create_table "plans", force: :cascade do |t|
@@ -295,6 +308,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shop_member_benefit_grants", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "shop_member_benefit_id", null: false
+    t.bigint "shop_membership_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.index ["shop_member_benefit_id"], name: "index_shop_member_benefit_grants_on_shop_member_benefit_id"
+    t.index ["shop_membership_id"], name: "index_shop_member_benefit_grants_on_shop_membership_id"
+  end
+
+  create_table "shop_member_benefits", force: :cascade do |t|
+    t.integer "benefit_type", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.bigint "shop_member_rank_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_member_rank_id"], name: "index_shop_member_benefits_on_shop_member_rank_id"
+  end
+
+  create_table "shop_member_ranks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "min_visit_count", null: false
+    t.string "name", null: false
+    t.bigint "shop_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id", "min_visit_count"], name: "index_shop_member_ranks_on_shop_id_and_min_visit_count", unique: true
+    t.index ["shop_id"], name: "index_shop_member_ranks_on_shop_id"
+  end
+
+  create_table "shop_memberships", force: :cascade do |t|
+    t.text "caution_notes"
+    t.datetime "created_at", null: false
+    t.text "incident_notes"
+    t.bigint "member_id", null: false
+    t.bigint "shop_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_shop_memberships_on_member_id"
+    t.index ["shop_id", "member_id"], name: "index_shop_memberships_on_shop_id_and_member_id", unique: true
+    t.index ["shop_id"], name: "index_shop_memberships_on_shop_id"
+  end
+
   create_table "shop_page_blocks", force: :cascade do |t|
     t.string "background_color"
     t.decimal "background_opacity", precision: 3, scale: 2, default: "1.0", null: false
@@ -309,6 +365,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
     t.boolean "visible", default: true, null: false
     t.index ["shop_id", "position"], name: "index_shop_page_blocks_on_shop_id_and_position"
     t.index ["shop_id"], name: "index_shop_page_blocks_on_shop_id"
+  end
+
+  create_table "shop_point_transactions", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.string "reason", null: false
+    t.bigint "shop_membership_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_membership_id"], name: "index_shop_point_transactions_on_shop_membership_id"
   end
 
   create_table "shop_prospects", force: :cascade do |t|
@@ -333,6 +398,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
     t.datetime "updated_at", null: false
     t.index ["plan_id"], name: "index_shop_subscriptions_on_plan_id"
     t.index ["shop_id"], name: "index_shop_subscriptions_on_shop_id"
+  end
+
+  create_table "shop_visits", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "memo"
+    t.integer "points_earned", default: 0, null: false
+    t.bigint "shop_membership_id", null: false
+    t.datetime "updated_at", null: false
+    t.date "visited_on", null: false
+    t.index ["shop_membership_id"], name: "index_shop_visits_on_shop_membership_id"
   end
 
   create_table "shops", force: :cascade do |t|
@@ -407,6 +482,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
   add_foreign_key "diary_entries", "casts"
   add_foreign_key "favorites", "casts"
   add_foreign_key "favorites", "members"
+  add_foreign_key "phone_verification_codes", "members"
   add_foreign_key "present_ticket_entries", "members"
   add_foreign_key "present_ticket_entries", "present_tickets"
   add_foreign_key "present_tickets", "shops"
@@ -419,9 +495,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_034502) do
   add_foreign_key "shop_daily_views", "shops"
   add_foreign_key "shop_favorites", "members"
   add_foreign_key "shop_favorites", "shops"
+  add_foreign_key "shop_member_benefit_grants", "shop_member_benefits"
+  add_foreign_key "shop_member_benefit_grants", "shop_memberships"
+  add_foreign_key "shop_member_benefits", "shop_member_ranks"
+  add_foreign_key "shop_member_ranks", "shops"
+  add_foreign_key "shop_memberships", "members"
+  add_foreign_key "shop_memberships", "shops"
   add_foreign_key "shop_page_blocks", "shops"
+  add_foreign_key "shop_point_transactions", "shop_memberships"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"
+  add_foreign_key "shop_visits", "shop_memberships"
   add_foreign_key "shops", "areas"
   add_foreign_key "shops", "genres"
   add_foreign_key "shops", "plans"

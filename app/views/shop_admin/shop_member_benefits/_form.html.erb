@@ -1,0 +1,20 @@
+<% if shop_member_benefit.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% shop_member_benefit.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: shop_member_benefit, url: url, local: true, class: "form" do |f| %>
+  <label>特典名(例: 500円割引券)</label>
+  <%= f.text_field :name %>
+
+  <label>種別</label>
+  <%= f.select :benefit_type, [["割引券", "discount_ticket"], ["無料券", "free_ticket"]] %>
+
+  <label>内容(利用条件など。会員にも表示されます)</label>
+  <%= f.text_area :description %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

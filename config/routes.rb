@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   # in particular, and keeps Devise's own /members/* routes untouched).
   namespace :member, module: "member_portal" do
     root to: "mypage#show"
+    resource :phone_verification, only: [:new, :create, :edit, :update]
+    resources :shop_memberships, only: [:index, :show]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -44,6 +46,7 @@ Rails.application.routes.draw do
     resources :reviews, only: [:new, :create] do
       member { post :helpful }
     end
+    resource :shop_membership, only: [:create]
   end
   resources :shop_inquiries, only: [:new, :create]
 
@@ -98,6 +101,16 @@ Rails.application.routes.draw do
       member do
         post :draw
         post :send_result_emails
+      end
+    end
+    resources :shop_member_ranks, except: [:show] do
+      resources :shop_member_benefits, only: [:new, :create, :edit, :update, :destroy]
+    end
+    resources :shop_memberships, only: [:index, :show, :update] do
+      resources :shop_visits, only: [:create]
+      resources :shop_point_redemptions, only: [:create]
+      resources :shop_member_benefit_grants, only: [] do
+        member { patch :mark_used }
       end
     end
   end

@@ -12,6 +12,7 @@
 <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
 <p><%= @shop.catch_copy %></p>
 <%= render "shop_favorites/button", shop: @shop %>
+<%= render "shop_memberships/button", shop: @shop %>
 
 <% if @shop.online_reservation? || @shop.visit_point_program? || @shop.coupon_available? || @shop.event_ongoing? %>
   <div class="shop-badge-row">

@@ -1,0 +1,33 @@
+<% content_for :title, "会員ランク・特典設定" %>
+
+<h1>会員ランク・特典設定</h1>
+<p>来店回数に応じて自動的にランクアップし、ランクに設定した特典(割引券・無料券等)が自動的に付与されます。</p>
+<%= link_to "新規ランク登録", new_shop_admin_shop_member_rank_path, class: "btn" %>
+
+<% @shop_member_ranks.each do |rank| %>
+  <div class="card">
+    <h2>
+      <%= rank.name %>(来店<%= rank.min_visit_count %>回以上)
+      <%= link_to "編集", edit_shop_admin_shop_member_rank_path(rank) %>
+      <%= button_to "削除", shop_admin_shop_member_rank_path(rank), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+    </h2>
+
+    <table class="admin-table">
+      <thead><tr><th>特典名</th><th>種別</th><th>内容</th><th></th></tr></thead>
+      <tbody>
+        <% rank.shop_member_benefits.each do |benefit| %>
+          <tr>
+            <td><%= benefit.name %></td>
+            <td><%= benefit.discount_ticket? ? "割引券" : "無料券" %></td>
+            <td><%= benefit.description %></td>
+            <td>
+              <%= link_to "編集", edit_shop_admin_shop_member_rank_shop_member_benefit_path(rank, benefit) %>
+              <%= button_to "削除", shop_admin_shop_member_rank_shop_member_benefit_path(rank, benefit), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= link_to "特典を追加", new_shop_admin_shop_member_rank_shop_member_benefit_path(rank), class: "btn secondary" %>
+  </div>
+<% end %>

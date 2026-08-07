@@ -1,0 +1,13 @@
+<% content_for :title, "SMS認証コードの入力 | 会員マイページ" %>
+
+<h1>SMS認証コードの入力</h1>
+<p>送信された6桁の認証コードを入力してください。</p>
+
+<%= form_with url: member_phone_verification_path, method: :patch, local: true, class: "form" do %>
+  <label>認証コード</label>
+  <%= text_field_tag :code, nil, placeholder: "123456" %>
+
+  <%= submit_tag "認証する", class: "btn" %>
+<% end %>
+
+<%= link_to "認証コードを再送する", new_member_phone_verification_path %>

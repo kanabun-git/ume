@@ -14,6 +14,8 @@ class Shop < ApplicationRecord
   has_many :review_reply_templates, dependent: :destroy
   has_many :present_tickets, dependent: :destroy
   has_many :coupons, dependent: :destroy
+  has_many :shop_memberships, dependent: :destroy
+  has_many :shop_member_ranks, dependent: :destroy
   has_many_attached :photos
 
   enum :status, { pending: 0, approved: 1, suspended: 2 }, default: :pending

@@ -1,0 +1,18 @@
+<% content_for :title, "店舗会員証一覧 | 会員マイページ" %>
+
+<h1>店舗会員証</h1>
+
+<% if @shop_memberships.any? %>
+  <div class="grid">
+    <% @shop_memberships.each do |membership| %>
+      <div class="card">
+        <h3><%= link_to membership.shop.name, shop_path(membership.shop) %></h3>
+        <p>ランク: <%= membership.current_rank&.name || "未認定" %></p>
+        <p>来店回数: <%= membership.visit_count %>回 / ポイント残高: <%= membership.points %>pt</p>
+        <%= link_to "利用履歴・特典を見る", member_shop_membership_path(membership), class: "btn secondary" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="region-note">まだ店舗会員証に登録した店舗がありません。店舗ページから登録できます。</p>
+<% end %>

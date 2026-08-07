@@ -1,0 +1,10 @@
+<% if member_signed_in? %>
+  <% membership = current_member.shop_memberships.find_by(shop: shop) %>
+  <% if membership %>
+    <%= link_to "店舗会員証を見る", member_shop_membership_path(membership), class: "btn secondary" %>
+  <% else %>
+    <%= button_to "店舗会員証に登録する", shop_shop_membership_path(shop), method: :post, class: "btn secondary" %>
+  <% end %>
+<% else %>
+  <%= link_to "店舗会員証に登録する(要会員登録)", new_member_session_path, class: "btn secondary" %>
+<% end %>

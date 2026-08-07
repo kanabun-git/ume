@@ -1,0 +1,70 @@
+<% content_for :title, "#{@shop_membership.shop.name}の店舗会員証 | 会員マイページ" %>
+
+<h1><%= @shop_membership.shop.name %>の店舗会員証</h1>
+
+<div class="card">
+  <p>
+    現在のランク: <strong><%= @shop_membership.current_rank&.name || "未認定" %></strong>
+    <% if @shop_membership.next_rank %>
+      (次のランク「<%= @shop_membership.next_rank.name %>」まであと<%= @shop_membership.next_rank.min_visit_count - @shop_membership.visit_count %>回)
+    <% end %>
+  </p>
+  <p>来店回数: <%= @shop_membership.visit_count %>回 / ポイント残高: <%= @shop_membership.points %>pt</p>
+</div>
+
+<h2>利用履歴</h2>
+<% if @shop_visits.any? %>
+  <table class="admin-table">
+    <thead><tr><th>来店日</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
+    <tbody>
+      <% @shop_visits.each do |visit| %>
+        <tr>
+          <td><%= visit.visited_on.strftime("%Y-%m-%d") %></td>
+          <td><%= visit.points_earned %>pt</td>
+          <td><%= visit.memo %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="region-note">まだ利用履歴がありません。</p>
+<% end %>
+
+<h2>ポイント履歴</h2>
+<% if @shop_point_transactions.any? %>
+  <table class="admin-table">
+    <thead><tr><th>日時</th><th>ポイント増減</th><th>内容</th></tr></thead>
+    <tbody>
+      <% @shop_point_transactions.each do |transaction| %>
+        <tr>
+          <td><%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= transaction.amount.positive? ? "+" : "" %><%= transaction.amount %>pt</td>
+          <td><%= transaction.reason %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="region-note">まだポイント履歴がありません。</p>
+<% end %>
+
+<h2>特典</h2>
+<% if @shop_member_benefit_grants.any? %>
+  <table class="admin-table">
+    <thead><tr><th>特典名</th><th>種別</th><th>内容</th><th>状態</th></tr></thead>
+    <tbody>
+      <% @shop_member_benefit_grants.each do |grant| %>
+        <tr>
+          <td><%= grant.shop_member_benefit.name %></td>
+          <td><%= grant.shop_member_benefit.discount_ticket? ? "割引券" : "無料券" %></td>
+          <td><%= grant.shop_member_benefit.description %></td>
+          <td><%= grant.used? ? "利用済み" : "未使用" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="region-note">まだ獲得した特典がありません。</p>
+<% end %>
+
+<%= link_to "店舗会員証一覧に戻る", member_shop_memberships_path %>

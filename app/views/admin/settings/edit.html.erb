@@ -143,3 +143,23 @@
     <%= f.submit "画像を保存する", class: "btn" %>
   <% end %>
 </div>
+
+<div class="card">
+  <h2>会員証イメージ</h2>
+  <p>
+    会員登録を済ませた個人会員のマイページに表示される、会員証のデザイン画像です。
+    未設定の場合は会員証は表示されません。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>会員証イメージ</label>
+    <% if @site_setting.membership_card_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.membership_card_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :membership_card_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>

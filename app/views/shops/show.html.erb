@@ -4,6 +4,14 @@
   <% content_for :og_image, rails_blob_url(@shop.photos.first, host: request.base_url) %>
 <% end %>
 
+<% if member_signed_in? && (membership = current_member.shop_memberships.find_by(shop: @shop)) %>
+  <div class="shop-member-rank-badge">
+    <span class="shop-member-rank-badge-label">この店舗の会員ランク</span>
+    <span class="shop-member-rank-badge-rank"><%= membership.current_rank&.name || "未認定" %></span>
+    <%= link_to "詳細を見る", member_shop_membership_path(membership), class: "shop-member-rank-badge-link" %>
+  </div>
+<% end %>
+
 <h1>
   <%= @shop.name %><% if @shop.chain_name.present? %><span class="shop-listing-chain">(<%= @shop.chain_name %>)</span><% end %>
   <% if @shop.zero_recommended_badge? %><span class="tag-badge zero-recommend">Zeroお勧め</span><% end %>

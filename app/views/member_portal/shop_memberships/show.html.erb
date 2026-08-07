@@ -1,6 +1,6 @@
-<% content_for :title, "#{@shop_membership.shop.name}の店舗会員証 | 会員マイページ" %>
+<% content_for :title, "#{@shop.name}の店舗会員証 | 会員マイページ" %>
 
-<h1><%= @shop_membership.shop.name %>の店舗会員証</h1>
+<h1><%= @shop.name %>の店舗会員証</h1>
 
 <div class="card">
   <p>
@@ -11,6 +11,90 @@
   </p>
   <p>来店回数: <%= @shop_membership.visit_count %>回 / ポイント残高: <%= @shop_membership.points %>pt</p>
 </div>
+
+<h2>会員特典</h2>
+<% if @shop_member_benefit_grants.any? %>
+  <table class="admin-table">
+    <thead><tr><th>特典名</th><th>種別</th><th>内容</th><th>状態</th></tr></thead>
+    <tbody>
+      <% @shop_member_benefit_grants.each do |grant| %>
+        <tr>
+          <td><%= grant.shop_member_benefit.name %></td>
+          <td><%= grant.shop_member_benefit.discount_ticket? ? "割引券" : "無料券" %></td>
+          <td><%= grant.shop_member_benefit.description %></td>
+          <td><%= grant.used? ? "利用済み" : "未使用" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="region-note">まだ獲得した特典がありません。</p>
+<% end %>
+
+<h2>お気に入りの店舗情報</h2>
+<div class="card">
+  <h3><%= link_to @shop.name, shop_path(@shop) %></h3>
+  <p><span class="badge"><%= @shop.genre.name %></span> <span class="badge muted"><%= @shop.area.name %></span></p>
+  <%= render "shop_favorites/button", shop: @shop %>
+</div>
+
+<h2>お気に入りの女の子の出勤状況・写メ日記</h2>
+<% if @favorite_casts.any? %>
+  <div class="grid">
+    <% @favorite_casts.each do |cast| %>
+      <div class="card favorite-card">
+        <%= link_to cast_path(cast) do %>
+          <%= photo_or_placeholder_tag cast.visible_photos.first, removed: cast.photos_removed_by_moderation? %>
+        <% end %>
+        <h3><%= link_to cast.alias_name.presence || cast.name, cast_path(cast) %></h3>
+
+        <% shift = @today_shifts_by_cast_id[cast.id] %>
+        <% if shift %>
+          <p class="favorite-shift-status on-duty">本日出勤: <%= shift.formatted_start_time %>〜<%= shift.formatted_end_time(cast.shop.time_display_format) %></p>
+        <% else %>
+          <p class="favorite-shift-status off-duty">本日の出勤予定なし</p>
+        <% end %>
+
+        <% entry = @latest_diary_entry_by_cast_id[cast.id] %>
+        <% if entry %>
+          <p class="favorite-diary-update">
+            最新日記: <%= link_to entry.title, cast_path(cast, anchor: "diary-#{entry.id}") %>
+            <br><small><%= entry.published_at&.strftime("%Y/%m/%d %H:%M") %></small>
+          </p>
+        <% else %>
+          <p class="favorite-diary-update">まだ写メ日記の投稿がありません。</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="region-note">この店舗のお気に入りの女の子がいません。</p>
+<% end %>
+
+<h2>店舗プレゼントの応募状況</h2>
+<% if @present_ticket_entries.any? %>
+  <table class="admin-table">
+    <thead><tr><th>企画名</th><th>応募状況</th></tr></thead>
+    <tbody>
+      <% @present_ticket_entries.each do |entry| %>
+        <tr>
+          <td><%= entry.present_ticket.name %></td>
+          <td>
+            <% if entry.pending? %>
+              抽選待ち
+            <% elsif entry.won? %>
+              当選
+            <% else %>
+              落選
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="region-note">この店舗のプレゼント企画への応募はありません。</p>
+<% end %>
 
 <h2>利用履歴</h2>
 <% if @shop_visits.any? %>
@@ -46,25 +130,6 @@
   </table>
 <% else %>
   <p class="region-note">まだポイント履歴がありません。</p>
-<% end %>
-
-<h2>特典</h2>
-<% if @shop_member_benefit_grants.any? %>
-  <table class="admin-table">
-    <thead><tr><th>特典名</th><th>種別</th><th>内容</th><th>状態</th></tr></thead>
-    <tbody>
-      <% @shop_member_benefit_grants.each do |grant| %>
-        <tr>
-          <td><%= grant.shop_member_benefit.name %></td>
-          <td><%= grant.shop_member_benefit.discount_ticket? ? "割引券" : "無料券" %></td>
-          <td><%= grant.shop_member_benefit.description %></td>
-          <td><%= grant.used? ? "利用済み" : "未使用" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p class="region-note">まだ獲得した特典がありません。</p>
 <% end %>
 
 <%= link_to "店舗会員証一覧に戻る", member_shop_memberships_path %>

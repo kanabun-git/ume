@@ -10,8 +10,13 @@
         <% entry = current_member.present_ticket_entries.find_by(present_ticket: ticket) %>
         <% if entry %>
           <%= button_to "応募を取り消す", present_ticket_entry_path(entry), method: :delete, class: "btn secondary" %>
-        <% else %>
+        <% elsif current_member.phone_verified? %>
           <%= button_to "応募する", present_ticket_entries_path(present_ticket_id: ticket.id), method: :post, class: "btn" %>
+        <% else %>
+          <span class="btn disabled" aria-disabled="true">応募する</span>
+          <span class="present-ticket-sms-warning">※SMS認証後有効化されます。</span>
+          <br>
+          <%= link_to "SMS認証はこちら", new_member_phone_verification_path(return_to: shop_path(shop)) %>
         <% end %>
       <% else %>
         <%= link_to "応募する(要会員登録)", new_member_session_path, class: "btn secondary" %>

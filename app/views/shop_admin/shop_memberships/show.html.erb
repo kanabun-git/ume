@@ -10,6 +10,14 @@
     <% end %>
   </p>
   <p>来店回数: <%= @shop_membership.visit_count %>回 / ポイント残高: <%= @shop_membership.points %>pt</p>
+  <p>
+    SMS認証:
+    <% if @shop_membership.member.phone_verified? %>
+      <span class="tag-badge">認証済み</span>(<%= @shop_membership.member.phone_number %>)
+    <% else %>
+      <span class="badge muted">未認証</span>
+    <% end %>
+  </p>
 </div>
 
 <div class="card">

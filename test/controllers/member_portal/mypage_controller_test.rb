@@ -46,5 +46,25 @@ module MemberPortal
 
       assert_redirected_to new_member_session_path
     end
+
+    test "shows the membership card image when the platform admin has uploaded one" do
+      SiteSetting.instance.membership_card_image.attach(**png_upload)
+      member = create_member
+      sign_in member
+
+      get member_root_path
+
+      assert_response :success
+      assert_match "membership-card-image", response.body
+    end
+
+    test "does not show a membership card section when no image has been uploaded" do
+      member = create_member
+      sign_in member
+
+      get member_root_path
+
+      assert_no_match "membership-card-image", response.body
+    end
   end
 end

@@ -220,6 +220,7 @@ form.form textarea { min-height: 120px; }
 .image-setting-preview { margin-bottom: 8px; }
 .image-setting-preview img { max-width: 200px; max-height: 200px; border-radius: 6px; border: 1px solid var(--border); display: block; }
 .membership-card-image { max-width: 340px; width: 100%; border-radius: 10px; box-shadow: var(--shadow-sm); display: block; margin: 8px 0; }
+.member-rank-card-thumb { max-width: 100px; max-height: 63px; border-radius: 6px; border: 1px solid var(--border); display: block; object-fit: cover; }
 
 .shop-member-rank-badge {
   display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;

@@ -20,10 +20,17 @@
 <%= link_to "新規ランク登録", new_admin_member_rank_path, class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>ランク名</th><th>必要承認数</th><th></th></tr></thead>
+  <thead><tr><th>カード画像</th><th>ランク名</th><th>必要承認数</th><th></th></tr></thead>
   <tbody>
     <% @member_ranks.each do |member_rank| %>
       <tr>
+        <td>
+          <% if member_rank.card_image.attached? %>
+            <%= image_tag member_rank.card_image, class: "member-rank-card-thumb" %>
+          <% else %>
+            <span class="region-note">未設定</span>
+          <% end %>
+        </td>
         <td><%= member_rank.name %></td>
         <td><%= member_rank.min_approved_count %>件以上</td>
         <td>

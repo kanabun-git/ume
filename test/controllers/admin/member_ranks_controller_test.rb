@@ -63,5 +63,33 @@ module Admin
       assert_response :success
       assert_match "エクスポート対象ランク", response.body
     end
+
+    test "a platform admin can upload a card image for a rank" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      file = Rack::Test::UploadedFile.new(StringIO.new(png_bytes), "image/png", original_filename: "card.png")
+
+      post admin_member_ranks_path, params: { member_rank: { name: "ゴールド", min_approved_count: 10, card_image: file } }
+
+      rank = MemberRank.find_by(name: "ゴールド")
+      assert rank.card_image.attached?
+    end
+
+    test "leaving the card image field blank on update does not remove an existing image" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      rank = MemberRank.create!(name: "ゴールド", min_approved_count: 10)
+      rank.card_image.attach(io: StringIO.new(png_bytes), filename: "card.png", content_type: "image/png")
+
+      patch admin_member_rank_path(rank), params: { member_rank: { name: "プラチナ" } }
+
+      assert rank.reload.card_image.attached?
+    end
+
+    private
+
+    def png_bytes
+      Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
+    end
   end
 end

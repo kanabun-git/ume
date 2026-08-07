@@ -68,7 +68,12 @@ module Admin
     end
 
     def member_rank_params
-      params.require(:member_rank).permit(:name, :min_approved_count)
+      attrs = params.require(:member_rank).permit(:name, :min_approved_count, :card_image)
+      # A blank file field submits "" for the attachment, which
+      # has_one_attached's setter treats as "remove the current file" --
+      # only pass it through when the admin actually chose a new file.
+      attrs.delete(:card_image) if attrs[:card_image].blank?
+      attrs
     end
   end
 end

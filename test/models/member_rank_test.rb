@@ -19,4 +19,25 @@ class MemberRankTest < ActiveSupport::TestCase
     assert_equal silver, MemberRank.for_approved_count(5)
     assert_equal gold, MemberRank.for_approved_count(20)
   end
+
+  test "rejects a card_image over 5MB" do
+    rank = MemberRank.new(name: "ブロンズ", min_approved_count: 1)
+    rank.card_image.attach(io: StringIO.new("a" * 6.megabytes), filename: "big.png", content_type: "image/png")
+
+    assert_not rank.valid?
+  end
+
+  test "rejects a card_image that isn't jpeg/png/webp" do
+    rank = MemberRank.new(name: "ブロンズ", min_approved_count: 1)
+    rank.card_image.attach(io: StringIO.new("not an image"), filename: "evil.exe", content_type: "application/x-msdownload")
+
+    assert_not rank.valid?
+  end
+
+  test "accepts a valid card_image" do
+    rank = MemberRank.new(name: "ブロンズ", min_approved_count: 1)
+    rank.card_image.attach(io: StringIO.new("fake png data"), filename: "card.png", content_type: "image/png")
+
+    assert rank.valid?
+  end
 end

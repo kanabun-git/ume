@@ -66,5 +66,29 @@ module MemberPortal
 
       assert_no_match "membership-card-image", response.body
     end
+
+    test "shows the member's rank-specific card image instead of the site-wide one" do
+      SiteSetting.instance.membership_card_image.attach(**png_upload(filename: "site-wide.png"))
+      rank = MemberRank.create!(name: "ゴールド", min_approved_count: 0)
+      rank.card_image.attach(**png_upload(filename: "gold-card.png"))
+      member = create_member
+      sign_in member
+
+      get member_root_path
+
+      assert_match "gold-card", response.body
+      assert_no_match "site-wide", response.body
+    end
+
+    test "falls back to the site-wide card image when the member's rank has no card image" do
+      SiteSetting.instance.membership_card_image.attach(**png_upload(filename: "site-wide.png"))
+      MemberRank.create!(name: "ブロンズ", min_approved_count: 0)
+      member = create_member
+      sign_in member
+
+      get member_root_path
+
+      assert_match "site-wide", response.body
+    end
   end
 end

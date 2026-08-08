@@ -66,4 +66,23 @@ class ShopMembershipTest < ActiveSupport::TestCase
 
     assert_not duplicate.valid?
   end
+
+  test "assigns sequential member numbers scoped to the shop" do
+    shop = create_shop
+    other_shop = create_shop
+
+    first = ShopMembership.create!(shop: shop, member: create_member)
+    second = ShopMembership.create!(shop: shop, member: create_member)
+    other_shop_first = ShopMembership.create!(shop: other_shop, member: create_member)
+
+    assert_equal 1, first.member_number
+    assert_equal 2, second.member_number
+    assert_equal 1, other_shop_first.member_number
+  end
+
+  test "formatted_member_number pads to four digits" do
+    membership = ShopMembership.create!(shop: create_shop, member: create_member)
+
+    assert_equal "No.0001", membership.formatted_member_number
+  end
 end

@@ -41,4 +41,11 @@ class Member < ApplicationRecord
   def next_rank
     MemberRank.where("min_approved_count > ?", approved_review_count).reorder(:min_approved_count).first
   end
+
+  # A rank's own card design takes priority over the site-wide default, so
+  # members visibly see their card change color/design as they rank up.
+  def membership_card_image
+    rank_card_image = rank&.card_image
+    rank_card_image&.attached? ? rank_card_image : ::SiteSetting.instance.membership_card_image
+  end
 end

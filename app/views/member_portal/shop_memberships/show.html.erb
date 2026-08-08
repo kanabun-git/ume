@@ -2,6 +2,8 @@
 
 <h1><%= @shop.name %>の店舗会員証</h1>
 
+<%= render "shop_memberships/card", membership: @shop_membership, card_image: current_member.membership_card_image %>
+
 <div class="card">
   <p>
     現在のランク: <strong><%= @shop_membership.current_rank&.name || "未認定" %></strong>

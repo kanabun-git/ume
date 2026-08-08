@@ -51,4 +51,21 @@ class MemberTest < ActiveSupport::TestCase
     assert_equal "ブロンズ", member.rank.name
     assert_equal gold, member.next_rank
   end
+
+  test "#membership_card_image prefers the member's rank card over the site-wide default" do
+    SiteSetting.instance.membership_card_image.attach(**png_upload(filename: "site-wide.png"))
+    rank = MemberRank.create!(name: "ゴールド", min_approved_count: 0)
+    rank.card_image.attach(**png_upload(filename: "gold-card.png"))
+    member = create_member
+
+    assert_equal "gold-card.png", member.membership_card_image.filename.to_s
+  end
+
+  test "#membership_card_image falls back to the site-wide default when the rank has no image" do
+    SiteSetting.instance.membership_card_image.attach(**png_upload(filename: "site-wide.png"))
+    MemberRank.create!(name: "ブロンズ", min_approved_count: 0)
+    member = create_member
+
+    assert_equal "site-wide.png", member.membership_card_image.filename.to_s
+  end
 end

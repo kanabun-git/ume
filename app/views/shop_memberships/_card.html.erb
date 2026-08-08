@@ -1,0 +1,13 @@
+<div class="member-card-visual">
+  <% if card_image&.attached? %>
+    <%= image_tag card_image, class: "member-card-visual-bg" %>
+  <% end %>
+  <div class="member-card-visual-overlay">
+    <p class="member-card-visual-shop"><%= membership.shop.name %></p>
+    <p class="member-card-visual-name"><%= membership.member.name %> 様</p>
+    <p class="member-card-visual-meta">
+      会員番号: <%= membership.formatted_member_number %><br>
+      発行日: <%= membership.created_at.strftime("%Y/%m/%d") %>
+    </p>
+  </div>
+</div>

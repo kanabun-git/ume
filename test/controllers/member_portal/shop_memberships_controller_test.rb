@@ -60,6 +60,20 @@ module MemberPortal
       assert_match "抽選待ち", response.body
     end
 
+    test "shows the shop name, member name, member number, and issue date on the card" do
+      shop = create_shop(name: "カード確認店舗")
+      member = create_member(name: "カード確認会員", phone_verified_at: Time.current)
+      membership = ShopMembership.create!(shop: shop, member: member)
+      sign_in member
+
+      get member_shop_membership_path(membership)
+
+      assert_match "カード確認店舗", response.body
+      assert_match "カード確認会員", response.body
+      assert_match membership.formatted_member_number, response.body
+      assert_match membership.created_at.strftime("%Y/%m/%d"), response.body
+    end
+
     test "does not show a favorited cast belonging to a different shop" do
       shop = create_shop
       other_shop_cast = create_cast(shop: create_shop, name: "他店のお気に入り")

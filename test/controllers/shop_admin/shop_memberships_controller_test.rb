@@ -45,6 +45,20 @@ module ShopAdmin
       assert_match "未認証", response.body
     end
 
+    test "shows the shop name, member name, member number, and issue date on the card" do
+      shop = create_shop(name: "カード確認店舗")
+      membership = ShopMembership.create!(shop: shop, member: create_member(name: "カード確認会員"))
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      get shop_admin_shop_membership_path(membership)
+
+      assert_match "カード確認店舗", response.body
+      assert_match "カード確認会員", response.body
+      assert_match membership.formatted_member_number, response.body
+      assert_match membership.created_at.strftime("%Y/%m/%d"), response.body
+    end
+
     test "a shop admin cannot view or edit another shop's membership" do
       other_membership = ShopMembership.create!(shop: create_shop, member: create_member)
       user = create_user(role: :shop_admin, shop: create_shop)

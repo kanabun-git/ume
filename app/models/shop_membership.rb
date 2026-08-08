@@ -5,7 +5,17 @@ class ShopMembership < ApplicationRecord
   has_many :shop_point_transactions, dependent: :destroy
   has_many :shop_member_benefit_grants, dependent: :destroy
 
+  before_validation :assign_member_number, on: :create
+
   validates :member_id, uniqueness: { scope: :shop_id }
+  validates :member_number, presence: true, uniqueness: { scope: :shop_id }
+
+  # e.g. "No.0007", for display on the member card and its printed/shared
+  # form -- padded so numbers stay visually aligned as a shop's roster grows
+  # past four digits.
+  def formatted_member_number
+    "No.#{member_number.to_s.rjust(4, "0")}"
+  end
 
   # Visit count and point balance are derived from their log tables rather
   # than cached columns, so they can never drift out of sync with the
@@ -50,6 +60,12 @@ class ShopMembership < ApplicationRecord
   end
 
   private
+
+  def assign_member_number
+    return if member_number.present? || shop.blank?
+
+    self.member_number = shop.shop_memberships.maximum(:member_number).to_i + 1
+  end
 
   def grant_benefits_for_newly_reached_rank!
     rank = shop.shop_member_ranks.find_by(min_visit_count: visit_count)

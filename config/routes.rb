@@ -205,6 +205,7 @@ Rails.application.routes.draw do
     get "analytics", to: "analytics#index", as: :analytics
 
     resource :setting, only: [:edit, :update]
+    resource :basic_setting, only: [:edit, :update]
 
     get "data_backups", to: "data_backups#index", as: :data_backups
     get "data_backups/shops", to: "data_backups#shops", as: :data_backups_shops

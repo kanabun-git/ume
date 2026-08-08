@@ -17,17 +17,7 @@ module Admin
     private
 
     def setting_params
-      attrs = params.require(:site_setting).permit(
-        :maintenance_mode, :maintenance_message,
-        *::SiteSetting::IMAGE_ATTACHMENTS
-      )
-      # A blank file field submits "" for the attachment, which Rails'
-      # has_one_attached setter treats as "remove the current file" -- only
-      # pass it through when the admin actually chose a new file.
-      ::SiteSetting::IMAGE_ATTACHMENTS.each do |name|
-        attrs.delete(name) if attrs[name].blank?
-      end
-      attrs
+      params.require(:site_setting).permit(:maintenance_mode, :maintenance_message)
     end
   end
 end

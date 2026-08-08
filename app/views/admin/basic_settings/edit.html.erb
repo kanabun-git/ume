@@ -1,0 +1,147 @@
+<% content_for :title, "サイト基本設定" %>
+
+<h1>サイト基本設定</h1>
+<p>サイト全体で使われる基本画像をここに集約しています。未設定の場合はそれぞれ標準の画像・デザインが使われます。</p>
+
+<div class="card">
+  <h2>Now Printing画像</h2>
+  <p>
+    キャストや店舗の写真が未登録の箇所に表示する「Now Printing」プレースホルダー画像です。
+    未設定の場合は標準の画像が使われます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>縦長画像(キャスト写真・写メ日記サムネイルなど / 縦横比3:4推奨)</label>
+    <% if @site_setting.nowprinting_portrait_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.nowprinting_portrait_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :nowprinting_portrait_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>横長画像(店舗フォトギャラリーなど)</label>
+    <% if @site_setting.nowprinting_landscape_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.nowprinting_landscape_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :nowprinting_landscape_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>サイトロゴ</h2>
+  <p>
+    サイトヘッダー・SNSシェア時の画像・ファビコンに使用するロゴです。
+    未設定の場合は標準のテキストロゴ・アイコンが使われます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>横長ロゴ(サイトヘッダーに表示)</label>
+    <% if @site_setting.logo_horizontal_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.logo_horizontal_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :logo_horizontal_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>スクウェアロゴ(大 / SNSシェア時の画像などに使用)</label>
+    <% if @site_setting.logo_square_large_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.logo_square_large_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :logo_square_large_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>スクウェアロゴ(小 / ファビコン・ブラウザタブアイコンに使用)</label>
+    <% if @site_setting.logo_square_small_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.logo_square_small_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :logo_square_small_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "ロゴを保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>削除された画像・動画の差し替え画像</h2>
+  <p>
+    女の子画像の確認・写メ日記画像の確認で「非公開にする」にした画像や動画の代わりに表示する画像です。
+    (アップロード自体がまだない箇所には、上記のNow Printing画像が使われます。)
+    未設定の場合は標準の画像が使われます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>縦長画像(キャスト写真・写メ日記サムネイルなど / 縦横比3:4推奨)</label>
+    <% if @site_setting.removed_content_portrait_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.removed_content_portrait_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :removed_content_portrait_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>横長画像</label>
+    <% if @site_setting.removed_content_landscape_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.removed_content_landscape_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :removed_content_landscape_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>Indexページ画像</h2>
+  <p>
+    TOPページの前に表示される案内ページ(Indexページ)のアイキャッチ画像と、
+    関東・中部を選ぶ地図画像です。未設定の場合は画像なしで表示されます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>アイキャッチ画像</label>
+    <% if @site_setting.index_eyecatch_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.index_eyecatch_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :index_eyecatch_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <label>地図画像(関東・中部の選択案内用)</label>
+    <% if @site_setting.index_map_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.index_map_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :index_map_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
+  <h2>会員証イメージ(基本デザイン)</h2>
+  <p>
+    会員登録を済ませた個人会員のマイページに表示される、会員証の基本デザイン画像です。
+    会員ランクごとに個別のカード画像が設定されている場合はそちらが優先され、
+    未設定のランクの会員にはここで設定した画像が表示されます。
+    (ランクごとのカード画像は「会員ランク管理」の各ランクの編集画面から設定します。)
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>会員証イメージ</label>
+    <% if @site_setting.membership_card_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.membership_card_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :membership_card_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>

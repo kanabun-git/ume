@@ -311,7 +311,51 @@ ShopMemberBenefit.find_or_create_by!(shop_member_rank: gold_rank, name: "指名�
   b.description = "次回ご指名時の指名料が無料になります。"
 end
 
+# Records enough visits to reach (but not duplicate past) `target_count`,
+# so re-running db:seed doesn't keep piling on more visits/points/benefits
+# each time.
+def ensure_shop_visits(membership, target_count)
+  (target_count - membership.visit_count).times do
+    membership.record_visit!(visited_on: Date.current, points_earned: 100, memo: "来店")
+  end
+end
+
+# Three individual members (個人会員) at different points on both rank
+# ladders -- the site-wide MemberRank (driven by approved review count)
+# and this shop's own ShopMemberRank (driven by visit count) -- so admin
+# screens have realistic-looking members to browse instead of empty lists.
+dummy_member1 = Member.find_or_create_by!(email: "member.gold@example.com") do |m|
+  m.name = "モデル太郎"
+  m.password = "password1234"
+  m.password_confirmation = "password1234"
+  m.phone_number = "09011112222"
+  m.phone_verified_at = Time.current
+end
+25.times { |i| Review.find_or_create_by!(shop: shop, member: dummy_member1, reviewer_name: dummy_member1.name, body: "とても満足しています。また利用したいです。(#{i + 1})") { |r| r.rating = 5; r.status = :approved } }
+ensure_shop_visits(ShopMembership.find_or_create_by!(shop: shop, member: dummy_member1), 12)
+
+dummy_member2 = Member.find_or_create_by!(email: "member.silver@example.com") do |m|
+  m.name = "モデル花子"
+  m.password = "password1234"
+  m.password_confirmation = "password1234"
+  m.phone_number = "09033334444"
+  m.phone_verified_at = Time.current
+end
+6.times { |i| Review.find_or_create_by!(shop: shop, member: dummy_member2, reviewer_name: dummy_member2.name, body: "接客が丁寧で良かったです。(#{i + 1})") { |r| r.rating = 4; r.status = :approved } }
+ensure_shop_visits(ShopMembership.find_or_create_by!(shop: shop, member: dummy_member2), 4)
+
+dummy_member3 = Member.find_or_create_by!(email: "member.bronze@example.com") do |m|
+  m.name = "モデル次郎"
+  m.password = "password1234"
+  m.password_confirmation = "password1234"
+end
+2.times { |i| Review.find_or_create_by!(shop: shop, member: dummy_member3, reviewer_name: dummy_member3.name, body: "また利用します。(#{i + 1})") { |r| r.rating = 3; r.status = :approved } }
+ensure_shop_visits(ShopMembership.find_or_create_by!(shop: shop, member: dummy_member3), 1)
+
 puts "Seed data created."
 puts "platform_admin: #{platform_admin.email} / password1234"
 puts "shop_admin: #{shop_admin.email} / password1234"
 puts "cast: #{cast1_user.email} / password1234"
+puts "member (ゴールド会員/店舗ゴールド会員): #{dummy_member1.email} / password1234"
+puts "member (シルバー会員/店舗レギュラー会員): #{dummy_member2.email} / password1234"
+puts "member (ブロンズ会員/店舗未認定・SMS未認証): #{dummy_member3.email} / password1234"

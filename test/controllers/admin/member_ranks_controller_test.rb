@@ -86,6 +86,33 @@ module Admin
       assert rank.reload.card_image.attached?
     end
 
+    test "uploading a new card image replaces the existing one" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      rank = MemberRank.create!(name: "ゴールド", min_approved_count: 10)
+      rank.card_image.attach(io: StringIO.new(png_bytes), filename: "old.png", content_type: "image/png")
+      old_blob_id = rank.card_image.blob.id
+      new_file = Rack::Test::UploadedFile.new(StringIO.new(png_bytes), "image/png", original_filename: "new.png")
+
+      patch admin_member_rank_path(rank), params: { member_rank: { card_image: new_file } }
+
+      rank.reload
+      assert rank.card_image.attached?
+      assert_equal "new.png", rank.card_image.filename.to_s
+      assert_not_equal old_blob_id, rank.card_image.blob.id
+    end
+
+    test "checking remove_card_image clears the existing image" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      rank = MemberRank.create!(name: "ゴールド", min_approved_count: 10)
+      rank.card_image.attach(io: StringIO.new(png_bytes), filename: "card.png", content_type: "image/png")
+
+      patch admin_member_rank_path(rank), params: { member_rank: { remove_card_image: "1" } }
+
+      assert_not rank.reload.card_image.attached?
+    end
+
     private
 
     def png_bytes

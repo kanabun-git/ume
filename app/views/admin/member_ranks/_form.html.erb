@@ -18,7 +18,12 @@
     <div class="image-setting-preview">
       <%= image_tag member_rank.card_image %>
     </div>
+    <label class="checkbox-inline">
+      <%= check_box_tag "member_rank[remove_card_image]", "1" %>
+      現在の画像を削除する(サイト共通の会員証画像に戻します)
+    </label>
   <% end %>
+  <p class="region-note">新しい画像を選択すると、現在の画像と入れ替わります。</p>
   <%= f.file_field :card_image, accept: "image/jpeg,image/png,image/webp" %>
 
   <%= f.submit "保存する", class: "btn" %>

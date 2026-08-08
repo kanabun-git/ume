@@ -69,10 +69,20 @@ module Admin
 
     def member_rank_params
       attrs = params.require(:member_rank).permit(:name, :min_approved_count, :card_image)
-      # A blank file field submits "" for the attachment, which
-      # has_one_attached's setter treats as "remove the current file" --
-      # only pass it through when the admin actually chose a new file.
-      attrs.delete(:card_image) if attrs[:card_image].blank?
+      if attrs[:card_image].present?
+        # A new file was chosen -- has_one_attached's setter replaces the
+        # existing attachment (if any) with this one on save.
+      elsif params.dig(:member_rank, :remove_card_image) == "1"
+        # No new file, but the admin explicitly asked to clear the current
+        # one -- assigning nil detaches/purges it.
+        attrs[:card_image] = nil
+      else
+        # A blank file field submits "" for the attachment, which
+        # has_one_attached's setter treats as "remove the current file" --
+        # only pass it through when the admin actually chose a new file or
+        # asked to remove it, so leaving both alone keeps the image as-is.
+        attrs.delete(:card_image)
+      end
       attrs
     end
   end

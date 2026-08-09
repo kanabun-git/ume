@@ -47,24 +47,29 @@ module MemberPortal
       assert_redirected_to new_member_session_path
     end
 
-    test "shows the membership card image when the platform admin has uploaded one" do
-      SiteSetting.instance.membership_card_image.attach(**png_upload)
-      member = create_member
+    test "shows a card overlaying the shop name, member name, number, and issue date for each shop membership" do
+      shop = create_shop(name: "カード確認店舗")
+      member = create_member(name: "カード確認会員")
+      membership = ShopMembership.create!(shop: shop, member: member)
       sign_in member
 
       get member_root_path
 
       assert_response :success
-      assert_match "membership-card-image", response.body
+      assert_match "member-card-visual", response.body
+      assert_match "カード確認店舗", response.body
+      assert_match "カード確認会員", response.body
+      assert_match membership.formatted_member_number, response.body
     end
 
-    test "does not show a membership card section when no image has been uploaded" do
+    test "shows a guidance message instead of a card when the member has no shop membership yet" do
       member = create_member
       sign_in member
 
       get member_root_path
 
-      assert_no_match "membership-card-image", response.body
+      assert_no_match "member-card-visual", response.body
+      assert_match "まだ店舗会員証に登録した店舗がありません", response.body
     end
 
     test "shows the member's rank-specific card image instead of the site-wide one" do
@@ -72,6 +77,7 @@ module MemberPortal
       rank = MemberRank.create!(name: "ゴールド", min_approved_count: 0)
       rank.card_image.attach(**png_upload(filename: "gold-card.png"))
       member = create_member
+      ShopMembership.create!(shop: create_shop, member: member)
       sign_in member
 
       get member_root_path
@@ -84,6 +90,7 @@ module MemberPortal
       SiteSetting.instance.membership_card_image.attach(**png_upload(filename: "site-wide.png"))
       MemberRank.create!(name: "ブロンズ", min_approved_count: 0)
       member = create_member
+      ShopMembership.create!(shop: create_shop, member: member)
       sign_in member
 
       get member_root_path

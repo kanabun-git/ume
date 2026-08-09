@@ -1,11 +1,13 @@
 <% content_for :title, "お気に入り一覧 | 会員マイページ" %>
 
-<% if @membership_card_image&.attached? %>
-  <div class="card membership-card">
-    <h2>会員証</h2>
-    <%= image_tag @membership_card_image, class: "membership-card-image" %>
-    <p><%= current_member.name %>様<% if current_member.rank %> (<%= current_member.rank.name %>)<% end %></p>
-  </div>
+<h2>会員証</h2>
+<% if @shop_memberships.any? %>
+  <% @shop_memberships.each do |membership| %>
+    <%= render "shop_memberships/card", membership: membership, card_image: @membership_card_image %>
+    <p><%= link_to "#{membership.shop.name}の会員証詳細を見る", member_shop_membership_path(membership) %></p>
+  <% end %>
+<% else %>
+  <p class="region-note">まだ店舗会員証に登録した店舗がありません。店舗ページから「店舗会員証に登録する」で登録できます。</p>
 <% end %>
 
 <div class="card">

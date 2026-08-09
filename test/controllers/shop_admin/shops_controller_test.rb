@@ -24,5 +24,53 @@ module ShopAdmin
       assert_not_equal "改名後", shop.reload.name
       assert_not_equal other_plan, shop.plan
     end
+
+    test "a shop admin can set the shop detail page's background/text/accent colors and a background image" do
+      shop = create_shop
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      patch shop_admin_shop_path, params: {
+        shop: {
+          page_background_color: "#112233", page_text_color: "#ffffff", page_accent_color: "#00aa88",
+          page_background_image: upload_png
+        }
+      }
+
+      shop.reload
+      assert_equal "#112233", shop.page_background_color
+      assert_equal "#ffffff", shop.page_text_color
+      assert_equal "#00aa88", shop.page_accent_color
+      assert shop.page_background_image.attached?
+    end
+
+    test "a shop admin can remove the shop's background image" do
+      shop = create_shop
+      shop.page_background_image.attach(**png_upload)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      patch shop_admin_shop_path, params: { shop: { remove_page_background_image: "1" } }
+
+      assert_not shop.reload.page_background_image.attached?
+    end
+
+    test "leaving the background image field blank keeps the existing image" do
+      shop = create_shop
+      shop.page_background_image.attach(**png_upload)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      patch shop_admin_shop_path, params: { shop: { catch_copy: "更新" } }
+
+      assert shop.reload.page_background_image.attached?
+    end
+
+    private
+
+    def upload_png
+      bytes = Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
+      Rack::Test::UploadedFile.new(StringIO.new(bytes), "image/png", original_filename: "bg.png")
+    end
   end
 end

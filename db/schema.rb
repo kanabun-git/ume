@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_152433) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_155544) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -440,6 +440,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_152433) do
     t.integer "min_price"
     t.string "name", null: false
     t.boolean "online_reservation", default: false, null: false
+    t.string "page_accent_color"
+    t.string "page_background_color"
+    t.string "page_text_color"
     t.string "phone"
     t.bigint "plan_id", null: false
     t.datetime "pr_badge_until"

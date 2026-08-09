@@ -50,6 +50,26 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, daily_view.views_count
   end
 
+  test "applies the shop's custom background/text/accent theme to the detail page" do
+    shop = create_shop(page_background_color: "#112233", page_text_color: "#ffffff", page_accent_color: "#00aa88")
+
+    get shop_path(shop)
+
+    assert_response :success
+    assert_match "background-color: #112233;", response.body
+    assert_match "color: #ffffff;", response.body
+    assert_match "--brand: #00aa88;", response.body
+  end
+
+  test "falls back to the default theme when no custom colors are set" do
+    shop = create_shop
+
+    get shop_path(shop)
+
+    assert_response :success
+    assert_match(/class="shop-theme-page" style="\s*"/, response.body)
+  end
+
   test "shows the member's rank badge for a shop they hold a membership at" do
     shop = create_shop
     member = create_member

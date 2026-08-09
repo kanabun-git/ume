@@ -85,6 +85,7 @@ main { padding: 24px 0 60px; }
 
 .card {
   background: #fff;
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
@@ -230,6 +231,8 @@ form.form textarea { min-height: 120px; }
 .shop-member-rank-badge-label { color: var(--muted); }
 .shop-member-rank-badge-rank { font-weight: bold; color: var(--brand-dark); }
 .shop-member-rank-badge-link { font-weight: bold; }
+
+.shop-theme-page { padding: 20px; border-radius: 12px; }
 
 .member-card-visual {
   position: relative; max-width: 340px; width: 100%; min-height: 180px;
@@ -480,7 +483,7 @@ form.form textarea { min-height: 120px; }
 
 .obi-block { margin-bottom: 16px; box-shadow: var(--shadow-sm); border-radius: var(--radius); }
 .obi-header { background: linear-gradient(120deg, var(--brand), var(--brand-dark)); color: #fff; font-weight: bold; padding: 9px 16px; border-radius: var(--radius) var(--radius) 0 0; font-size: .95rem; }
-.obi-body { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 14px; font-size: .9rem; }
+.obi-body { background: #fff; color: var(--text); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 14px; font-size: .9rem; }
 .obi-body.no-header { border-top: 1px solid var(--border); border-radius: var(--radius); }
 
 .price-table { width: 100%; border-collapse: collapse; }
@@ -732,7 +735,7 @@ img, video, iframe { max-width: 100%; }
 
 .coupon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px 20px; margin: 16px 0; }
 
-.coupon-card { background: #fff; border-radius: 10px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-top: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.coupon-card { background: #fff; color: var(--text); border-radius: 10px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-top: 10px; overflow: hidden; display: flex; flex-direction: column; }
 .coupon-card-header {
   position: relative;
   background: linear-gradient(135deg, var(--brand), var(--brand-dark));
@@ -812,7 +815,7 @@ img, video, iframe { max-width: 100%; }
 .coupon-detail-ribbon-sub { font-size: .58rem; color: #fff; }
 
 .coupon-detail-header { border-radius: 10px 10px 0 0; }
-.coupon-detail-body { display: flex; gap: 20px; padding: 20px 18px; background: #fff; border: 1px solid var(--border); border-top: none; flex-wrap: wrap; }
+.coupon-detail-body { display: flex; gap: 20px; padding: 20px 18px; background: #fff; color: var(--text); border: 1px solid var(--border); border-top: none; flex-wrap: wrap; }
 .coupon-detail-cast { flex: 0 0 140px; text-align: center; }
 .coupon-detail-cast img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; display: block; }
 .coupon-detail-cast-name { font-weight: bold; margin: 6px 0 2px; font-size: .9rem; }

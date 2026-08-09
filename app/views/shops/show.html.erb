@@ -4,6 +4,8 @@
   <% content_for :og_image, rails_blob_url(@shop.photos.first, host: request.base_url) %>
 <% end %>
 
+<div class="shop-theme-page" style="<%= shop_page_theme_style(@shop) %>">
+
 <% if member_signed_in? && (membership = current_member.shop_memberships.find_by(shop: @shop)) %>
   <div class="shop-member-rank-badge">
     <span class="shop-member-rank-badge-label">この店舗の会員ランク</span>
@@ -116,3 +118,5 @@
     <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
   </div>
 <% end %>
+
+</div>

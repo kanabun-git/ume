@@ -18,6 +18,7 @@ class Shop < ApplicationRecord
   has_many :shop_memberships, dependent: :destroy
   has_many :shop_member_ranks, dependent: :destroy
   has_many_attached :photos
+  has_one_attached :page_background_image
 
   enum :status, { pending: 0, approved: 1, suspended: 2 }, default: :pending
   # How times past midnight are shown on this shop's pages:
@@ -40,6 +41,7 @@ class Shop < ApplicationRecord
 
   validates :name, presence: true
   validates_attached_images :photos
+  validate :validate_page_background_image
 
   after_create :seed_default_page_blocks
   after_create :seed_default_cast_page_blocks
@@ -83,6 +85,28 @@ class Shop < ApplicationRecord
     pr_badge_until.present? && pr_badge_until > Time.current
   end
 
+  # Inline style for the store detail page's theme wrapper -- background
+  # color, base text color, and an override of the site's --brand/--brand-dark
+  # CSS custom properties so every badge/button/link nested inside picks up
+  # the shop's chosen accent color instead of the site-wide pink. The
+  # background image (if any) is added separately by the view, since
+  # resolving its URL needs a view context.
+  def page_theme_style
+    styles = []
+    styles << "background-color: #{page_background_color};" if page_background_color.present?
+    styles << "color: #{page_text_color};" if page_text_color.present?
+    if page_accent_color.present?
+      styles << "--brand: #{page_accent_color};"
+      styles << "--brand-dark: #{darkened_page_accent_color};"
+    end
+    styles.join(" ")
+  end
+
+  def darkened_page_accent_color(amount = 0.2)
+    r, g, b = page_accent_color.delete("#").scan(/../).map { |h| h.to_i(16) }
+    format("#%02x%02x%02x", *[r, g, b].map { |c| (c * (1 - amount)).round.clamp(0, 255) })
+  end
+
   # The default page composition for a newly created shop. Shop admins can
   # freely add/remove/reorder/hide blocks afterwards from their dashboard —
   # this just avoids a blank page on day one.
@@ -111,6 +135,20 @@ class Shop < ApplicationRecord
     end
     CAST_SIDE_COLUMN_BLOCK_TYPES.each_with_index do |block_type, index|
       cast_page_blocks.create!(block_type: block_type, layout_column: :side, position: index)
+    end
+  end
+
+  private
+
+  def validate_page_background_image
+    return unless page_background_image.attached?
+
+    blob = page_background_image.blob
+    if blob.byte_size > AttachedImageValidatable::MAX_FILE_SIZE
+      errors.add(:page_background_image, "は5MBまでのファイルを指定してください")
+    end
+    unless AttachedImageValidatable::ALLOWED_CONTENT_TYPES.include?(blob.content_type)
+      errors.add(:page_background_image, "はJPEG・PNG・WEBP形式の画像を指定してください")
     end
   end
 end

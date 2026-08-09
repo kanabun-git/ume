@@ -156,6 +156,18 @@ module ApplicationHelper
     end
   end
 
+  # Combines Shop#page_theme_style (colors, computed without a view context)
+  # with the background image style, which needs url_for and so has to be
+  # built here rather than on the model.
+  def shop_page_theme_style(shop)
+    styles = [shop.page_theme_style]
+    if shop.page_background_image.attached?
+      styles << "background-image: url('#{url_for(shop.page_background_image)}'); " \
+        "background-size: cover; background-position: center; background-attachment: fixed;"
+    end
+    styles.join(" ")
+  end
+
   private
 
   def site_setting_singleton

@@ -74,5 +74,27 @@
     </div>
   <% end %>
 
+  <h2>店舗詳細ページのデザイン</h2>
+  <p><small>店舗詳細ページ(会員・一般ユーザーが見る画面)の背景色・文字色・基調色(ボタンやバッジの色)・背景画像を、サイト標準のデザインから変更できます。空欄のままにすると標準デザインのままになります。</small></p>
+
+  <label>背景色</label>
+  <%= f.color_field :page_background_color, value: @shop.page_background_color.presence || "#f7f2f0" %>
+
+  <label>基調文字色</label>
+  <%= f.color_field :page_text_color, value: @shop.page_text_color.presence || "#1a1a1a" %>
+
+  <label>基調色(ボタン・バッジなどのアクセントカラー)</label>
+  <%= f.color_field :page_accent_color, value: @shop.page_accent_color.presence || "#e0356b" %>
+
+  <label>背景画像(任意。設定すると背景色より優先して表示されます)</label>
+  <%= f.file_field :page_background_image %>
+
+  <% if @shop.page_background_image.attached? %>
+    <div class="grid">
+      <%= image_tag @shop.page_background_image, style: "max-width:200px;" %>
+    </div>
+    <label><%= check_box_tag "shop[remove_page_background_image]", "1" %> 現在の背景画像を削除する</label>
+  <% end %>
+
   <%= f.submit "更新する", class: "btn" %>
 <% end %>

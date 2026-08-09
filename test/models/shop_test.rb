@@ -38,4 +38,25 @@ class ShopTest < ActiveSupport::TestCase
     assert_not create_shop(pr_badge_until: 1.day.ago).pr_badge_active?
     assert create_shop(pr_badge_until: 1.day.from_now).pr_badge_active?
   end
+
+  test "#page_theme_style is blank when no theme fields are set" do
+    assert_equal "", create_shop.page_theme_style
+  end
+
+  test "#page_theme_style renders the background color, text color, and accent CSS variables" do
+    shop = create_shop(page_background_color: "#112233", page_text_color: "#ffffff", page_accent_color: "#e0356b")
+
+    style = shop.page_theme_style
+
+    assert_includes style, "background-color: #112233;"
+    assert_includes style, "color: #ffffff;"
+    assert_includes style, "--brand: #e0356b;"
+    assert_includes style, "--brand-dark: #{shop.darkened_page_accent_color};"
+  end
+
+  test "#darkened_page_accent_color returns a darker shade of the accent color" do
+    shop = create_shop(page_accent_color: "#e0356b")
+
+    assert_equal "#b32a56", shop.darkened_page_accent_color
+  end
 end

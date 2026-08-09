@@ -27,14 +27,30 @@ module ShopAdmin
     # (chain_name/editor_review), go through the platform admin back office
     # (see Admin::ShopsController).
     def shop_params
-      params.require(:shop).permit(
+      attrs = params.require(:shop).permit(
         :catch_copy, :description, :address, :phone, :business_hours, :time_display_format,
         :price_note, :min_price, :transportation_fee_note, :coverage_area_note,
         :coupon_description, :recruiting_message,
         :online_reservation, :visit_point_program, :coupon_available,
         :event_ongoing, :recruiting_cast, :recruiting_staff, :pr_badge_until,
+        :page_background_color, :page_text_color, :page_accent_color, :page_background_image,
         photos: []
       )
+      if attrs[:page_background_image].present?
+        # A new file was chosen -- has_one_attached's setter replaces the
+        # existing attachment (if any) with this one on save.
+      elsif params.dig(:shop, :remove_page_background_image) == "1"
+        # No new file, but the admin explicitly asked to clear the current
+        # one -- assigning nil detaches/purges it.
+        attrs[:page_background_image] = nil
+      else
+        # A blank file field submits "" for the attachment, which
+        # has_one_attached's setter treats as "remove the current file" --
+        # only pass it through when the admin actually chose a new file or
+        # asked to remove it, so leaving both alone keeps the image as-is.
+        attrs.delete(:page_background_image)
+      end
+      attrs
     end
   end
 end

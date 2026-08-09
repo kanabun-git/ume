@@ -11,6 +11,14 @@ module Admin
       authorize @diary_entry
     end
 
+    def destroy
+      @diary_entry = @shop.diary_entries.find(params[:id])
+      authorize @diary_entry
+
+      @diary_entry.destroy
+      redirect_to admin_shop_diary_entries_path(@shop), notice: "日記を削除しました。"
+    end
+
     private
 
     def set_shop

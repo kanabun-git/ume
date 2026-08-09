@@ -1,0 +1,4 @@
+<% content_for :title, "特典編集" %>
+
+<h1><%= @shop.name %> - <%= @shop_member_rank.name %>の特典編集</h1>
+<%= render "form", shop_member_benefit: @shop_member_benefit, url: admin_shop_shop_member_rank_shop_member_benefit_path(@shop, @shop_member_rank, @shop_member_benefit) %>

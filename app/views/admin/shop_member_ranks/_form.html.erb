@@ -1,0 +1,17 @@
+<% if shop_member_rank.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% shop_member_rank.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: shop_member_rank, url: url, local: true, class: "form" do |f| %>
+  <label>ランク名(例: レギュラー、ゴールド)</label>
+  <%= f.text_field :name %>
+
+  <label>このランクになる来店回数(◯回以上で到達)</label>
+  <%= f.number_field :min_visit_count %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

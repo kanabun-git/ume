@@ -9,4 +9,5 @@
 <% end %>
 <p><%= simple_format @diary_entry.body %></p>
 
+<%= button_to "削除(モデレーション)", admin_shop_diary_entry_path(@shop, @diary_entry), method: :delete, class: "btn danger", form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
 <%= link_to "一覧に戻る", admin_shop_diary_entries_path(@shop), class: "btn secondary" %>

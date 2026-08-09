@@ -25,12 +25,32 @@
 
 <div class="card">
   <h2>事故歴・注意点(店舗内共有専用・会員には表示されません)</h2>
-  <p><%= simple_format @shop_membership.incident_notes.presence || "(登録なし)" %></p>
-  <p><%= simple_format @shop_membership.caution_notes.presence || "(登録なし)" %></p>
+  <%= form_with model: @shop_membership, url: admin_shop_shop_membership_path(@shop, @shop_membership), method: :patch, local: true, class: "form" do |f| %>
+    <label>事故歴</label>
+    <%= f.text_area :incident_notes, value: @shop_membership.incident_notes %>
+
+    <label>注意点</label>
+    <%= f.text_area :caution_notes, value: @shop_membership.caution_notes %>
+
+    <%= f.submit "保存する", class: "btn" %>
+  <% end %>
 </div>
 
 <div class="card">
   <h2>利用履歴</h2>
+  <%= form_with url: admin_shop_shop_membership_shop_visits_path(@shop, @shop_membership), method: :post, local: true, class: "form" do %>
+    <label>来店日</label>
+    <%= date_field_tag "shop_visit[visited_on]", Date.current %>
+
+    <label>獲得ポイント</label>
+    <%= number_field_tag "shop_visit[points_earned]", 0 %>
+
+    <label>メモ(会員にも表示されます)</label>
+    <%= text_field_tag "shop_visit[memo]" %>
+
+    <%= submit_tag "利用履歴を記録する", class: "btn" %>
+  <% end %>
+
   <table class="admin-table">
     <thead><tr><th>来店日</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
     <tbody>
@@ -46,7 +66,17 @@
 </div>
 
 <div class="card">
-  <h2>ポイント履歴</h2>
+  <h2>ポイント利用</h2>
+  <%= form_with url: admin_shop_shop_membership_shop_point_redemptions_path(@shop, @shop_membership), method: :post, local: true, class: "form" do %>
+    <label>利用ポイント数</label>
+    <%= number_field_tag "shop_point_redemption[amount]", nil %>
+
+    <label>利用内容</label>
+    <%= text_field_tag "shop_point_redemption[reason]" %>
+
+    <%= submit_tag "ポイントを利用する", class: "btn" %>
+  <% end %>
+
   <table class="admin-table">
     <thead><tr><th>日時</th><th>ポイント増減</th><th>内容</th></tr></thead>
     <tbody>
@@ -64,17 +94,22 @@
 <div class="card">
   <h2>ランクアップ特典</h2>
   <table class="admin-table">
-    <thead><tr><th>特典名</th><th>種別</th><th>状態</th></tr></thead>
+    <thead><tr><th>特典名</th><th>種別</th><th>状態</th><th></th></tr></thead>
     <tbody>
       <% @shop_member_benefit_grants.each do |grant| %>
         <tr>
           <td><%= grant.shop_member_benefit.name %></td>
           <td><%= grant.shop_member_benefit.discount_ticket? ? "割引券" : "無料券" %></td>
           <td><%= grant.used? ? "利用済み(#{grant.used_at.strftime('%Y-%m-%d')})" : "未使用" %></td>
+          <td>
+            <% unless grant.used? %>
+              <%= button_to "利用済みにする", mark_used_admin_shop_shop_membership_shop_member_benefit_grant_path(@shop, @shop_membership, grant), method: :patch, class: "btn secondary" %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
 
-<%= link_to "会員一覧に戻る", admin_shop_shop_memberships_path(@shop), class: "btn secondary" %>
+<%= link_to "会員一覧に戻る", admin_shop_shop_memberships_path(@shop) %>

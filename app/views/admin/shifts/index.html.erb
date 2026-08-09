@@ -2,8 +2,22 @@
 
 <h1><%= @shop.name %> - 出勤予定</h1>
 
+<div class="card">
+  <h2>CSV一括登録</h2>
+  <p>
+    <%= link_to "CSVテンプレートをダウンロード", template_admin_shop_shifts_path(@shop), class: "btn secondary" %>
+  </p>
+  <%= form_with url: import_admin_shop_shifts_path(@shop), method: :post, local: true, multipart: true, class: "form" do |f| %>
+    <label>CSVファイル(キャスト名,勤務日,開始時刻,終了時刻,翌日にまたぐ,メモ)</label>
+    <%= file_field_tag :file, accept: ".csv,text/csv" %>
+    <%= submit_tag "アップロードして登録する", class: "btn" %>
+  <% end %>
+</div>
+
+<%= link_to "画面で一括登録する", new_admin_shop_shift_path(@shop), class: "btn" %>
+
 <table class="admin-table">
-  <thead><tr><th>キャスト</th><th>勤務日</th><th>時間</th><th>メモ</th></tr></thead>
+  <thead><tr><th>キャスト</th><th>勤務日</th><th>時間</th><th>メモ</th><th></th></tr></thead>
   <tbody>
     <% @shifts.each do |shift| %>
       <tr>
@@ -11,6 +25,7 @@
         <td><%= shift.work_date.strftime("%Y-%m-%d") %></td>
         <td><%= shift.formatted_time_range(@shop.time_display_format) %></td>
         <td><%= shift.note %></td>
+        <td><%= button_to "削除", admin_shop_shift_path(@shop, shift), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %></td>
       </tr>
     <% end %>
   </tbody>

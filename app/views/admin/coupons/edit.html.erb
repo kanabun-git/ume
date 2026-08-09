@@ -1,0 +1,4 @@
+<% content_for :title, "クーポン編集" %>
+
+<h1><%= @shop.name %> - クーポン編集</h1>
+<%= render "form", coupon: @coupon, url: admin_shop_coupon_path(@shop, @coupon) %>

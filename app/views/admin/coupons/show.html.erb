@@ -2,11 +2,19 @@
 
 <h1><%= @coupon.title %></h1>
 <p>店舗: <%= link_to @shop.name, admin_shop_path(@shop) %></p>
+
+<p>
+  <%= link_to "編集", edit_admin_shop_coupon_path(@shop, @coupon), class: "btn secondary" %>
+  <%= button_to "削除", admin_shop_coupon_path(@shop, @coupon), method: :delete, class: "btn danger", form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+</p>
+
 <p>
   ネット予約経由: <%= @usages.net_reservation.count %>件 /
   手動記録: <%= @usages.manual.count %>件 /
   合計: <%= @usages.count %>件
 </p>
+
+<%= button_to "来店・電話予約などの利用実績を記録する", admin_shop_coupon_usages_path(@shop, @coupon), method: :post, class: "btn" %>
 
 <table class="admin-table">
   <thead><tr><th>日時</th><th>種別</th></tr></thead>

@@ -9,6 +9,7 @@ class ShiftPolicy < ApplicationPolicy
 
   def create?
     return true if user.present? && user.cast? && record.cast_id == user.cast_profile&.id
+    return true if user.present? && user.platform_admin?
 
     user.present? && user.shop_admin? && record.cast&.shop_id == user.shop_id
   end

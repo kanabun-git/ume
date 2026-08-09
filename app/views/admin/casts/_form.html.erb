@@ -1,0 +1,76 @@
+<% if cast.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% cast.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: cast, url: url, local: true, class: "form" do |f| %>
+  <label>名前(源氏名)</label>
+  <%= f.text_field :name %>
+
+  <label>愛称</label>
+  <%= f.text_field :alias_name %>
+
+  <label>年齢</label>
+  <%= f.number_field :age %>
+
+  <label>身長(cm)</label>
+  <%= f.number_field :height %>
+
+  <label>バスト / カップ</label>
+  <%= f.number_field :bust %> <%= f.text_field :cup %>
+
+  <label>ウエスト</label>
+  <%= f.number_field :waist %>
+
+  <label>ヒップ</label>
+  <%= f.number_field :hip %>
+
+  <label>キャッチコピー</label>
+  <%= f.text_field :catch_copy %>
+
+  <label>紹介文</label>
+  <%= f.text_area :description %>
+
+  <label>在籍状態</label>
+  <%= f.select :status, Cast.statuses.keys.map { |s| [s == "active" ? "在籍中" : "退店", s] } %>
+
+  <label><%= f.check_box :is_trial %> 体験入店</label>
+  <label><%= f.check_box :manager_recommended %> 店長おすすめ</label>
+  <label><%= f.check_box :pick_up %> ピックアップ(店舗一覧に写真を表示)</label>
+
+  <label>店長からのコメント</label>
+  <%= f.text_area :manager_comment %>
+
+  <label>写真を追加(複数選択可。既存の写真は残ったまま追加されます。最大5枚まで)</label>
+  <%= f.file_field :photos, multiple: true %>
+
+  <% if cast.persisted? && cast.photos.attached? %>
+    <div class="grid">
+      <% cast.photos.select(&:persisted?).each do |photo| %>
+        <div class="photo-with-status">
+          <%= image_tag photo, style: "max-width:120px;" %>
+          <% if photo.hidden? %>
+            <span class="badge muted">運営により非公開</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if cast.new_record? %>
+    <%= f.fields_for :user do |uf| %>
+      <p>ログインアカウントを発行する場合は入力してください(任意)。</p>
+      <label>メールアドレス</label>
+      <%= uf.email_field :email %>
+      <label>パスワード</label>
+      <%= uf.password_field :password %>
+      <label>パスワード(確認)</label>
+      <%= uf.password_field :password_confirmation %>
+    <% end %>
+  <% end %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

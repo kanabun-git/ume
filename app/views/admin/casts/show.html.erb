@@ -14,4 +14,6 @@
   <p><%= shift.work_date %> <%= shift.formatted_time_range(@shop.time_display_format) %><% if shift.ends_next_day? %> <span class="tag-badge">翌日まで</span><% end %></p>
 <% end %>
 
+<%= link_to "編集", edit_admin_shop_cast_path(@shop, @cast), class: "btn" %>
+<%= button_to "削除", admin_shop_cast_path(@shop, @cast), method: :delete, class: "btn danger", form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
 <%= link_to "在籍キャスト一覧に戻る", admin_shop_casts_path(@shop), class: "btn secondary" %>

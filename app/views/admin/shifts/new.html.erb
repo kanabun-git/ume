@@ -1,0 +1,43 @@
+<% content_for :title, "出勤予定一括登録(画面)" %>
+
+<h1><%= @shop.name %> - 出勤予定一括登録</h1>
+<p>選んだ期間のうち、チェックした曜日にあたる日に、同じ時間帯の出勤予定をまとめて登録します。</p>
+
+<% if @casts.empty? %>
+  <p class="region-note">在籍キャストがいません。先にキャストを登録してください。</p>
+<% else %>
+  <%= form_with url: admin_shop_shifts_path(@shop), method: :post, local: true, class: "form" do |f| %>
+    <label>キャスト</label>
+    <%= select_tag :cast_id, options_from_collection_for_select(@casts, :id, :name) %>
+
+    <label>開始日</label>
+    <%= date_field_tag :start_date, Date.current %>
+
+    <label>終了日</label>
+    <%= date_field_tag :end_date, Date.current %>
+
+    <label>曜日</label>
+    <div class="checkbox-row">
+      <% [["月", 1], ["火", 2], ["水", 3], ["木", 4], ["金", 5], ["土", 6], ["日", 0]].each do |label, wday| %>
+        <label class="checkbox-inline">
+          <%= check_box_tag "weekdays[]", wday, true, id: "weekday_#{wday}" %> <%= label %>
+        </label>
+      <% end %>
+    </div>
+
+    <label>開始時刻</label>
+    <%= time_field_tag :start_time, "18:00" %>
+
+    <label>終了時刻</label>
+    <%= time_field_tag :end_time, "02:00" %>
+
+    <label><%= check_box_tag :ends_next_day %> 終了時刻が翌日にまたぐ(例: 20:00〜翌2:00)</label>
+
+    <label>メモ(任意)</label>
+    <%= text_field_tag :note %>
+
+    <%= submit_tag "この内容で一括登録する", class: "btn" %>
+  <% end %>
+<% end %>
+
+<%= link_to "一覧に戻る", admin_shop_shifts_path(@shop), class: "btn secondary" %>

@@ -1,9 +1,10 @@
 <% content_for :title, "#{@shop.name} - クーポン" %>
 
 <h1><%= @shop.name %> - クーポン</h1>
+<%= link_to "新規クーポン登録", new_admin_shop_coupon_path(@shop), class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th>利用実績</th></tr></thead>
+  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th>利用実績</th><th></th></tr></thead>
   <tbody>
     <% @coupons.each do |coupon| %>
       <tr>
@@ -14,6 +15,10 @@
         <td><%= coupon.discount_percent %>%OFF</td>
         <td><%= coupon.valid_from.strftime("%Y-%m-%d") %>〜<%= coupon.unlimited? ? "無期限" : coupon.valid_until.strftime("%Y-%m-%d") %></td>
         <td><%= coupon.coupon_usages.count %>件</td>
+        <td>
+          <%= link_to "編集", edit_admin_shop_coupon_path(@shop, coupon) %>
+          <%= button_to "削除", admin_shop_coupon_path(@shop, coupon), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+        </td>
       </tr>
     <% end %>
   </tbody>

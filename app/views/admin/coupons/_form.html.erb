@@ -1,0 +1,43 @@
+<% if coupon.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% coupon.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: coupon, url: url, local: true, class: "form" do |f| %>
+  <label>クーポン番号(会員様への案内・お電話でのご確認用)</label>
+  <%= f.text_field :coupon_number %>
+
+  <label>クーポンタイトル(例: 【WEB予約限定】フリー割)</label>
+  <%= f.text_field :title %>
+
+  <label>対象キャスト(任意。指定するとクーポン詳細に写真・プロフィールが表示されます)</label>
+  <%= f.collection_select :cast_id, @casts, :id, :name, include_blank: "指定しない" %>
+
+  <label>コース名(例: 45分コース)</label>
+  <%= f.text_field :course_name %>
+
+  <label>通常料金(円)</label>
+  <%= f.number_field :regular_price %>
+
+  <label>割引後料金(円)</label>
+  <%= f.number_field :discounted_price %>
+
+  <label>開始日</label>
+  <%= f.date_field :valid_from %>
+
+  <label>終了日(空欄で無期限)</label>
+  <%= f.date_field :valid_until %>
+
+  <label>利用条件</label>
+  <%= f.text_area :conditions %>
+
+  <label><%= f.check_box :net_reservation_only %> ネット予約限定にする</label>
+
+  <label>並び順(小さいほど先に表示)</label>
+  <%= f.number_field :position %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

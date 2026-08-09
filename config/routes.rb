@@ -138,18 +138,33 @@ Rails.application.routes.draw do
         end
       end
       resources :review_reply_templates
-      resources :casts, only: [:index, :show]
-      resources :coupons, only: [:index, :show]
-      resources :shifts, only: [:index]
-      resources :diary_entries, only: [:index, :show]
+      resources :casts
+      resources :coupons do
+        resources :usages, only: [:create], controller: "coupon_usages"
+      end
+      resources :shifts, only: [:index, :new, :create, :destroy] do
+        collection do
+          post :import
+          get :template
+        end
+      end
+      resources :diary_entries, only: [:index, :show, :destroy]
       resources :present_tickets do
         member do
           post :draw
           post :send_result_emails
         end
       end
-      resources :shop_member_ranks, only: [:index]
-      resources :shop_memberships, only: [:index, :show]
+      resources :shop_member_ranks, except: [:show] do
+        resources :shop_member_benefits, only: [:new, :create, :edit, :update, :destroy]
+      end
+      resources :shop_memberships, only: [:index, :show, :update] do
+        resources :shop_visits, only: [:create]
+        resources :shop_point_redemptions, only: [:create]
+        resources :shop_member_benefit_grants, only: [] do
+          member { patch :mark_used }
+        end
+      end
     end
     resources :areas do
       collection do

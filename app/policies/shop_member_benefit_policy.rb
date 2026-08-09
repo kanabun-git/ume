@@ -1,18 +1,18 @@
 class ShopMemberBenefitPolicy < ApplicationPolicy
   def index?
-    user.present? && user.shop_admin?
+    user.present? && (user.platform_admin? || user.shop_admin?)
   end
 
   def create?
-    user.present? && user.shop_admin?
+    user.present? && (user.platform_admin? || user.shop_admin?)
   end
 
   def update?
-    same_shop?
+    user.platform_admin? || same_shop?
   end
 
   def destroy?
-    same_shop?
+    user.platform_admin? || same_shop?
   end
 
   private

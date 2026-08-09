@@ -3,7 +3,7 @@
 <h1><%= @shop.name %> - 写メ日記</h1>
 
 <table class="admin-table">
-  <thead><tr><th>キャスト</th><th>タイトル</th><th>状態</th><th>公開日時</th></tr></thead>
+  <thead><tr><th>キャスト</th><th>タイトル</th><th>状態</th><th>公開日時</th><th></th></tr></thead>
   <tbody>
     <% @diary_entries.each do |entry| %>
       <tr>
@@ -14,6 +14,7 @@
           <% if entry.scheduled? %><span class="badge">予約中</span><% end %>
         </td>
         <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= button_to "削除", admin_shop_diary_entry_path(@shop, entry), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %></td>
       </tr>
     <% end %>
   </tbody>

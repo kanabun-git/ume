@@ -1,0 +1,3 @@
+<% content_for :title, "キャスト編集" %>
+<h1><%= @shop.name %> - キャスト編集</h1>
+<%= render "form", cast: @cast, url: admin_shop_cast_path(@shop, @cast) %>

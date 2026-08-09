@@ -1,0 +1,4 @@
+<% content_for :title, "会員ランク編集" %>
+
+<h1><%= @shop.name %> - 会員ランク編集</h1>
+<%= render "form", shop_member_rank: @shop_member_rank, url: admin_shop_shop_member_rank_path(@shop, @shop_member_rank) %>

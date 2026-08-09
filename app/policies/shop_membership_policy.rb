@@ -8,12 +8,18 @@ class ShopMembershipPolicy < ApplicationPolicy
   end
 
   def update?
-    same_shop?
+    user.platform_admin? || same_shop?
   end
 
   class Scope < Scope
     def resolve
-      user&.shop_admin? ? scope.where(shop_id: user.shop_id) : scope.none
+      if user&.platform_admin?
+        scope.all
+      elsif user&.shop_admin?
+        scope.where(shop_id: user.shop_id)
+      else
+        scope.none
+      end
     end
   end
 

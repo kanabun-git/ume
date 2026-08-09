@@ -138,6 +138,13 @@ Rails.application.routes.draw do
         end
       end
       resources :review_reply_templates
+      resources :casts, only: [:index, :show]
+      resources :coupons, only: [:index, :show]
+      resources :shifts, only: [:index]
+      resources :diary_entries, only: [:index, :show]
+      resources :present_tickets, only: [:index, :show]
+      resources :shop_member_ranks, only: [:index]
+      resources :shop_memberships, only: [:index, :show]
     end
     resources :areas do
       collection do

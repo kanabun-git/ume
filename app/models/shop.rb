@@ -7,6 +7,7 @@ class Shop < ApplicationRecord
   has_many :users, dependent: :nullify
   has_many :casts, dependent: :destroy
   has_many :diary_entries, through: :casts
+  has_many :shifts, through: :casts
   has_many :reviews, dependent: :destroy
   has_many :shop_subscriptions, dependent: :destroy
   has_many :shop_page_blocks, dependent: :destroy

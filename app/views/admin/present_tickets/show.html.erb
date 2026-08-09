@@ -1,0 +1,23 @@
+<% content_for :title, @present_ticket.name %>
+
+<h1><%= @present_ticket.name %></h1>
+<p>店舗: <%= link_to @shop.name, admin_shop_path(@shop) %></p>
+<p><span class="badge"><%= status_label(@present_ticket) %></span></p>
+<p><%= simple_format @present_ticket.description.to_s %></p>
+<p>当選人数: <%= @present_ticket.capacity %>名 / 応募締切: <%= @present_ticket.deadline_at.strftime("%Y-%m-%d %H:%M") %></p>
+
+<table class="admin-table">
+  <thead><tr><th>会員</th><th>応募日時</th><th>結果</th><th>メール送信</th></tr></thead>
+  <tbody>
+    <% @entries.each do |entry| %>
+      <tr>
+        <td><%= entry.member.name %></td>
+        <td><%= entry.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= status_label(entry) %></td>
+        <td><%= entry.notified? ? entry.notified_at.strftime("%Y-%m-%d %H:%M") : "未送信" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "一覧に戻る", admin_shop_present_tickets_path(@shop), class: "btn secondary" %>

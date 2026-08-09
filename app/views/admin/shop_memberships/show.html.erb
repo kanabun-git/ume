@@ -1,0 +1,80 @@
+<% content_for :title, "#{@shop_membership.member.name}様の店舗会員証" %>
+
+<h1><%= @shop_membership.member.name %>様の店舗会員証</h1>
+<p>店舗: <%= link_to @shop.name, admin_shop_path(@shop) %></p>
+
+<%= render "shop_memberships/card", membership: @shop_membership, card_image: @shop_membership.member.membership_card_image %>
+
+<div class="card">
+  <p>
+    現在のランク: <strong><%= @shop_membership.current_rank&.name || "未認定" %></strong>
+    <% if @shop_membership.next_rank %>
+      (次のランク「<%= @shop_membership.next_rank.name %>」まであと<%= @shop_membership.next_rank.min_visit_count - @shop_membership.visit_count %>回)
+    <% end %>
+  </p>
+  <p>来店回数: <%= @shop_membership.visit_count %>回 / ポイント残高: <%= @shop_membership.points %>pt</p>
+  <p>
+    SMS認証:
+    <% if @shop_membership.member.phone_verified? %>
+      <span class="tag-badge">認証済み</span>(<%= @shop_membership.member.phone_number %>)
+    <% else %>
+      <span class="badge muted">未認証</span>
+    <% end %>
+  </p>
+</div>
+
+<div class="card">
+  <h2>事故歴・注意点(店舗内共有専用・会員には表示されません)</h2>
+  <p><%= simple_format @shop_membership.incident_notes.presence || "(登録なし)" %></p>
+  <p><%= simple_format @shop_membership.caution_notes.presence || "(登録なし)" %></p>
+</div>
+
+<div class="card">
+  <h2>利用履歴</h2>
+  <table class="admin-table">
+    <thead><tr><th>来店日</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
+    <tbody>
+      <% @shop_visits.each do |visit| %>
+        <tr>
+          <td><%= visit.visited_on.strftime("%Y-%m-%d") %></td>
+          <td><%= visit.points_earned %>pt</td>
+          <td><%= visit.memo %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>ポイント履歴</h2>
+  <table class="admin-table">
+    <thead><tr><th>日時</th><th>ポイント増減</th><th>内容</th></tr></thead>
+    <tbody>
+      <% @shop_point_transactions.each do |transaction| %>
+        <tr>
+          <td><%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= transaction.amount.positive? ? "+" : "" %><%= transaction.amount %>pt</td>
+          <td><%= transaction.reason %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>ランクアップ特典</h2>
+  <table class="admin-table">
+    <thead><tr><th>特典名</th><th>種別</th><th>状態</th></tr></thead>
+    <tbody>
+      <% @shop_member_benefit_grants.each do |grant| %>
+        <tr>
+          <td><%= grant.shop_member_benefit.name %></td>
+          <td><%= grant.shop_member_benefit.discount_ticket? ? "割引券" : "無料券" %></td>
+          <td><%= grant.used? ? "利用済み(#{grant.used_at.strftime('%Y-%m-%d')})" : "未使用" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%= link_to "会員一覧に戻る", admin_shop_shop_memberships_path(@shop), class: "btn secondary" %>

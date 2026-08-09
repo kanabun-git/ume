@@ -34,4 +34,16 @@
 <%= link_to "ページ構成(ブロック)を管理", admin_shop_shop_page_blocks_path(@shop), class: "btn secondary" %>
 <%= link_to "女の子ページ構成(ブロック)を管理", admin_shop_cast_page_blocks_path(@shop), class: "btn secondary" %>
 <%= link_to "返信テンプレートを管理", admin_shop_review_reply_templates_path(@shop), class: "btn secondary" %>
+
+<h2>店舗運営状況を見る(閲覧専用)</h2>
+<p>
+  <%= link_to "在籍キャスト", admin_shop_casts_path(@shop), class: "btn secondary" %>
+  <%= link_to "クーポン", admin_shop_coupons_path(@shop), class: "btn secondary" %>
+  <%= link_to "出勤予定", admin_shop_shifts_path(@shop), class: "btn secondary" %>
+  <%= link_to "写メ日記", admin_shop_diary_entries_path(@shop), class: "btn secondary" %>
+  <%= link_to "プレゼント企画", admin_shop_present_tickets_path(@shop), class: "btn secondary" %>
+  <%= link_to "会員ランク・特典", admin_shop_shop_member_ranks_path(@shop), class: "btn secondary" %>
+  <%= link_to "店舗会員証", admin_shop_shop_memberships_path(@shop), class: "btn secondary" %>
+</p>
+
 <%= link_to "一覧に戻る", admin_shops_path, class: "btn secondary" %>

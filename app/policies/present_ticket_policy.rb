@@ -1,10 +1,10 @@
 class PresentTicketPolicy < ApplicationPolicy
   def index?
-    user.present? && user.shop_admin?
+    user.present? && (user.platform_admin? || user.shop_admin?)
   end
 
   def show?
-    same_shop?
+    user.platform_admin? || same_shop?
   end
 
   def create?

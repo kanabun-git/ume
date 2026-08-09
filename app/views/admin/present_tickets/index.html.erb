@@ -1,0 +1,20 @@
+<% content_for :title, "#{@shop.name} - プレゼント企画" %>
+
+<h1><%= @shop.name %> - プレゼント企画</h1>
+
+<table class="admin-table">
+  <thead><tr><th>企画名</th><th>当選人数</th><th>締切</th><th>状態</th><th>応募数</th></tr></thead>
+  <tbody>
+    <% @present_tickets.each do |ticket| %>
+      <tr>
+        <td><%= link_to ticket.name, admin_shop_present_ticket_path(@shop, ticket) %></td>
+        <td><%= ticket.capacity %>名</td>
+        <td><%= ticket.deadline_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= status_label(ticket) %></td>
+        <td><%= ticket.present_ticket_entries.count %>件</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

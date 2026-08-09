@@ -1,0 +1,12 @@
+<% content_for :title, @diary_entry.title %>
+
+<h1><%= @diary_entry.title %></h1>
+<p><%= link_to @diary_entry.cast.name, admin_shop_cast_path(@shop, @diary_entry.cast) %> / <%= status_label(@diary_entry) %> / <%= @diary_entry.published_at&.strftime("%Y-%m-%d %H:%M") %></p>
+<% if @diary_entry.video.attached? %>
+  <div class="block-video-wrapper">
+    <%= video_tag @diary_entry.video, controls: true %>
+  </div>
+<% end %>
+<p><%= simple_format @diary_entry.body %></p>
+
+<%= link_to "一覧に戻る", admin_shop_diary_entries_path(@shop), class: "btn secondary" %>

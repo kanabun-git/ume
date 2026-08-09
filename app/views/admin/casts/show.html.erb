@@ -1,0 +1,17 @@
+<% content_for :title, @cast.name %>
+
+<h1><%= @cast.name %></h1>
+<p>店舗: <%= link_to @shop.name, admin_shop_path(@shop) %> / 年齢: <%= @cast.age %> / 状態: <%= status_label(@cast) %></p>
+<p>ログインアカウント: <%= @cast.user&.email || "未発行" %></p>
+
+<h2>日記</h2>
+<% @cast.diary_entries.order(created_at: :desc).each do |entry| %>
+  <p><%= link_to entry.title, admin_shop_diary_entry_path(@shop, entry) %> (<%= status_label(entry) %>)</p>
+<% end %>
+
+<h2>出勤予定</h2>
+<% @cast.upcoming_shifts.each do |shift| %>
+  <p><%= shift.work_date %> <%= shift.formatted_time_range(@shop.time_display_format) %><% if shift.ends_next_day? %> <span class="tag-badge">翌日まで</span><% end %></p>
+<% end %>
+
+<%= link_to "在籍キャスト一覧に戻る", admin_shop_casts_path(@shop), class: "btn secondary" %>

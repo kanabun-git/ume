@@ -1,0 +1,25 @@
+<% content_for :title, "#{@shop.name} - 在籍キャスト" %>
+
+<h1><%= @shop.name %> - 在籍キャスト</h1>
+
+<table class="admin-table">
+  <thead><tr><th>名前</th><th>年齢</th><th>状態</th><th>ログインアカウント</th><th></th></tr></thead>
+  <tbody>
+    <% @casts.each do |cast| %>
+      <tr>
+        <td>
+          <%= link_to cast.name, admin_shop_cast_path(@shop, cast) %>
+          <% if cast.is_trial? %><span class="tag-badge highlight">体験入店</span><% end %>
+          <% if cast.manager_recommended? %><span class="tag-badge">店長おすすめ</span><% end %>
+          <% if cast.pick_up? %><span class="tag-badge">ピックアップ</span><% end %>
+        </td>
+        <td><%= cast.age %></td>
+        <td><%= status_label(cast) %></td>
+        <td><%= cast.user&.email || "未発行" %></td>
+        <td><%= link_to "詳細", admin_shop_cast_path(@shop, cast) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

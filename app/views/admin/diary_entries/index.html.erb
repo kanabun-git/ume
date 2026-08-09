@@ -1,0 +1,22 @@
+<% content_for :title, "#{@shop.name} - 写メ日記" %>
+
+<h1><%= @shop.name %> - 写メ日記</h1>
+
+<table class="admin-table">
+  <thead><tr><th>キャスト</th><th>タイトル</th><th>状態</th><th>公開日時</th></tr></thead>
+  <tbody>
+    <% @diary_entries.each do |entry| %>
+      <tr>
+        <td><%= entry.cast.name %></td>
+        <td><%= link_to entry.title, admin_shop_diary_entry_path(@shop, entry) %></td>
+        <td>
+          <%= status_label(entry) %>
+          <% if entry.scheduled? %><span class="badge">予約中</span><% end %>
+        </td>
+        <td><%= entry.published_at&.strftime("%Y-%m-%d %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

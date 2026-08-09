@@ -1,0 +1,20 @@
+<% content_for :title, "#{@shop.name} - 店舗会員証" %>
+
+<h1><%= @shop.name %> - 店舗会員証</h1>
+
+<table class="admin-table">
+  <thead><tr><th>会員名</th><th>ランク</th><th>来店回数</th><th>ポイント残高</th><th></th></tr></thead>
+  <tbody>
+    <% @shop_memberships.each do |membership| %>
+      <tr>
+        <td><%= membership.member.name %></td>
+        <td><%= membership.current_rank&.name || "未認定" %></td>
+        <td><%= membership.visit_count %>回</td>
+        <td><%= membership.points %>pt</td>
+        <td><%= link_to "詳細", admin_shop_shop_membership_path(@shop, membership) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

@@ -1,0 +1,19 @@
+<% content_for :title, "#{@shop.name} - 出勤予定" %>
+
+<h1><%= @shop.name %> - 出勤予定</h1>
+
+<table class="admin-table">
+  <thead><tr><th>キャスト</th><th>勤務日</th><th>時間</th><th>メモ</th></tr></thead>
+  <tbody>
+    <% @shifts.each do |shift| %>
+      <tr>
+        <td><%= shift.cast.name %></td>
+        <td><%= shift.work_date.strftime("%Y-%m-%d") %></td>
+        <td><%= shift.formatted_time_range(@shop.time_display_format) %></td>
+        <td><%= shift.note %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

@@ -1,0 +1,24 @@
+<% content_for :title, "#{@shop.name} - 会員ランク・特典" %>
+
+<h1><%= @shop.name %> - 会員ランク・特典</h1>
+
+<% @shop_member_ranks.each do |rank| %>
+  <div class="card">
+    <h2><%= rank.name %>(来店<%= rank.min_visit_count %>回以上)</h2>
+
+    <table class="admin-table">
+      <thead><tr><th>特典名</th><th>種別</th><th>内容</th></tr></thead>
+      <tbody>
+        <% rank.shop_member_benefits.each do |benefit| %>
+          <tr>
+            <td><%= benefit.name %></td>
+            <td><%= benefit.discount_ticket? ? "割引券" : "無料券" %></td>
+            <td><%= benefit.description %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

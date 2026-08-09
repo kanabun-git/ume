@@ -1,6 +1,10 @@
 class ShopMemberRankPolicy < ApplicationPolicy
   def index?
-    user.present? && user.shop_admin?
+    user.present? && (user.platform_admin? || user.shop_admin?)
+  end
+
+  def show?
+    user.platform_admin? || same_shop?
   end
 
   def create?

@@ -1,0 +1,22 @@
+<% content_for :title, "#{@shop.name} - クーポン" %>
+
+<h1><%= @shop.name %> - クーポン</h1>
+
+<table class="admin-table">
+  <thead><tr><th>クーポン番号</th><th>タイトル</th><th>コース</th><th>料金</th><th>割引率</th><th>期間</th><th>利用実績</th></tr></thead>
+  <tbody>
+    <% @coupons.each do |coupon| %>
+      <tr>
+        <td><%= coupon.coupon_number %></td>
+        <td><%= link_to coupon.title, admin_shop_coupon_path(@shop, coupon) %></td>
+        <td><%= coupon.course_name %></td>
+        <td><%= number_to_currency(coupon.regular_price, unit: "¥", precision: 0) %> → <%= number_to_currency(coupon.discounted_price, unit: "¥", precision: 0) %></td>
+        <td><%= coupon.discount_percent %>%OFF</td>
+        <td><%= coupon.valid_from.strftime("%Y-%m-%d") %>〜<%= coupon.unlimited? ? "無期限" : coupon.valid_until.strftime("%Y-%m-%d") %></td>
+        <td><%= coupon.coupon_usages.count %>件</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "店舗詳細に戻る", admin_shop_path(@shop), class: "btn secondary" %>

@@ -142,7 +142,12 @@ Rails.application.routes.draw do
       resources :coupons, only: [:index, :show]
       resources :shifts, only: [:index]
       resources :diary_entries, only: [:index, :show]
-      resources :present_tickets, only: [:index, :show]
+      resources :present_tickets do
+        member do
+          post :draw
+          post :send_result_emails
+        end
+      end
       resources :shop_member_ranks, only: [:index]
       resources :shop_memberships, only: [:index, :show]
     end

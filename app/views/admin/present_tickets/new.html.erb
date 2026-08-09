@@ -1,0 +1,4 @@
+<% content_for :title, "プレゼント企画 新規登録" %>
+
+<h1><%= @shop.name %> - プレゼント企画 新規登録</h1>
+<%= render "form", present_ticket: @present_ticket, url: admin_shop_present_tickets_path(@shop) %>

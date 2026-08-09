@@ -223,6 +223,57 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 7-1. キャストポータル用の別ドメイン設定(任意・推奨)
+
+在籍キャストが出勤予定・日記の管理に使う「スタッフポータル」(`/cast`以下)は、サイト本体とは別の、業種を連想させない中立なドメインでのみアクセスできるようにできます。キャストが外出先や周囲に人がいる状況でスマホを開いた際、URLやブラウザタブから「風俗店のスタッフ管理画面である」と分からないようにするための機能です。
+
+同じアプリ・同じデータベースをそのまま使うので、DB移行やAPI連携などの追加作業は不要です。以下の設定を追加するだけで有効になります。
+
+1. **中立なドメインを別途取得する**(例: 事業内容を連想させない適当な単語のドメイン)。
+2. DNS側でそのドメインのAレコードをこのVPSのIPに向ける(手順7と同様)。
+3. `/etc/systemd/system/ume-puma.service`に環境変数を追加します。
+
+   ```ini
+   Environment=CAST_PORTAL_HOST=(取得した中立ドメイン。例: staff-xxxxx.example.com)
+   ```
+
+   設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。この環境変数が設定されると、`/cast`以下はこのドメインでしか開けなくなります(サイト本体のドメインで`/cast`にアクセスすると404になります)。
+
+4. nginxに、そのドメイン用のserver blockを追加します(`server_name`だけが違う、手順7と同じ内容のブロックをもう1つ`/etc/nginx/sites-available/ume`に追記)。
+
+   ```nginx
+   server {
+       listen 80;
+       server_name (取得した中立ドメイン);
+
+       location /assets/ {
+           root /home/deploy/ume/public;
+           expires max;
+           add_header Cache-Control public;
+       }
+
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+   ```
+
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   sudo certbot --nginx -d (取得した中立ドメイン)
+   ```
+
+設定後は、このドメインの`/cast`からログインすると、サイト本体とは全く異なる配色・タイトル・アイコンの「スタッフポータル」画面が表示されます(ログイン画面も含めて中立デザインです)。キャストへのログインURL案内は、サイト本体のドメインではなく、この中立ドメインの方をお伝えください。
+
+この設定を行わない場合(環境変数を設定しない場合)は、これまで通りサイト本体のドメインの`/cast`からもアクセスできます。
+
+---
+
 ## 8. メール送信(Postfix)の設定
 
 **Vシリーズはリレーサーバー不要・直接送信可能**です。追加の設定なしで動くはずですが、以下だけ確認してください。

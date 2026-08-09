@@ -1,3 +1,22 @@
+<% if ENV["CAST_PORTAL_HOST"].present? && request.host == ENV["CAST_PORTAL_HOST"] %>
+{
+  "name": "スタッフポータル",
+  "short_name": "スタッフ",
+  "icons": [
+    {
+      "src": "/staff_portal_icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/cast",
+  "display": "standalone",
+  "scope": "/",
+  "description": "スタッフポータル",
+  "theme_color": "#6C5CE7",
+  "background_color": "#6C5CE7"
+}
+<% else %>
 {
   "name": "Ume",
   "icons": [
@@ -20,3 +39,4 @@
   "theme_color": "red",
   "background_color": "red"
 }
+<% end %>

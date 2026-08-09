@@ -1,0 +1,114 @@
+/* --- Cast (staff) portal: a deliberately distinct, playful theme kept
+   visually unrelated to the site's own pink branding. Every rule here is
+   scoped under .cast-portal-shell so it never leaks into the rest of the
+   app, and it works by overriding the shared --brand/--brand-dark/--muted
+   custom properties within that scope -- .btn/.badge/.tag-badge/.card/etc.
+   all reference those variables already, so they retheme automatically
+   without needing per-component overrides. */
+
+.cast-portal-shell {
+  --brand: #6C5CE7;
+  --brand-dark: #5541d1;
+  --muted: #6b6f76;
+  --border: #e3e1f5;
+  min-height: 100vh;
+  display: flex;
+  background: linear-gradient(160deg, #6C5CE7 0%, #00CEC9 100%);
+}
+
+.cast-portal-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 24px 16px;
+  color: #fff;
+}
+.cast-portal-sidebar .brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+.cast-portal-sidebar a,
+.cast-portal-sidebar .link-button {
+  display: block;
+  width: 100%;
+  color: #fff;
+  background: rgba(255, 255, 255, .16);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: .92rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.cast-portal-sidebar a:hover,
+.cast-portal-sidebar .link-button:hover {
+  background: rgba(255, 255, 255, .3);
+  text-decoration: none;
+}
+
+.cast-portal-content {
+  flex: 1;
+  padding: 32px;
+  color: #fff;
+  min-width: 0;
+}
+.cast-portal-content h1,
+.cast-portal-content h2,
+.cast-portal-content h3 {
+  color: #fff;
+}
+.cast-portal-content .notice,
+.cast-portal-content .alert {
+  border-radius: 12px;
+}
+
+.cast-portal-shell .card {
+  background: #fff;
+  color: var(--text);
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(30, 10, 60, .15);
+}
+.cast-portal-shell .card h1,
+.cast-portal-shell .card h2,
+.cast-portal-shell .card h3 {
+  color: var(--text);
+}
+
+.cast-portal-shell .btn {
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.cast-portal-shell .tag-badge {
+  background: #efecfd;
+}
+
+.cast-portal-shell table.admin-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Minimal centered shell for unauthenticated pages (Devise sign-in/password
+   screens) reached on the dedicated cast portal domain -- see
+   layouts/cast_portal_public.html.erb. */
+.cast-portal-public {
+  --brand: #6C5CE7;
+  --brand-dark: #5541d1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #6C5CE7 0%, #00CEC9 100%);
+  padding: 24px;
+}
+.cast-portal-public .auth-card {
+  width: 100%;
+  max-width: 380px;
+  margin: 0;
+}

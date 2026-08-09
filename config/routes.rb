@@ -53,15 +53,31 @@ Rails.application.routes.draw do
   # --- Cast (女の子) dashboard: manage own profile, diary, shifts ---
   # `module: "cast_portal"` avoids clashing with the top-level Cast model
   # (a bare `namespace :cast` would try to reopen the Cast class as a module).
-  namespace :cast, module: "cast_portal" do
-    root to: "dashboard#show"
-    resource :profile, only: [:edit, :update]
-    resources :diary_entries do
-      collection do
-        post :generate_draft
+  #
+  # When CAST_PORTAL_HOST is set (production), these routes only resolve on
+  # that dedicated, unbranded domain -- visiting /cast/* on the main site
+  # domain 404s, so casts get a discreet URL that doesn't reveal what the
+  # site is to anyone glancing at their phone. It's still the same app/DB
+  # (see ApplicationHelper#discreet_cast_portal_host? for the matching
+  # layout/branding switch); left unconstrained in development/test so
+  # local work doesn't need a second hostname configured.
+  cast_portal_routes = lambda do
+    namespace :cast, module: "cast_portal" do
+      root to: "dashboard#show"
+      resource :profile, only: [:edit, :update]
+      resources :diary_entries do
+        collection do
+          post :generate_draft
+        end
       end
+      resources :shifts
     end
-    resources :shifts
+  end
+
+  if ENV["CAST_PORTAL_HOST"].present?
+    constraints(host: ENV["CAST_PORTAL_HOST"], &cast_portal_routes)
+  else
+    cast_portal_routes.call
   end
 
   # --- Shop admin dashboard: manage own shop's content ---

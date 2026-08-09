@@ -9,6 +9,16 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  # Controllers under CastPortal::BaseController set their own explicit
+  # `layout "cast"` (which always wins over this), so this only affects
+  # pages with no layout of their own -- chiefly Devise's shared
+  # sign_in/password screens. When those are opened on the dedicated,
+  # unbranded cast portal domain (see config/routes.rb's CAST_PORTAL_HOST
+  # constraint), swap in the same neutral shell so a cast member never sees
+  # the site's real branding, even before logging in.
+  layout :resolve_layout
+  helper_method :discreet_cast_portal_host?
+
   def after_sign_in_path_for(resource)
     case resource
     when User
@@ -21,6 +31,14 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def resolve_layout
+    "cast_portal_public" if discreet_cast_portal_host?
+  end
+
+  def discreet_cast_portal_host?
+    ENV["CAST_PORTAL_HOST"].present? && request.host == ENV["CAST_PORTAL_HOST"]
+  end
 
   def user_not_authorized
     flash[:alert] = "この操作を行う権限がありません。"

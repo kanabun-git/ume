@@ -2,16 +2,36 @@
 
 <h1>アクセス解析</h1>
 
-<%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
-  <label>店舗で絞り込む</label>
-  <%= select_tag :shop_id, options_from_collection_for_select(Shop.order(:name), :id, :name, params[:shop_id]), include_blank: "全店舗合計" %>
-  <button type="submit" class="btn secondary">表示</button>
-<% end %>
+<p>
+  <%= link_to "店舗ページ", admin_analytics_path(page_type: "shop"), class: "btn #{'secondary' unless @page_type == 'shop'}" %>
+  <%= link_to "女の子ページ", admin_analytics_path(page_type: "cast"), class: "btn #{'secondary' unless @page_type == 'cast'}" %>
+</p>
 
-<h2>
-  <%= @selected_shop ? "#{@selected_shop.name} の閲覧数推移" : "全店舗合計の閲覧数推移" %>
-  (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
-</h2>
+<% if @page_type == "shop" %>
+  <%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
+    <%= hidden_field_tag :page_type, "shop" %>
+    <label>店舗で絞り込む</label>
+    <%= select_tag :shop_id, options_from_collection_for_select(Shop.order(:name), :id, :name, params[:shop_id]), include_blank: "全店舗合計" %>
+    <button type="submit" class="btn secondary">表示</button>
+  <% end %>
+
+  <h2>
+    <%= @selected_shop ? "#{@selected_shop.name} の閲覧数推移" : "全店舗合計の閲覧数推移" %>
+    (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
+  </h2>
+<% else %>
+  <%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
+    <%= hidden_field_tag :page_type, "cast" %>
+    <label>女の子で絞り込む</label>
+    <%= select_tag :cast_id, options_from_collection_for_select(Cast.order(:name), :id, :name, params[:cast_id]), include_blank: "全女の子合計" %>
+    <button type="submit" class="btn secondary">表示</button>
+  <% end %>
+
+  <h2>
+    <%= @selected_cast ? "#{@selected_cast.name} の閲覧数推移" : "全女の子合計の閲覧数推移" %>
+    (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
+  </h2>
+<% end %>
 
 <% max = @daily_totals.values.max || 0 %>
 <div class="analytics-chart">
@@ -24,23 +44,49 @@
 </div>
 <p><small>棒にカーソルを合わせると日付ごとの閲覧数が表示されます。合計: <%= @daily_totals.values.sum %>件</small></p>
 
-<% if @selected_shop %>
-  <%= link_to "全店舗合計に戻る", admin_analytics_path, class: "btn secondary" %>
-<% else %>
-  <h2>店舗別閲覧数ランキング</h2>
-  <% if @top_shops.any? %>
-    <table class="admin-table">
-      <thead><tr><th>店舗名</th><th>閲覧数</th></tr></thead>
-      <tbody>
-        <% @top_shops.each do |shop, count| %>
-          <tr>
-            <td><%= link_to shop.name, admin_analytics_path(shop_id: shop.id) %></td>
-            <td><%= count %>件</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<% if @page_type == "shop" %>
+  <% if @selected_shop %>
+    <%= link_to "全店舗合計に戻る", admin_analytics_path(page_type: "shop"), class: "btn secondary" %>
   <% else %>
-    <p class="region-note">この期間の閲覧データがまだありません。</p>
+    <h2>店舗別閲覧数ランキング</h2>
+    <% if @top_shops.any? %>
+      <table class="admin-table">
+        <thead><tr><th>店舗名</th><th>閲覧数(累計)</th><th>閲覧数(直近<%= @range_days %>日)</th></tr></thead>
+        <tbody>
+          <% @top_shops.each do |shop, count| %>
+            <tr>
+              <td><%= link_to shop.name, admin_analytics_path(page_type: "shop", shop_id: shop.id) %></td>
+              <td><%= shop.view_count %>件</td>
+              <td><%= count %>件</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="region-note">この期間の閲覧データがまだありません。</p>
+    <% end %>
+  <% end %>
+<% else %>
+  <% if @selected_cast %>
+    <%= link_to "全女の子合計に戻る", admin_analytics_path(page_type: "cast"), class: "btn secondary" %>
+  <% else %>
+    <h2>女の子別閲覧数ランキング</h2>
+    <% if @top_casts.any? %>
+      <table class="admin-table">
+        <thead><tr><th>名前</th><th>所属店舗</th><th>閲覧数(累計)</th><th>閲覧数(直近<%= @range_days %>日)</th></tr></thead>
+        <tbody>
+          <% @top_casts.each do |cast, count| %>
+            <tr>
+              <td><%= link_to cast.name, admin_analytics_path(page_type: "cast", cast_id: cast.id) %></td>
+              <td><%= cast.shop.name %></td>
+              <td><%= cast.view_count %>件</td>
+              <td><%= count %>件</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="region-note">この期間の閲覧データがまだありません。</p>
+    <% end %>
   <% end %>
 <% end %>

@@ -22,6 +22,17 @@ class CastsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "viewing a cast records a daily view and increments its view count" do
+    cast = create_cast
+
+    get cast_path(cast)
+    get cast_path(cast)
+
+    assert_equal 2, cast.reload.view_count
+    daily_view = CastDailyView.find_by(cast: cast, view_date: Date.current)
+    assert_equal 2, daily_view.views_count
+  end
+
   test "filters by area_id" do
     matching_area = create_area
     other_area = create_area

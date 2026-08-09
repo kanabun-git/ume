@@ -32,6 +32,36 @@ module Admin
       assert_not_includes @response.body, "店舗別閲覧数ランキング"
     end
 
+    test "shows the site-wide cast daily total and a cast ranking" do
+      admin = create_user(role: :platform_admin)
+      popular_cast = create_cast(name: "人気キャスト")
+      quiet_cast = create_cast(name: "静かなキャスト")
+      CastDailyView.create!(cast: popular_cast, view_date: Date.current, views_count: 10)
+      CastDailyView.create!(cast: quiet_cast, view_date: Date.current, views_count: 1)
+      sign_in admin
+
+      get admin_analytics_path(page_type: "cast")
+
+      assert_response :success
+      assert_includes @response.body, popular_cast.name
+      assert_includes @response.body, quiet_cast.name
+    end
+
+    test "filtering by cast_id shows only that cast's own trend, not the ranking table" do
+      admin = create_user(role: :platform_admin)
+      cast = create_cast(name: "対象キャスト")
+      other_cast = create_cast(name: "対象外キャスト")
+      CastDailyView.create!(cast: cast, view_date: Date.current, views_count: 5)
+      CastDailyView.create!(cast: other_cast, view_date: Date.current, views_count: 5)
+      sign_in admin
+
+      get admin_analytics_path(page_type: "cast", cast_id: cast.id)
+
+      assert_response :success
+      assert_includes @response.body, "#{cast.name} の閲覧数推移"
+      assert_not_includes @response.body, "女の子別閲覧数ランキング"
+    end
+
     test "a shop admin cannot access analytics" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

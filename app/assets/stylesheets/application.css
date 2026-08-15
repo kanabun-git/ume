@@ -852,3 +852,18 @@ img, video, iframe { max-width: 100%; }
   .coupon-simple-item a { flex-wrap: wrap; }
   .coupon-simple-shop { order: 4; width: 100%; }
 }
+
+/* --- 運営管理画面 > メールアドレス管理 ------------------------------------ */
+.mail-server-warning { background: #fff8e1; border: 1px solid #e0b23a; color: #9a6b00; padding: 10px 14px; border-radius: 4px; }
+.mail-test-error { color: #b5204f; font-size: .8rem; }
+/* The per-row 送信テスト form: keep the address field and its button on one
+   line inside the table cell instead of stacking like a full-width form. */
+.inline-form { display: flex; gap: 6px; align-items: center; }
+.inline-form input[type=email] { padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: .85rem; min-width: 180px; }
+.inline-form .btn { margin-top: 0; flex-shrink: 0; padding: 6px 12px; font-size: .85rem; }
+.mail-local-part-row { display: flex; gap: 8px; align-items: center; }
+.mail-local-part-row input[type=text] { flex: 1; }
+.mail-domain-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.mail-domain-actions .btn { margin-top: 0; }
+.mail-account-table td .btn { margin-top: 0; white-space: nowrap; }
+.mail-account-table td { vertical-align: top; }

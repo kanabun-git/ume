@@ -1,0 +1,142 @@
+<% content_for :title, "メールアドレス管理" %>
+
+<h1>メールアドレス管理</h1>
+<p>
+  運営している各サイト(ドメイン)のメールアドレスを追加・削除し、
+  そのアドレスからテストメールを送って実際に届くか確認できます。
+</p>
+
+<div class="card">
+  <h2>メールサーバーへの反映状況</h2>
+  <% if @provisioner_configured && @provisioner_command.present? %>
+    <p>
+      このページで追加・削除した内容は、そのままメールサーバー(Postfix/Dovecot)の設定に反映されます。
+      反映に失敗した場合は、原因を解消したうえで下のボタンから再実行してください。
+    </p>
+  <% elsif @provisioner_configured %>
+    <p class="mail-server-warning">
+      設定ファイルの書き出し先は用意されていますが、反映コマンド(環境変数 <code>UME_MAILBOXCTL</code>)が
+      設定されていないため、追加・削除の内容はメールサーバーにはまだ反映されません。
+      設定手順は <code>docs/vps_setup.md</code> の「メールアドレス管理画面の連携」を参照してください。
+    </p>
+  <% else %>
+    <p class="mail-server-warning">
+      このサーバーではメールサーバー連携が未設定のため、ここでの登録内容は管理画面上の記録のみとなり、
+      実際のメールボックスは作成・削除されません。
+      設定手順は <code>docs/vps_setup.md</code> の「メールアドレス管理画面の連携」を参照してください。
+    </p>
+  <% end %>
+  <%= button_to "メールサーバーへ再反映する", sync_admin_mail_accounts_path, method: :post, class: "btn secondary" %>
+</div>
+
+<% @mail_domains.each do |mail_domain| %>
+  <div class="card">
+    <h2><%= mail_domain.name %> <span class="badge muted"><%= mail_domain.domain %></span></h2>
+    <% if mail_domain.note.present? %>
+      <p><%= simple_format mail_domain.note %></p>
+    <% end %>
+
+    <table class="admin-table mail-account-table">
+      <thead>
+        <tr>
+          <th>メールアドレス</th>
+          <th>サーバー反映</th>
+          <th>最終送信テスト</th>
+          <th>送信テスト</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if mail_domain.mail_accounts.empty? %>
+          <tr><td colspan="5">まだメールアドレスが登録されていません。</td></tr>
+        <% end %>
+        <% mail_domain.mail_accounts.each do |mail_account| %>
+          <tr>
+            <td><%= mail_account.address %></td>
+            <td>
+              <% if mail_account.synced? %>
+                <span class="badge">反映済</span>
+              <% else %>
+                <span class="badge warning">未反映</span>
+              <% end %>
+            </td>
+            <td>
+              <% if mail_account.last_test_sent_at.present? %>
+                <%= mail_account.last_test_sent_at.strftime("%Y-%m-%d %H:%M") %><br>
+                <% if mail_account.last_test_succeeded? %>
+                  宛先: <%= mail_account.last_test_to %> / 送信成功
+                <% else %>
+                  宛先: <%= mail_account.last_test_to %> / 送信失敗<br>
+                  <span class="mail-test-error"><%= truncate(mail_account.last_test_error, length: 120) %></span>
+                <% end %>
+              <% else %>
+                未実施
+              <% end %>
+            </td>
+            <td>
+              <%= form_with url: test_delivery_admin_mail_account_path(mail_account), method: :post, local: true, class: "inline-form" do %>
+                <%= email_field_tag :to, nil, placeholder: "送信先アドレス", required: true %>
+                <%= submit_tag "テスト送信", class: "btn secondary", data: { disable_with: "送信中..." } %>
+              <% end %>
+            </td>
+            <td>
+              <%= button_to "削除", admin_mail_account_path(mail_account), method: :delete, class: "btn danger",
+                    form: { data: { turbo_confirm: "#{mail_account.address} を削除します。メールボックスの中身も読めなくなります。よろしいですか?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <h3>このサイトにメールアドレスを追加</h3>
+    <% new_account = @mail_account.mail_domain_id == mail_domain.id ? @mail_account : ::MailAccount.new %>
+    <% if new_account.errors.any? %>
+      <div class="errors">
+        <ul>
+          <% new_account.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+    <%= form_with model: new_account, url: admin_mail_domain_mail_accounts_path(mail_domain), local: true, class: "form" do |f| %>
+      <label>アドレス(@より前の部分)</label>
+      <div class="mail-local-part-row">
+        <%= f.text_field :local_part, placeholder: "info" %>
+        <span>@<%= mail_domain.domain %></span>
+      </div>
+
+      <label>パスワード(メールソフトでの受信に使用。<%= ::MailAccount::MIN_PASSWORD_LENGTH %>文字以上)</label>
+      <%= f.password_field :password, autocomplete: "new-password" %>
+
+      <label>パスワード(確認)</label>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+
+      <%= f.submit "このアドレスを追加する", class: "btn" %>
+    <% end %>
+
+    <%# A div, not a p: button_to renders a <form>, which browsers treat as
+        block-level and would auto-close a surrounding <p>, breaking the row. %>
+    <div class="mail-domain-actions">
+      <%= link_to "サイト情報を編集", edit_admin_mail_domain_path(mail_domain), class: "btn secondary" %>
+      <%= button_to "このサイトを削除", admin_mail_domain_path(mail_domain), method: :delete, class: "btn danger",
+            form: { data: { turbo_confirm: "#{mail_domain.name}(#{mail_domain.domain})と、登録されているメールアドレスをすべて削除します。よろしいですか?" } } %>
+    </div>
+  </div>
+<% end %>
+
+<div class="card">
+  <h2>サイト(ドメイン)を追加</h2>
+  <p>メールアドレスは、ここで登録したサイトごとにぶら下げて管理します。</p>
+
+  <% if @mail_domain.errors.any? %>
+    <div class="errors">
+      <ul>
+        <% @mail_domain.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<%# Fully qualified: Admin::MailAccountsController re-renders this same
+      screen when adding an address fails, and resolves partials against its
+      own view paths. %>
+  <%= render "admin/mail_domains/form", mail_domain: @mail_domain, url: admin_mail_domains_path, submit_label: "このサイトを追加する" %>
+</div>

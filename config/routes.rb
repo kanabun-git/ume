@@ -247,6 +247,18 @@ Rails.application.routes.draw do
 
     get "analytics", to: "analytics#index", as: :analytics
 
+    # メールアドレス管理: 運営する各サイト(ドメイン)のメールアドレスを
+    # 追加・削除し、そこからの送信テストを行う画面。
+    # 一覧(#index)がその画面そのもので、新規登録フォームも同じ画面に
+    # 並ぶため :new は使わない。
+    resources :mail_domains, except: [:show, :new] do
+      resources :mail_accounts, only: [:create]
+    end
+    resources :mail_accounts, only: [:destroy] do
+      member { post :test_delivery }
+      collection { post :sync }
+    end
+
     resource :setting, only: [:edit, :update]
     resource :basic_setting, only: [:edit, :update]
 

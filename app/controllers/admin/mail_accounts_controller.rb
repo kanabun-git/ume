@@ -1,0 +1,102 @@
+module Admin
+  # The per-address half of 運営管理画面 > メールアドレス管理: add an address to
+  # a site, delete one, send a test mail from it, and re-run the mail server
+  # sync by hand after a failure. Every action renders/redirects back to
+  # Admin::MailDomainsController#index, which is the whole screen.
+  class MailAccountsController < BaseController
+    include MailboxManagement
+
+    before_action :set_mail_domain, only: [:create]
+    before_action :set_mail_account, only: [:destroy, :test_delivery]
+
+    def create
+      @mail_account = @mail_domain.mail_accounts.build(mail_account_params)
+      authorize @mail_account
+
+      if @mail_account.save
+        sync_mailboxes("#{@mail_account.address} を追加しました。")
+        redirect_to admin_mail_domains_path
+      else
+        load_mailbox_index
+        render "admin/mail_domains/index", status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      address = @mail_account.address
+      @mail_account.destroy
+
+      sync_mailboxes("#{address} を削除しました。")
+      redirect_to admin_mail_domains_path
+    end
+
+    # Sends one real mail from this address to an address the admin types in
+    # (their own, normally) and records the outcome on the row, so a failure
+    # stays visible on the screen after the flash is gone.
+    def test_delivery
+      to_address = params[:to].to_s.strip
+
+      unless to_address.match?(URI::MailTo::EMAIL_REGEXP)
+        redirect_to admin_mail_domains_path, alert: "送信先のメールアドレスを正しく入力してください。"
+        return
+      end
+
+      deliver_test_mail(to_address)
+      redirect_to admin_mail_domains_path
+    end
+
+    # Re-applies the current registry to the mail server without changing
+    # anything, for retrying after a failed sync (or after the server-side
+    # setup was finished).
+    def sync
+      authorize ::MailAccount, :sync?
+
+      sync_mailboxes("")
+      redirect_to admin_mail_domains_path
+    end
+
+    private
+
+    def deliver_test_mail(to_address)
+      ::MailboxTestMailer.test_email(
+        from_address: @mail_account.address,
+        to_address: to_address,
+        site_name: @mail_account.mail_domain.name
+      ).deliver_now
+
+      record_test_result(to_address, succeeded: true, error: nil)
+      flash[:notice] = "#{@mail_account.address} から #{to_address} へテストメールを送信しました。" \
+        "受信できない場合は、DNS(SPF)やメールサーバーのログを確認してください。"
+    rescue StandardError => e
+      # Delivery errors here are expected operational feedback (unreachable
+      # relay, rejected sender), not bugs -- surface them instead of 500ing.
+      record_test_result(to_address, succeeded: false, error: e.message)
+      flash[:alert] = "テストメールの送信に失敗しました: #{e.message.truncate(300)}"
+    end
+
+    # update_columns rather than update: a test send doesn't change what the
+    # mail server should be serving, so it must not bump updated_at and make
+    # the row look 未反映.
+    def record_test_result(to_address, succeeded:, error:)
+      @mail_account.update_columns(
+        last_test_sent_at: Time.current,
+        last_test_to: to_address,
+        last_test_succeeded: succeeded,
+        last_test_error: error&.truncate(1000)
+      )
+    end
+
+    def set_mail_domain
+      @mail_domain = ::MailDomain.find(params[:mail_domain_id])
+    end
+
+    def set_mail_account
+      @mail_account = ::MailAccount.find(params[:id])
+      authorize @mail_account
+    end
+
+    def mail_account_params
+      params.require(:mail_account).permit(:local_part, :password, :password_confirmation)
+    end
+  end
+end

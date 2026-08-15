@@ -352,6 +352,17 @@ end
 2.times { |i| Review.find_or_create_by!(shop: shop, member: dummy_member3, reviewer_name: dummy_member3.name, body: "また利用します。(#{i + 1})") { |r| r.rating = 3; r.status = :approved } }
 ensure_shop_visits(ShopMembership.find_or_create_by!(shop: shop, member: dummy_member3), 1)
 
+# Mail address management (運営管理画面 > メールアドレス管理) starts out
+# knowing about the domains this app already serves; any further site the
+# operator runs is registered from the screen itself. Only the site rows are
+# seeded -- addresses have passwords, so they're always created by hand.
+MailDomain.find_or_initialize_by(domain: "fuzoku-zero.com")
+  .update!(name: "サイト本体", note: "一般ユーザー向けのポータルサイト。")
+if ENV["CAST_PORTAL_HOST"].present?
+  MailDomain.find_or_initialize_by(domain: ENV["CAST_PORTAL_HOST"])
+    .update!(name: "キャストポータル", note: "キャスト向けのスタッフポータル(中立ドメイン)。")
+end
+
 puts "Seed data created."
 puts "platform_admin: #{platform_admin.email} / password1234"
 puts "shop_admin: #{shop_admin.email} / password1234"

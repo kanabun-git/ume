@@ -26,7 +26,12 @@ module Ume
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # サイトは日本国内向けのみで、常にJSTで表示・判定してよい(データベース
+    # への保存は引き続きUTCのまま -- default_timezoneはRailsの既定値
+    # :utcから変更していないので、Time.current等の見え方だけが変わる)。
+    # これを設定していなかったため、管理画面をはじめ全画面の日時表示が
+    # UTC(日本時間の9時間前)になっていた。
+    config.time_zone = "Tokyo"
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Don't generate system test files.

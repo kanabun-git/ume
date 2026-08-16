@@ -97,6 +97,26 @@
 </div>
 
 <div class="card">
+  <h2>メンテナンス画面のバナー画像</h2>
+  <p>
+    メンテナンスモード中に表示する画面用の画像です。設定すると、通常の見出し・案内文・囲み枠は表示されなくなり、
+    この画像だけが表示されます(案内文をこの画像内に含めてください)。未設定の場合は通常通りテキストで表示されます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>バナー画像</label>
+    <% if @site_setting.maintenance_banner_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.maintenance_banner_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :maintenance_banner_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
   <h2>Indexページ画像</h2>
   <p>
     TOPページの前に表示される案内ページ(Indexページ)のアイキャッチ画像と、

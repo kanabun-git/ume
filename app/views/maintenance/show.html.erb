@@ -39,17 +39,24 @@
       h1 { font-size: 1.3rem; margin: 0 0 16px; }
       p { line-height: 1.7; color: #555; margin: 0; }
       p + p { margin-top: 10px; }
+      .maintenance-banner { max-width: 100%; height: auto; display: block; }
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="logo">FuzokuZero</div>
-      <h1>ただいまメンテナンス中です</h1>
-      <% if message.present? %>
-        <p><%= simple_format message, {}, wrapper_tag: "span" %></p>
-      <% else %>
-        <p>ただいまサイトのメンテナンスを行っております。<br>ご不便をおかけしますが、しばらく経ってから再度アクセスください。</p>
-      <% end %>
-    </div>
+    <% if banner_image&.attached? %>
+      <%# バナー画像が設定されている場合は、案内文・見出し・囲み枠は出さず
+          画像だけを表示する(案内文は画像自体に含めてもらう運用)。 %>
+      <%= image_tag banner_image, class: "maintenance-banner" %>
+    <% else %>
+      <div class="card">
+        <div class="logo">FuzokuZero</div>
+        <h1>ただいまメンテナンス中です</h1>
+        <% if message.present? %>
+          <p><%= simple_format message, {}, wrapper_tag: "span" %></p>
+        <% else %>
+          <p>ただいまサイトのメンテナンスを行っております。<br>ご不便をおかけしますが、しばらく経ってから再度アクセスください。</p>
+        <% end %>
+      </div>
+    <% end %>
   </body>
 </html>

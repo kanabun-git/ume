@@ -47,10 +47,11 @@ class MaintenanceModeMiddleware
   end
 
   def render_maintenance_page
+    setting = SiteSetting.instance
     body = ApplicationController.render(
       template: "maintenance/show",
       layout: false,
-      locals: { message: SiteSetting.instance.maintenance_message }
+      locals: { message: setting.maintenance_message, banner_image: setting.maintenance_banner_image }
     )
     [503, { "Content-Type" => "text/html; charset=utf-8", "Retry-After" => "3600" }, [body]]
   end

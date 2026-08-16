@@ -9,8 +9,8 @@ class SiteSetting < ApplicationRecord
   # (header, OGP share image, favicon), the "removed by moderation"
   # placeholders shown when a photo/video was hidden rather than never
   # uploaded, the top gate/splash page's eyecatch + region map images, the
-  # member card design shown on a signed-up member's mypage, and the banner
-  # shown on the maintenance-mode page in place of its usual text.
+  # member card design shown on a signed-up member's mypage, and the two
+  # images shown on the メンテナンスモード page (see MaintenanceModeMiddleware).
   IMAGE_ATTACHMENTS = %i[
     nowprinting_portrait_image
     nowprinting_landscape_image
@@ -22,6 +22,7 @@ class SiteSetting < ApplicationRecord
     index_eyecatch_image
     index_map_image
     membership_card_image
+    maintenance_image
     maintenance_banner_image
   ].freeze
 

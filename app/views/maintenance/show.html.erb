@@ -27,6 +27,11 @@
         padding: 40px 32px;
         text-align: center;
       }
+      .maintenance-bare {
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+      }
       .logo {
         font-size: 1.3rem;
         font-weight: bold;
@@ -39,23 +44,44 @@
       h1 { font-size: 1.3rem; margin: 0 0 16px; }
       p { line-height: 1.7; color: #555; margin: 0; }
       p + p { margin-top: 10px; }
-      .maintenance-banner { max-width: 100%; height: auto; display: block; }
+      .maintenance-image { margin: 0 0 20px; }
+      .maintenance-image img { max-width: 100%; border-radius: 8px; display: block; margin: 0 auto; }
+      .maintenance-banner { margin-top: 28px; }
+      .maintenance-banner a { display: inline-block; }
+      .maintenance-banner img { max-width: 100%; border-radius: 8px; display: block; }
+      .maintenance-banner-link {
+        color: #b5204f;
+        font-weight: bold;
+        text-decoration: underline;
+        font-size: .95rem;
+      }
     </style>
   </head>
   <body>
-    <% if banner_image&.attached? %>
-      <%# バナー画像が設定されている場合は、案内文・見出し・囲み枠は出さず
-          画像だけを表示する(案内文は画像自体に含めてもらう運用)。 %>
-      <%= image_tag banner_image, class: "maintenance-banner" %>
+    <% if site_setting.maintenance_image.attached? %>
+      <%# メンテナンス画像が設定されている場合は、見出し・案内文・カード枠は出さず、
+          画像とお問い合わせバナーだけを表示する。 %>
+      <div class="maintenance-bare">
+        <div class="maintenance-image">
+          <%# image_tag on a bare attachment needs a request host to build its
+              URL, which this page doesn't have (rendered by
+              MaintenanceModeMiddleware via ApplicationController.render, outside
+              any request) -- rails_blob_path stays host-less. %>
+          <%= image_tag rails_blob_path(site_setting.maintenance_image) %>
+        </div>
+        <%= render "maintenance/banner", site_setting: site_setting %>
+      </div>
     <% else %>
       <div class="card">
         <div class="logo">FuzokuZero</div>
         <h1>ただいまメンテナンス中です</h1>
-        <% if message.present? %>
-          <p><%= simple_format message, {}, wrapper_tag: "span" %></p>
+        <% if site_setting.maintenance_message.present? %>
+          <p><%= simple_format site_setting.maintenance_message, {}, wrapper_tag: "span" %></p>
         <% else %>
           <p>ただいまサイトのメンテナンスを行っております。<br>ご不便をおかけしますが、しばらく経ってから再度アクセスください。</p>
         <% end %>
+
+        <%= render "maintenance/banner", site_setting: site_setting %>
       </div>
     <% end %>
   </body>

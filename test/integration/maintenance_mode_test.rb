@@ -1,47 +1,81 @@
 require "test_helper"
 
-# Covers MaintenanceModeMiddleware's behavior, including the banner-image
-# override added alongside SiteSetting#maintenance_banner_image: when set,
-# the maintenance page shows only that image, with none of the usual
-# heading/message/card chrome.
 class MaintenanceModeTest < ActionDispatch::IntegrationTest
-  def with_maintenance_mode(message: nil, banner_image: nil)
+  test "public pages show the default message when maintenance mode is on with no customization" do
+    with_maintenance_mode_on do
+      get root_path
+
+      assert_response :service_unavailable
+      assert_select "h1", "ただいまメンテナンス中です"
+      assert_select "p", text: /ただいまサイトのメンテナンスを行っております/
+    end
+  end
+
+  test "a custom message replaces the default text" do
+    SiteSetting.instance.update!(maintenance_message: "臨時メンテナンス中です")
+
+    with_maintenance_mode_on do
+      get root_path
+
+      assert_select "p", text: /臨時メンテナンス中です/
+    end
+  end
+
+  test "a maintenance image drops the heading, message, and card -- only the image and banner remain" do
     setting = SiteSetting.instance
-    setting.update!(maintenance_mode: true, maintenance_message: message)
-    setting.maintenance_banner_image.attach(banner_image) if banner_image
+    setting.update!(maintenance_message: "このメッセージは表示されないはず")
+    setting.maintenance_image.attach(png_upload(filename: "maintenance.png"))
+
+    with_maintenance_mode_on do
+      get root_path
+
+      assert_select ".maintenance-image img"
+      assert_select "p", text: /このメッセージは表示されないはず/, count: 0
+      assert_select "h1", count: 0
+      assert_select ".card", count: 0
+      assert_select "a.maintenance-banner-link[href=?]", new_shop_inquiry_path
+    end
+  end
+
+  test "with no banner image, a text link to the shop inquiry page is shown" do
+    with_maintenance_mode_on do
+      get root_path
+
+      assert_select "a.maintenance-banner-link[href=?]", new_shop_inquiry_path
+    end
+  end
+
+  test "with a banner image, it links to the shop inquiry page instead of the text link" do
+    SiteSetting.instance.maintenance_banner_image.attach(png_upload(filename: "banner.png"))
+
+    with_maintenance_mode_on do
+      get root_path
+
+      assert_select ".maintenance-banner a[href=?] img", new_shop_inquiry_path
+      assert_select "a.maintenance-banner-link", count: 0
+    end
+  end
+
+  test "the shop inquiry pages stay reachable during maintenance" do
+    with_maintenance_mode_on do
+      get new_shop_inquiry_path
+      assert_response :success
+    end
+  end
+
+  test "the admin, shop_admin, and cast portal areas stay reachable during maintenance" do
+    with_maintenance_mode_on do
+      get new_user_session_path
+      assert_response :success
+    end
+  end
+
+  private
+
+  def with_maintenance_mode_on
+    SiteSetting.instance.update!(maintenance_mode: true)
     yield
   ensure
     SiteSetting.instance.update!(maintenance_mode: false)
-  end
-
-  test "without a banner image, the usual heading and message are shown" do
-    with_maintenance_mode(message: "案内メッセージです") do
-      get "/"
-
-      assert_response :service_unavailable
-      assert_match "<h1>ただいまメンテナンス中です</h1>", response.body
-      assert_match "<span>案内メッセージです</span>", response.body
-      assert_no_match(/<img[^>]*maintenance-banner/, response.body)
-    end
-  end
-
-  test "with a banner image, only the image is shown -- no heading, message, or card" do
-    with_maintenance_mode(message: "案内メッセージです", banner_image: png_upload) do
-      get "/"
-
-      assert_response :service_unavailable
-      assert_match(/<img[^>]*maintenance-banner/, response.body)
-      assert_no_match "<h1>", response.body
-      assert_no_match "<span>案内メッセージです</span>", response.body
-      assert_no_match 'class="card"', response.body
-    end
-  end
-
-  test "back-office areas stay reachable during maintenance mode regardless of the banner" do
-    with_maintenance_mode(banner_image: png_upload) do
-      get new_user_session_path
-
-      assert_response :success
-    end
   end
 end

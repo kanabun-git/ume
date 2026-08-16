@@ -108,7 +108,10 @@ cd ume
 git checkout claude/email-management-page-wn9tm2   # 本番で動かすブランチ(運用に合わせて調整)
 
 gem install bundler
-bundle install --without development test
+# --without はBundler 4系でCLIフラグとして廃止されたため、config設定を使う
+# (このアプリのディレクトリに記憶され、以後のbundle installにも引き継がれる)
+bundle config set --local without 'development test'
+bundle install
 ```
 
 > **注意(2026年8月)**: 以前このドキュメントは `kanabun-git/fuzoku_zero.git` を

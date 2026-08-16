@@ -15,7 +15,11 @@ class MaintenanceModeMiddleware
     /icon.svg
     /manifest.json
     /service-worker
+    /shop_inquiries
   ].freeze
+  # /shop_inquiries stays open even during maintenance so the maintenance
+  # page's "サイト掲載のお問い合わせ" banner/link (see maintenance/show.html.erb)
+  # actually works instead of bouncing back to itself.
 
   def initialize(app)
     @app = app
@@ -49,7 +53,7 @@ class MaintenanceModeMiddleware
     body = ApplicationController.render(
       template: "maintenance/show",
       layout: false,
-      locals: { message: SiteSetting.instance.maintenance_message }
+      locals: { site_setting: SiteSetting.instance }
     )
     [503, { "Content-Type" => "text/html; charset=utf-8", "Retry-After" => "3600" }, [body]]
   end

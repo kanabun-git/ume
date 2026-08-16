@@ -1,8 +1,9 @@
 module Admin
   # All the site's swappable base images (placeholders, logo, moderation
   # replacement images, Index page images, member card design) in one
-  # place, separate from Admin::SettingsController's operational toggles
-  # (maintenance mode) so "where do I upload a base image" has one answer.
+  # place, separate from Admin::SettingsController's operational toggles.
+  # Exception: the メンテナンスモード images live on Admin::SettingsController's
+  # own form instead, next to the toggle/message they only ever apply to.
   class BasicSettingsController < BaseController
     def edit
       @site_setting = ::SiteSetting.instance

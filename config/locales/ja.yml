@@ -6,18 +6,7 @@ ja:
       shop: 店舗
       diary_entry: 写メ日記
       shop_inquiry: 掲載のお問い合わせ
-      mail_domain: サイト
-      mail_account: メールアドレス
     attributes:
-      mail_domain:
-        name: サイト名
-        domain: ドメイン
-        note: メモ
-      mail_account:
-        local_part: アドレス(@より前の部分)
-        password: パスワード
-        password_confirmation: パスワード(確認)
-        password_hash: パスワード
       shift:
         work_date: 出勤日
         start_time: 開始時刻

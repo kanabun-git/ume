@@ -103,13 +103,28 @@ rbenv global 3.3.6
 
 ```bash
 cd /home/deploy
-git clone https://github.com/kanabun-git/fuzoku_zero.git ume
+git clone https://github.com/kanabun-git/ume.git ume
 cd ume
-git checkout main   # 本番で動かすブランチ(運用に合わせて調整)
+git checkout claude/email-management-page-wn9tm2   # 本番で動かすブランチ(運用に合わせて調整)
 
 gem install bundler
 bundle install --without development test
 ```
+
+> **注意(2026年8月)**: 以前このドキュメントは `kanabun-git/fuzoku_zero.git` を
+> クローン先として案内していましたが、そちらは開発の初期にコピーされたきり
+> 更新されていない別リポジトリで、実際の開発は一貫して `kanabun-git/ume.git`
+> 側で行われています。既に `fuzoku_zero.git` からデプロイ済みの環境は、
+> 以下でリモートを付け替えてください(過去のコミット履歴は共有していないため
+> `git fetch` だけでは追従できません)。
+>
+> ```bash
+> cd /home/deploy/ume
+> git remote set-url origin https://github.com/kanabun-git/ume.git
+> git fetch origin
+> git checkout claude/email-management-page-wn9tm2
+> git reset --hard origin/claude/email-management-page-wn9tm2
+> ```
 
 ### 5-1. マスターキーの配置(重要)
 

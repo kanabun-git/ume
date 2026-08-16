@@ -196,7 +196,22 @@ sudo systemctl status ume-puma --no-pager
 
 ## 7. nginx + SSL(Let's Encrypt)
 
-`/etc/nginx/sites-available/ume`を作成します。
+まず、アップロードサイズの上限を上げます(nginxの既定値は1MBしかなく、アプリ自体が許可している画像5MB・動画50MBのアップロードがそれより先に`413 Request Entity Too Large`で弾かれてしまうため)。`/etc/nginx/nginx.conf`の`http {}`ブロック内に追加してください。
+
+```nginx
+http {
+    ...
+    client_max_body_size 60m;
+    ...
+}
+```
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+次に、`/etc/nginx/sites-available/ume`を作成します。
 
 ```nginx
 server {

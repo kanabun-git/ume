@@ -1,0 +1,25 @@
+<% content_for :title, @message.subject %>
+
+<h1><%= @message.subject %></h1>
+
+<table class="mail-settings-table">
+  <tbody>
+    <tr><th>差出人</th><td><%= @message.from %></td></tr>
+    <tr><th>宛先</th><td><%= @message.to %></td></tr>
+    <tr><th>日時</th><td><%= @message.date&.strftime("%Y-%m-%d %H:%M:%S") %></td></tr>
+  </tbody>
+</table>
+
+<div class="card mail-message-body">
+  <% if @message.html_body.present? %>
+    <%# 送信者が自由に書けるメール本文なので、レンダリング前に必ずsanitizeを
+        通す(script/on*属性/javascript:リンク等を除去する、XSS対策)。 %>
+    <%= sanitize @message.html_body %>
+  <% elsif @message.text_body.present? %>
+    <%= simple_format @message.text_body %>
+  <% else %>
+    <p>(本文がありません)</p>
+  <% end %>
+</div>
+
+<%= link_to "受信箱に戻る", mail_admin_mail_account_messages_path(@mail_account), class: "btn secondary" %>

@@ -1,0 +1,33 @@
+<% content_for :title, "#{@mail_account.address} の受信箱" %>
+
+<h1><%= @mail_account.address %> の受信箱</h1>
+<p class="mail-settings-hint">
+  最新<%= MailboxInbox::MESSAGE_LIMIT %>件までの表示専用画面です(作成・返信・削除はできません)。
+</p>
+
+<% if @error.present? %>
+  <div class="errors"><%= @error %></div>
+<% elsif @messages.empty? %>
+  <p>受信メールはありません。</p>
+<% else %>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>差出人</th>
+        <th>件名</th>
+        <th>日時</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @messages.each do |message| %>
+        <tr>
+          <td><%= message.from %></td>
+          <td><%= link_to message.subject, mail_admin_mail_account_message_path(@mail_account, message.uid) %></td>
+          <td><%= message.date&.strftime("%Y-%m-%d %H:%M") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= link_to "メールアドレス管理に戻る", mail_admin_mail_domains_path, class: "btn secondary" %>

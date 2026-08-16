@@ -103,6 +103,8 @@ Rails.application.routes.draw do
           post :round_trip_test
         end
         collection { post :sync }
+        # 受信箱を見る(閲覧専用)。:id はDBのレコードIDではなくIMAPのUID。
+        resources :messages, only: [:index, :show], controller: "mail_account_messages"
       end
     end
   end

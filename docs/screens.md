@@ -60,6 +60,7 @@
 |---|---|---|---|
 | 1 | メールアドレス管理 | `/mailadmin` | 運営する3サイト(fuzoku-zero.com / kanabun.tech / puremint.jp)のメールアドレスの追加・削除、送信テスト・送受信テストと、メールソフト用の設定値・パスワードの確認/変更。登録内容はメールサーバー(Postfix/Dovecot)に反映される |
 | 2 | サイト情報の編集 | `/mailadmin/mail_domains/:id/edit` | サイト名・ドメイン・メールサーバーのホスト名・メモの編集 |
+| 3 | 受信箱を見る | `/mailadmin/mail_accounts/:mail_account_id/messages` | そのアドレスのINBOXをIMAP経由で閲覧する読み取り専用のWebメーラー(一覧・本文表示のみ。作成・返信・削除は不可)。HTML本文は表示前に`sanitize`でXSS対策済み |
 
 ## 画面遷移の考え方
 

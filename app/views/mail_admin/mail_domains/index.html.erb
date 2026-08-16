@@ -54,7 +54,10 @@
         <% end %>
         <% mail_domain.mail_accounts.each do |mail_account| %>
           <tr>
-            <td><%= mail_account.address %></td>
+            <td>
+              <%= mail_account.address %><br>
+              <%= link_to "受信箱を見る", mail_admin_mail_account_messages_path(mail_account), class: "btn secondary mail-inbox-link" %>
+            </td>
             <td>
               <% if mail_account.synced? %>
                 <span class="badge">反映済</span>

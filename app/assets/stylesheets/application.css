@@ -885,6 +885,8 @@ img, video, iframe { max-width: 100%; }
 .mail-domain-actions .btn { margin-top: 0; }
 .mail-account-table td .btn { margin-top: 0; white-space: nowrap; }
 .mail-account-table td { vertical-align: top; }
+.mail-inbox-link { margin-top: 6px !important; }
+.mail-message-body { line-height: 1.6; word-break: break-word; }
 /* The per-address "メールソフトの設定" drawer, opened from its own table row. */
 .mail-settings-row > td { background: #faf6f7; }
 .mail-client-settings summary { cursor: pointer; font-weight: bold; font-size: .9rem; color: var(--brand-dark); }

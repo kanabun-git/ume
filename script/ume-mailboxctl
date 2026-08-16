@@ -83,8 +83,12 @@ awk -F'\t' -v uid="$vmail_uid" -v gid="$vmail_gid" -v root="$VMAIL_ROOT" \
 
 install -o root -g root -m 0644 "$TMP_DIR/virtual_mailbox_domains" "$POSTFIX_VDOMAINS_FILE"
 install -o root -g root -m 0644 "$TMP_DIR/vmailbox" "$POSTFIX_VMAILBOX_FILE"
-# Dovecotのユーザーファイルはハッシュを含むため、Dovecotだけが読めれば良い。
-install -o root -g root -m 0600 "$TMP_DIR/users" "$DOVECOT_USERS_FILE"
+# Dovecotのユーザーファイルはハッシュを含むため、dovecotグループだけが
+# 読めれば良い(root:root 0600だと、認証ワーカーが非特権ユーザーで動く
+# 構成のとき、Dovecot自身も読めずログイン全体が "Temporary authentication
+# failure" で失敗する)。
+DOVECOT_GROUP=${UME_DOVECOT_GROUP:-dovecot}
+install -o root -g "$DOVECOT_GROUP" -m 0640 "$TMP_DIR/users" "$DOVECOT_USERS_FILE"
 
 postmap "$POSTFIX_VDOMAINS_FILE"
 postmap "$POSTFIX_VMAILBOX_FILE"

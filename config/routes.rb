@@ -98,7 +98,10 @@ Rails.application.routes.draw do
         resources :mail_accounts, only: [:create]
       end
       resources :mail_accounts, only: [:update, :destroy] do
-        member { post :test_delivery }
+        member do
+          post :test_delivery
+          post :round_trip_test
+        end
         collection { post :sync }
       end
     end

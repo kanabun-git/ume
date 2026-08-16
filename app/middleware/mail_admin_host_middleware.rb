@@ -3,16 +3,18 @@
 # than a second door into the portal.
 #
 # config/routes.rb already makes /mailadmin resolve *only* on that host; this
-# is the other half: on that host, nothing but /mailadmin (plus login and
-# static assets) resolves at all, so the portal's public pages and its
-# /admin, /shop_admin, /cast back offices are simply not there.
+# is the other half: on that host, nothing but /mailadmin (plus static
+# assets) resolves at all, so the portal's public pages and its /admin,
+# /shop_admin, /cast, /users (Devise) back offices are simply not there.
+# /mailadmin itself is protected by its own Basic auth (see
+# MailAdmin::BaseController), not Devise, so no login route needs carving
+# out here.
 #
 # Does nothing when MAIL_ADMIN_HOST is unset (development, test, and any
 # deployment that hasn't set up the separate domain yet).
 class MailAdminHostMiddleware
   ALLOWED_PATH_PREFIXES = %w[
     /mailadmin
-    /users
     /assets
     /rails
     /up

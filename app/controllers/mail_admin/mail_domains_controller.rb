@@ -13,7 +13,6 @@ module MailAdmin
 
     def create
       @mail_domain = ::MailDomain.new(mail_domain_params)
-      authorize @mail_domain
 
       if @mail_domain.save
         sync_mailboxes("サイトを登録しました。")
@@ -53,7 +52,6 @@ module MailAdmin
 
     def set_mail_domain
       @mail_domain = ::MailDomain.find(params[:id])
-      authorize @mail_domain
     end
 
     def mail_domain_params

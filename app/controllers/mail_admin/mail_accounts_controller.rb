@@ -7,11 +7,10 @@ module MailAdmin
     include MailboxManagement
 
     before_action :set_mail_domain, only: [:create]
-    before_action :set_mail_account, only: [:update, :destroy, :test_delivery]
+    before_action :set_mail_account, only: [:update, :destroy, :test_delivery, :round_trip_test]
 
     def create
       @mail_account = @mail_domain.mail_accounts.build(mail_account_params)
-      authorize @mail_account
 
       if @mail_account.save
         sync_mailboxes("#{@mail_account.address} を追加しました。")
@@ -63,12 +62,26 @@ module MailAdmin
       redirect_to mail_admin_mail_domains_path
     end
 
+    # Sends a mail from this address to itself and confirms via IMAP that it
+    # actually arrived -- a fuller check than #test_delivery, which only
+    # proves outbound send didn't raise.
+    def round_trip_test
+      result = ::MailboxRoundTripTest.new(@mail_account).call
+
+      @mail_account.update_columns(
+        last_round_trip_tested_at: Time.current,
+        last_round_trip_succeeded: result.succeeded?,
+        last_round_trip_error: result.succeeded? ? nil : result.message.truncate(1000)
+      )
+
+      flash[result.succeeded? ? :notice : :alert] = "#{@mail_account.address}: #{result.message}"
+      redirect_to mail_admin_mail_domains_path
+    end
+
     # Re-applies the current registry to the mail server without changing
     # anything, for retrying after a failed sync (or after the server-side
     # setup was finished).
     def sync
-      authorize ::MailAccount, :sync?
-
       sync_mailboxes("")
       redirect_to mail_admin_mail_domains_path
     end
@@ -110,7 +123,6 @@ module MailAdmin
 
     def set_mail_account
       @mail_account = ::MailAccount.find(params[:id])
-      authorize @mail_account
     end
 
     def mail_account_params

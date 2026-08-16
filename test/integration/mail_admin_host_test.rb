@@ -6,7 +6,8 @@ require "test_helper"
 #
 #   * config/routes.rb -- /mailadmin only resolves on MAIL_ADMIN_HOST
 #   * MailAdminHostMiddleware -- on that host, nothing *but* /mailadmin
-#     (plus login and assets) resolves at all
+#     (plus static assets) resolves at all -- not even Devise's /users, since
+#     this screen is protected by its own Basic auth, not a Devise session.
 #
 # Reloads routes around the ENV change and restores both in an `ensure`, the
 # same way cast_portal_host_constraint_test.rb does, so nothing leaks into
@@ -29,44 +30,39 @@ class MailAdminHostTest < ActionDispatch::IntegrationTest
       assert_response :not_found
 
       host! "mailadmin.example.test"
-      get "/mailadmin"
-      assert_response :redirect # to the sign-in screen
+      get "/mailadmin", headers: mail_admin_auth_headers
+      assert_response :success
     end
   end
 
-  test "the portal itself is not served on the mail admin host" do
+  test "the portal itself, including its Devise login, is not served on the mail admin host" do
     with_mail_admin_host("mailadmin.example.test") do
       host! "mailadmin.example.test"
 
-      ["/", "/shops", "/admin", "/shop_admin", "/cast"].each do |path|
+      ["/", "/shops", "/admin", "/shop_admin", "/cast", "/users/sign_in"].each do |path|
         get path
         assert_response :not_found, "#{path} must not be reachable on the mail admin host"
       end
     end
   end
 
-  test "signing in stays reachable on the mail admin host and lands on the management screen" do
-    admin = create_user(role: :platform_admin)
-
+  test "the management screen carries no portal branding" do
     with_mail_admin_host("mailadmin.example.test") do
       host! "mailadmin.example.test"
 
-      get "/users/sign_in"
+      get "/mailadmin", headers: mail_admin_auth_headers
+
       assert_response :success
-      # The login screen there carries none of the portal's branding.
       assert_match "メールアドレス管理", response.body
       assert_no_match(/FuzokuZero/, response.body)
-
-      post user_session_path, params: { user: { email: admin.email, password: "password1234" } }
-      assert_redirected_to "/mailadmin"
     end
   end
 
   test "without the environment variable everything behaves as before" do
     host! "www.example.com"
 
-    get "/mailadmin"
-    assert_response :redirect
+    get "/mailadmin", headers: mail_admin_auth_headers
+    assert_response :success
 
     get "/"
     assert_response :success

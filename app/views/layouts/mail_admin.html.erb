@@ -13,7 +13,6 @@
     <div class="mail-admin-shell">
       <header class="mail-admin-header">
         <%= link_to "メールアドレス管理", mail_admin_root_path, class: "mail-admin-brand" %>
-        <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
       </header>
       <main class="mail-admin-content">
         <% if notice %><div class="notice"><%= notice %></div><% end %>

@@ -285,14 +285,18 @@ systemctl list-timers | grep certbot
 
    ```ini
    Environment=MAIL_ADMIN_HOST=www.kanabun.tech
+   Environment=MAIL_ADMIN_HTTP_AUTH_USER=(この画面専用のID。運営者アカウントとは別物)
+   Environment=MAIL_ADMIN_HTTP_AUTH_PASSWORD=(この画面専用のパスワード。十分に長いランダム文字列を推奨)
    ```
 
-   設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。この環境変数を設定すると、
+   設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。`MAIL_ADMIN_HOST`を設定すると、
 
    - `/mailadmin`は**このドメインでしか開けなくなる**(`fuzoku-zero.com/mailadmin`は404)
-   - 逆にこのドメインでは、`/mailadmin`とログイン画面**以外は何も配信されない**(ポータルサイトのトップページや`/admin`にアクセスしても404)
+   - 逆にこのドメインでは、`/mailadmin`(と静的アセット)**以外は何も配信されない**(ポータルサイトのトップページや`/admin`、Deviseの`/users`ログインルートにアクセスしても404)
 
-   という双方向の切り離しが有効になります。ログイン画面にもポータルサイトの名前・デザインは一切出ません。
+   という双方向の切り離しが有効になります。
+
+   `/mailadmin`はポータルサイトのログイン(Devise/運営者アカウント)とは無関係の、**この画面専用のBasic認証**で保護されます。ブラウザがID・パスワードを尋ねるネイティブなダイアログを出すだけで、ポータルサイトの名前・デザインが見えることは一切ありません。`MAIL_ADMIN_HTTP_AUTH_USER`/`PASSWORD`のどちらかが未設定のまま起動すると、`/mailadmin`は(誰にも見せずに)503を返します -- 設定漏れで無防備に公開されることはありません。
 
 3. nginxに、このドメイン用のserver blockを追加します(`server_name`だけが違う、手順7と同じ内容のブロック)。
 
@@ -487,6 +491,7 @@ sudo systemctl daemon-reload && sudo systemctl restart ume-puma
 - メールソフトの設定値(サーバー名・ポート・パスワード)は、管理画面の各アドレスの「メールソフトの設定とパスワードを表示」から確認できます。受信はIMAPS(993番)、送信はsubmission(587番/STARTTLS)、ユーザー名はメールアドレス全体(`info@example.com`)です。
 - 証明書のホスト名と、メールソフトに設定するサーバー名は一致させてください。Let's Encryptの証明書を`mail.example.com`で取得している場合は、管理画面の「サイト情報を編集」→「メールサーバーのホスト名」にそのホスト名を入れておくと、画面の案内もそれに合わせて表示されます。
 - 反映に失敗した場合は、画面上部に理由が表示されます。詳しいログは `sudo journalctl -u ume-puma` と `sudo tail -50 /var/log/mail.log` を確認してください。
+- 「送受信テスト」は、アプリ自身がそのアドレスからそのアドレス宛にメールを送り、IMAPでログインして実際に届いたかまで確認します。`UME_ENCRYPTION_PRIMARY_KEY`が未設定(パスワードを確認できない)アドレスでは実行できません。また、アプリサーバーが自分自身の公開ホスト名(`mail_host`)の993番ポートに接続できる必要があります -- 一部のVPS/クラウド環境では、サーバーが自分の公開IPに外向きに接続できない(hairpin NAT非対応)ことがあり、その場合は送信は成功するのに受信確認だけ失敗します。その場合は`ufw`や外向き接続の制限を確認してください。
 
 ---
 

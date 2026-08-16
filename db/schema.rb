@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_16_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -173,6 +173,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_16_090000) do
 
   create_table "mail_accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "last_round_trip_error"
+    t.boolean "last_round_trip_succeeded"
+    t.datetime "last_round_trip_tested_at"
     t.text "last_test_error"
     t.datetime "last_test_sent_at"
     t.boolean "last_test_succeeded"

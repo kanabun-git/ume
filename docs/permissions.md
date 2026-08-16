@@ -20,9 +20,13 @@
 | 口コミ | 閲覧(承認前含む) | ×(承認済のみ) | - | △(自店舗宛のみ) | ○ |
 | 口コミ | 承認・却下・削除 | × | × | × | ○ |
 | エリア/ジャンル/プランのマスタ | 変更 | × | × | × | ○ |
-| 各サイトのメールアドレス(`/mailadmin`) | 追加・削除・送信テスト | × | × | × | ○ |
 | 契約(ShopSubscription) | 変更 | × | × | × | ○ |
 | ユーザーアカウント全般 | 変更 | × | ×(自分のプロフィールの一部のみ) | △(自店舗のキャストのみ) | ○ |
+
+`/mailadmin`(各サイトのメールアドレスの追加・削除・送信テスト)はこの表の対象外。
+上記のUser/ロールに基づく認可の仕組みを一切使わず、専用のBasic認証
+(`MAIL_ADMIN_HTTP_AUTH_USER`/`PASSWORD`)だけで保護される、完全に別系統の画面
+(詳細は [screens.md](screens.md) の5、`app/controllers/mail_admin/base_controller.rb`)。
 
 ## 実装対応表(Pundit Policy)
 
@@ -35,7 +39,6 @@
 | `ReviewPolicy` | `Review` | `create?`は誰でも可。`moderate?`(承認/却下/削除)は運営者のみ。`index?`は運営者/自店舗の店舗管理者 |
 | `UserPolicy` | `User` | 運営者は全操作可。店舗管理者は自店舗の`cast`ロールユーザーのみ作成・閲覧・更新・削除可 |
 | `AreaPolicy` / `GenrePolicy` / `PlanPolicy` / `ShopSubscriptionPolicy` | 各マスタ | `PlatformAdminPolicy`を継承し、運営者のみ全操作可 |
-| `MailDomainPolicy` / `MailAccountPolicy` | `MailDomain` / `MailAccount` | `PlatformAdminPolicy`を継承し、運営者のみ全操作可(送信テスト`test_delivery?`・再反映`sync?`を含む) |
 
 ## 認可の二重構造
 

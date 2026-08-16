@@ -46,15 +46,19 @@
 | 7 | 口コミモデレーション | `/admin/reviews` | 投稿された口コミの一覧・承認・却下・削除 |
 | 8 | ユーザー管理 | `/admin/users` | 全ロールのユーザーアカウントCRUD(店舗管理者・キャストのアカウント発行/所属店舗変更も可能) |
 
-## 5. メールアドレス管理画面 `/mailadmin` (要ログイン・platform_admin ロールのみ)
+## 5. メールアドレス管理画面 `/mailadmin` (要Basic認証)
 
-ポータルサイトとは切り離した、独立した管理画面。本番では `MAIL_ADMIN_HOST`
+ポータルサイトとは切り離した、独立した管理画面。ポータルサイトのDevise/User
+ログインとは無関係の、この画面専用のBasic認証(`MAIL_ADMIN_HTTP_AUTH_USER`/
+`MAIL_ADMIN_HTTP_AUTH_PASSWORD`)で保護する。本番では `MAIL_ADMIN_HOST`
 (想定: `www.kanabun.tech`)でのみ開けるようにし、そのドメインでは
-`/mailadmin` とログイン画面以外は配信しない(`MailAdminHostMiddleware`)。
+`/mailadmin`(とアセット)以外は一切配信しない -- ポータルサイトの
+`/admin`はもちろん、Deviseの`/users`ログインルートも含めて404になる
+(`MailAdminHostMiddleware`)。
 
 | # | 画面 | URL | 説明 |
 |---|---|---|---|
-| 1 | メールアドレス管理 | `/mailadmin` | 運営する3サイト(fuzoku-zero.com / kanabun.tech / puremint.jp)のメールアドレスの追加・削除・送信テストと、メールソフト用の設定値・パスワードの確認/変更。登録内容はメールサーバー(Postfix/Dovecot)に反映される |
+| 1 | メールアドレス管理 | `/mailadmin` | 運営する3サイト(fuzoku-zero.com / kanabun.tech / puremint.jp)のメールアドレスの追加・削除、送信テスト・送受信テストと、メールソフト用の設定値・パスワードの確認/変更。登録内容はメールサーバー(Postfix/Dovecot)に反映される |
 | 2 | サイト情報の編集 | `/mailadmin/mail_domains/:id/edit` | サイト名・ドメイン・メールサーバーのホスト名・メモの編集 |
 
 ## 画面遷移の考え方

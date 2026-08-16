@@ -2,8 +2,9 @@
 
 <h1>メールアドレス管理</h1>
 <p>
-  運営している各サイト(ドメイン)のメールアドレスを追加・削除し、
-  そのアドレスからテストメールを送って実際に届くか確認できます。
+  運営している各サイト(ドメイン)のメールアドレスを追加・削除できます。
+  「送信テスト」は指定した宛先へ実際に1通送るテスト、
+  「送受信テスト」はそのアドレス自身に送ってIMAPで受信まで自動確認するテストです。
 </p>
 
 <div class="card">
@@ -43,12 +44,13 @@
           <th>サーバー反映</th>
           <th>最終送信テスト</th>
           <th>送信テスト</th>
+          <th>送受信テスト</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <% if mail_domain.mail_accounts.empty? %>
-          <tr><td colspan="5">まだメールアドレスが登録されていません。</td></tr>
+          <tr><td colspan="6">まだメールアドレスが登録されていません。</td></tr>
         <% end %>
         <% mail_domain.mail_accounts.each do |mail_account| %>
           <tr>
@@ -80,12 +82,27 @@
               <% end %>
             </td>
             <td>
+              <% if mail_account.last_round_trip_tested_at.present? %>
+                <%= mail_account.last_round_trip_tested_at.strftime("%Y-%m-%d %H:%M") %><br>
+                <% if mail_account.last_round_trip_succeeded? %>
+                  送受信成功
+                <% else %>
+                  失敗<br>
+                  <span class="mail-test-error"><%= truncate(mail_account.last_round_trip_error, length: 100) %></span>
+                <% end %>
+              <% else %>
+                未実施
+              <% end %>
+              <%= button_to "送受信テスト", round_trip_test_mail_admin_mail_account_path(mail_account), method: :post,
+                    class: "btn secondary", data: { disable_with: "テスト中(数秒かかります)..." } %>
+            </td>
+            <td>
               <%= button_to "削除", mail_admin_mail_account_path(mail_account), method: :delete, class: "btn danger",
                     form: { data: { turbo_confirm: "#{mail_account.address} を削除します。メールボックスの中身も読めなくなります。よろしいですか?" } } %>
             </td>
           </tr>
           <tr class="mail-settings-row">
-            <td colspan="5">
+            <td colspan="6">
               <%# A failed password change re-renders this screen; swap in the
                   record carrying the error messages for that one address. %>
               <% account = @mail_account.persisted? && @mail_account.id == mail_account.id ? @mail_account : mail_account %>

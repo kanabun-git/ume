@@ -10,7 +10,7 @@ module MailboxManagement
   # failure, re-renders this same screen with the invalid record in place,
   # so both need the full set of ivars it reads.
   def load_mailbox_index
-    @mail_domains = policy_scope(::MailDomain).includes(:mail_accounts)
+    @mail_domains = ::MailDomain.includes(:mail_accounts)
     @mail_domain ||= ::MailDomain.new
     @mail_account ||= ::MailAccount.new
     @provisioner_configured = ::MailboxProvisioner.configured?

@@ -59,5 +59,15 @@ module Ume
     # 本番で鍵が未設定の場合は、パスワードの保存・表示だけを行わない
     # (メールアドレスの追加・削除・送信テストはこれまで通り使えるようにする)。
     config.x.mail_password_display = encryption_key.present?
+
+    # メールアドレス管理画面(/mailadmin)専用のBasic認証。ポータルサイトの
+    # ログイン(Devise/User)とは無関係で、この画面にしか通用しない
+    # 別のID・パスワード。開発・テストでは固定のダミー値、本番では環境変数が
+    # 必須(未設定ならMailAdmin::BaseControllerが画面ごと503を返し、
+    # 無防備な状態で公開されることはない)。
+    config.x.mail_admin_http_auth_user =
+      ENV["MAIL_ADMIN_HTTP_AUTH_USER"].presence || (Rails.env.production? ? nil : "admin")
+    config.x.mail_admin_http_auth_password =
+      ENV["MAIL_ADMIN_HTTP_AUTH_PASSWORD"].presence || (Rails.env.production? ? nil : "password1234")
   end
 end

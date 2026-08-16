@@ -5,19 +5,21 @@ class ShopInquiriesController < ApplicationController
   end
 
   def create
+    @shop_inquiry = ShopInquiry.new(shop_inquiry_params)
+
     # Honeypot: a field real visitors never see or fill in (see reviews'
     # same pattern in ReviewsController#create). If it's filled, silently
-    # pretend success rather than telling the bot it was caught.
+    # pretend success -- render the same confirmation page without saving
+    # or emailing anyone, rather than telling the bot it was caught.
     if params.dig(:shop_inquiry, :website).present?
-      redirect_to root_path, notice: "お問い合わせを受け付けました。担当者よりご連絡いたします。" and return
+      render :create and return
     end
 
-    @shop_inquiry = ShopInquiry.new(shop_inquiry_params)
     authorize @shop_inquiry
 
     if @shop_inquiry.save
       ShopInquiryMailer.notify_admin(@shop_inquiry).deliver_now
-      redirect_to root_path, notice: "お問い合わせを受け付けました。担当者よりご連絡いたします。"
+      render :create
     else
       render :new, status: :unprocessable_entity
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_15_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_16_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -180,6 +180,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_15_120001) do
     t.string "local_part", null: false
     t.bigint "mail_domain_id", null: false
     t.string "password_hash", null: false
+    t.text "stored_password"
     t.datetime "synced_at"
     t.datetime "updated_at", null: false
     t.index ["mail_domain_id", "local_part"], name: "index_mail_accounts_on_mail_domain_id_and_local_part", unique: true
@@ -189,6 +190,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_15_120001) do
   create_table "mail_domains", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "domain", null: false
+    t.string "mail_server_host"
     t.string "name", null: false
     t.text "note"
     t.datetime "updated_at", null: false

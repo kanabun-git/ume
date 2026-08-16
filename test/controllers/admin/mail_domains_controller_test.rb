@@ -50,6 +50,30 @@ module Admin
       assert_match "info@staff.example.net", response.body
     end
 
+    test "the index shows the mail client settings, including the password" do
+      sign_in create_user(role: :platform_admin)
+      mail_domain = MailDomain.create!(name: "サイト本体", domain: "example.com", mail_server_host: "mail.example.com")
+      mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      get admin_mail_domains_path
+
+      assert_response :success
+      assert_match "password1234", response.body
+      assert_match "mail.example.com", response.body
+      assert_match "993", response.body
+      assert_match "587", response.body
+    end
+
+    test "the mail server host falls back to the domain itself when left blank" do
+      sign_in create_user(role: :platform_admin)
+      mail_domain = MailDomain.create!(name: "サイト本体", domain: "example.com")
+
+      assert_equal "example.com", mail_domain.mail_host
+
+      patch admin_mail_domain_path(mail_domain), params: { mail_domain: { mail_server_host: "mail.example.com" } }
+      assert_equal "mail.example.com", mail_domain.reload.mail_host
+    end
+
     test "a shop admin cannot reach mail address management" do
       sign_in create_user(role: :shop_admin, shop: create_shop)
 

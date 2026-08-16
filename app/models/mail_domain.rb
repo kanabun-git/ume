@@ -11,9 +11,21 @@ class MailDomain < ApplicationRecord
 
   has_many :mail_accounts, dependent: :destroy
 
+  # Ports a mail client needs, alongside the hostname below. Standard
+  # values for the Dovecot/Postfix setup described in docs/vps_setup.md;
+  # shown on the management screen so an operator can copy them into
+  # Thunderbird without asking anyone.
+  IMAP_PORT = 993
+  SMTP_PORT = 587
+
   before_validation :normalize_domain
+  before_validation :normalize_mail_server_host
 
   validates :name, presence: true, length: { maximum: 100 }
+  validates :mail_server_host,
+    length: { maximum: 253 },
+    format: { with: DOMAIN_FORMAT, message: "は「mail.example.com」のような形式で入力してください" },
+    allow_blank: true
   validates :domain,
     presence: true,
     length: { maximum: 253 },
@@ -21,6 +33,13 @@ class MailDomain < ApplicationRecord
     uniqueness: { case_sensitive: false, message: "は既に登録されています" }
 
   default_scope { order(:domain) }
+
+  # What to type into a mail client's 受信/送信サーバー field. Most setups
+  # serve mail on the domain itself; a separate host (mail.example.com) is
+  # only needed when the operator says so.
+  def mail_host
+    mail_server_host.presence || domain
+  end
 
   private
 
@@ -35,5 +54,9 @@ class MailDomain < ApplicationRecord
       .sub(%r{/.*\z}, "")
       .sub(/\A@/, "")
       .sub(/\.\z/, "")
+  end
+
+  def normalize_mail_server_host
+    self.mail_server_host = mail_server_host.to_s.strip.downcase.presence
   end
 end

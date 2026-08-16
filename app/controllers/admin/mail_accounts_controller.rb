@@ -7,7 +7,7 @@ module Admin
     include MailboxManagement
 
     before_action :set_mail_domain, only: [:create]
-    before_action :set_mail_account, only: [:destroy, :test_delivery]
+    before_action :set_mail_account, only: [:update, :destroy, :test_delivery]
 
     def create
       @mail_account = @mail_domain.mail_accounts.build(mail_account_params)
@@ -15,6 +15,24 @@ module Admin
 
       if @mail_account.save
         sync_mailboxes("#{@mail_account.address} を追加しました。")
+        redirect_to admin_mail_domains_path
+      else
+        load_mailbox_index
+        render "admin/mail_domains/index", status: :unprocessable_entity
+      end
+    end
+
+    # Password change only -- the address itself is deliberately not editable,
+    # since renaming a mailbox on the server means the old one (and its mail)
+    # is archived away. Delete and re-add if the address is wrong.
+    def update
+      if params.dig(:mail_account, :password).blank?
+        redirect_to admin_mail_domains_path, alert: "新しいパスワードを入力してください。"
+        return
+      end
+
+      if @mail_account.update(password_params)
+        sync_mailboxes("#{@mail_account.address} のパスワードを変更しました。")
         redirect_to admin_mail_domains_path
       else
         load_mailbox_index
@@ -97,6 +115,10 @@ module Admin
 
     def mail_account_params
       params.require(:mail_account).permit(:local_part, :password, :password_confirmation)
+    end
+
+    def password_params
+      params.require(:mail_account).permit(:password, :password_confirmation)
     end
   end
 end

@@ -371,12 +371,51 @@ userdb {
 }
 ```
 
-最後に、アプリ側に反映コマンドの場所を教えます。
+メールソフト(Thunderbird等)から送信できるようにするため、submission(587番ポート)を有効にします。
+
+```bash
+# /etc/postfix/master.cf の submission 行のコメントアウトを外す
+sudo postconf -M submission/inet="submission inet n - y - - smtpd"
+sudo postconf -P submission/inet/smtpd_tls_security_level=encrypt
+sudo postconf -P submission/inet/smtpd_sasl_auth_enable=yes
+sudo postconf -P submission/inet/smtpd_recipient_restrictions='permit_sasl_authenticated,reject'
+sudo systemctl restart postfix
+sudo ufw allow 587/tcp
+```
+
+SASL認証はDovecot側に任せます(上で設定した`/etc/dovecot/users`のアカウントでそのまま送信できます)。
+
+```bash
+sudo postconf -e 'smtpd_sasl_type = dovecot'
+sudo postconf -e 'smtpd_sasl_path = private/auth'
+```
+
+```
+# /etc/dovecot/conf.d/10-master.conf
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+}
+```
+
+最後に、アプリ側に反映コマンドの場所と、パスワード表示用の暗号化鍵を教えます。
+
+```bash
+# 暗号化鍵を1つ生成する(この値は再発行するとパスワード表示ができなくなるので、
+# パスワードマネージャー等に控えておくこと)
+openssl rand -hex 32
+```
 
 ```ini
 # /etc/systemd/system/ume-puma.service の [Service] に追加
 Environment=UME_MAILBOXCTL=/usr/local/sbin/ume-mailboxctl
+Environment=UME_ENCRYPTION_PRIMARY_KEY=(上で生成した値)
 ```
+
+`UME_ENCRYPTION_PRIMARY_KEY` は、管理画面でメールアドレスのパスワードを後から確認できるようにするためのものです(パスワードはこの鍵で暗号化して保存されるため、データベースのダンプやバックアップだけが漏れても平文は読めません)。**未設定でもメールアドレスの追加・削除・送信テストは動きます**が、パスワードの確認だけができなくなります。
 
 ```bash
 sudo systemctl daemon-reload && sudo systemctl restart ume-puma
@@ -387,8 +426,9 @@ sudo systemctl daemon-reload && sudo systemctl restart ume-puma
 #### 運用上のメモ
 
 - 画面でメールアドレスを削除すると、そのメールボックスは即削除ではなく `/var/mail/vhosts-removed/(日時)/` に退避されます。誤削除に気付いた場合はここから戻せます(不要になったら手動で削除してください)。
-- パスワードは平文では保存されず、SHA-512 crypt形式のハッシュのみを保持します。忘れた場合は再設定してください。
-- メールソフトからの受信設定は、IMAPS(993番ポート)・ユーザー名はメールアドレス全体(`info@example.com`)です。
+- パスワードは2つの形で保存されます。認証に使うSHA-512 cryptハッシュ(復元不可)と、管理画面での確認用に`UME_ENCRYPTION_PRIMARY_KEY`で暗号化したもの。DBのバックアップに平文は含まれません。
+- メールソフトの設定値(サーバー名・ポート・パスワード)は、管理画面の各アドレスの「メールソフトの設定とパスワードを表示」から確認できます。受信はIMAPS(993番)、送信はsubmission(587番/STARTTLS)、ユーザー名はメールアドレス全体(`info@example.com`)です。
+- 証明書のホスト名と、メールソフトに設定するサーバー名は一致させてください。Let's Encryptの証明書を`mail.example.com`で取得している場合は、管理画面の「サイト情報を編集」→「メールサーバーのホスト名」にそのホスト名を入れておくと、画面の案内もそれに合わせて表示されます。
 - 反映に失敗した場合は、画面上部に理由が表示されます。詳しいログは `sudo journalctl -u ume-puma` と `sudo tail -50 /var/log/mail.log` を確認してください。
 
 ---

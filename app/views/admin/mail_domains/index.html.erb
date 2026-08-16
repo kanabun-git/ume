@@ -84,12 +84,22 @@
                     form: { data: { turbo_confirm: "#{mail_account.address} を削除します。メールボックスの中身も読めなくなります。よろしいですか?" } } %>
             </td>
           </tr>
+          <tr class="mail-settings-row">
+            <td colspan="5">
+              <%# A failed password change re-renders this screen; swap in the
+                  record carrying the error messages for that one address. %>
+              <% account = @mail_account.persisted? && @mail_account.id == mail_account.id ? @mail_account : mail_account %>
+              <%= render "admin/mail_domains/mail_client_settings", mail_domain: mail_domain, mail_account: account %>
+            </td>
+          </tr>
         <% end %>
       </tbody>
     </table>
 
     <h3>このサイトにメールアドレスを追加</h3>
-    <% new_account = @mail_account.mail_domain_id == mail_domain.id ? @mail_account : ::MailAccount.new %>
+    <%# @mail_account carries the errors from a failed add (new record) or a
+        failed password change (persisted); only the former belongs here. %>
+    <% new_account = @mail_account.new_record? && @mail_account.mail_domain_id == mail_domain.id ? @mail_account : ::MailAccount.new %>
     <% if new_account.errors.any? %>
       <div class="errors">
         <ul>
@@ -140,3 +150,20 @@
       own view paths. %>
   <%= render "admin/mail_domains/form", mail_domain: @mail_domain, url: admin_mail_domains_path, submit_label: "このサイトを追加する" %>
 </div>
+
+<%# Same copy-to-clipboard helper as the account setup screen
+    (app/views/admin/users/issue_account_setup_link.html.erb). %>
+<script>
+  (function() {
+    document.querySelectorAll("[data-copy-target]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        var target = document.getElementById(button.dataset.copyTarget);
+        navigator.clipboard.writeText(target.value).then(function() {
+          var original = button.textContent;
+          button.textContent = "コピーしました";
+          setTimeout(function() { button.textContent = original; }, 1500);
+        });
+      });
+    });
+  })();
+</script>

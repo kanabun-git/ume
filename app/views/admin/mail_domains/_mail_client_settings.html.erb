@@ -1,0 +1,79 @@
+<%# Everything an operator needs to set this mailbox up in Thunderbird/
+    Outlook/スマホのメールアプリ, including the password itself, kept behind a
+    closed <details> so passwords aren't on screen by default. %>
+<details class="mail-client-settings" <%= "open" if mail_account.errors.any? %>>
+  <summary>メールソフトの設定とパスワードを表示</summary>
+
+  <div class="mail-client-settings-body">
+    <table class="mail-settings-table">
+      <tbody>
+        <tr>
+          <th>ユーザー名(アカウント名)</th>
+          <td>
+            <div class="copy-row">
+              <input type="text" id="mail-username-<%= mail_account.id %>" value="<%= mail_account.address %>" readonly>
+              <button type="button" class="btn secondary" data-copy-target="mail-username-<%= mail_account.id %>">コピー</button>
+            </div>
+            <p class="mail-settings-hint">メールアドレス全体をそのまま入力してください(@より前だけではログインできません)。</p>
+          </td>
+        </tr>
+        <tr>
+          <th>パスワード</th>
+          <td>
+            <% if mail_account.displayable_password.present? %>
+              <div class="copy-row">
+                <input type="text" id="mail-password-<%= mail_account.id %>" value="<%= mail_account.displayable_password %>" readonly>
+                <button type="button" class="btn secondary" data-copy-target="mail-password-<%= mail_account.id %>">コピー</button>
+              </div>
+            <% elsif ::MailAccount.password_display_available? %>
+              <p class="mail-settings-hint">
+                このアドレスはパスワード表示に対応する前に登録されたため、パスワードを確認できません。
+                下の「パスワードを変更」で設定し直すと、以後は表示できるようになります。
+              </p>
+            <% else %>
+              <p class="mail-settings-hint">
+                このサーバーではパスワード表示が未設定のため、確認できません
+                (<code>docs/vps_setup.md</code> の「メールアドレス管理画面の連携」を参照)。
+              </p>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <th>受信(IMAP)</th>
+          <td>
+            サーバー: <code><%= mail_domain.mail_host %></code> /
+            ポート: <code><%= ::MailDomain::IMAP_PORT %></code> /
+            暗号化: <code>SSL/TLS</code>
+          </td>
+        </tr>
+        <tr>
+          <th>送信(SMTP)</th>
+          <td>
+            サーバー: <code><%= mail_domain.mail_host %></code> /
+            ポート: <code><%= ::MailDomain::SMTP_PORT %></code> /
+            暗号化: <code>STARTTLS</code> /
+            認証: <code>通常のパスワード認証</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <% if mail_account.errors.any? %>
+      <div class="errors">
+        <ul>
+          <% mail_account.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: mail_account, url: admin_mail_account_path(mail_account), method: :patch, local: true, class: "form mail-password-form" do |f| %>
+      <label>パスワードを変更(<%= ::MailAccount::MIN_PASSWORD_LENGTH %>文字以上)</label>
+      <%= f.password_field :password, autocomplete: "new-password", value: nil %>
+
+      <label>新しいパスワード(確認)</label>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", value: nil %>
+
+      <%= f.submit "パスワードを変更する", class: "btn secondary" %>
+    <% end %>
+  </div>
+</details>

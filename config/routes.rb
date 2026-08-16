@@ -254,7 +254,7 @@ Rails.application.routes.draw do
     resources :mail_domains, except: [:show, :new] do
       resources :mail_accounts, only: [:create]
     end
-    resources :mail_accounts, only: [:destroy] do
+    resources :mail_accounts, only: [:update, :destroy] do
       member { post :test_delivery }
       collection { post :sync }
     end

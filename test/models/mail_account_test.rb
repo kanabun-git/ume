@@ -14,6 +14,45 @@ class MailAccountTest < ActiveSupport::TestCase
     assert_nil MailAccount.find(account.id).password
   end
 
+  test "the password can be read back for mail client setup" do
+    account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+    assert_equal "password1234", MailAccount.find(account.id).displayable_password
+  end
+
+  test "the readable copy of the password is encrypted in the database" do
+    account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+    stored = MailAccount.connection.select_value(
+      "SELECT stored_password FROM mail_accounts WHERE id = #{account.id}"
+    )
+    assert_not_includes stored.to_s, "password1234"
+    # Active Record Encryption stores a JSON envelope: {"p": ciphertext, "h": headers}
+    assert_match(/\A\{"p":/, stored.to_s, "the column should hold an encrypted payload")
+  end
+
+  test "changing the password updates both the digest and the readable copy" do
+    account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+    original_hash = account.password_hash
+
+    account.update!(password: "newpassword1234", password_confirmation: "newpassword1234")
+
+    account.reload
+    assert_not_equal original_hash, account.password_hash
+    assert_equal "newpassword1234", account.displayable_password
+  end
+
+  test "no readable password is kept when the server has no encryption key configured" do
+    with_password_display(false) do
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      assert_nil account.reload.stored_password
+      assert_nil account.displayable_password
+      # The mailbox itself still works: Dovecot only needs the digest.
+      assert account.password_hash.start_with?("$6$")
+    end
+  end
+
   test "the same password produces a different digest each time (salted)" do
     first = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
     second = @mail_domain.mail_accounts.create!(local_part: "support", password: "password1234")
@@ -94,5 +133,15 @@ class MailAccountTest < ActiveSupport::TestCase
       account.update!(local_part: "contact")
     end
     assert_not account.reload.synced?
+  end
+
+  private
+
+  def with_password_display(available)
+    original = Rails.application.config.x.mail_password_display
+    Rails.application.config.x.mail_password_display = available
+    yield
+  ensure
+    Rails.application.config.x.mail_password_display = original
   end
 end

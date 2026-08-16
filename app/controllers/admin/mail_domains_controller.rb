@@ -57,7 +57,7 @@ module Admin
     end
 
     def mail_domain_params
-      params.require(:mail_domain).permit(:name, :domain, :note)
+      params.require(:mail_domain).permit(:name, :domain, :mail_server_host, :note)
     end
   end
 end

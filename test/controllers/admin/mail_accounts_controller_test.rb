@@ -42,6 +42,65 @@ module Admin
       assert_match "メールアドレス管理", response.body
     end
 
+    test "a platform admin can change an address's password and read the new one back" do
+      sign_in create_user(role: :platform_admin)
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      patch admin_mail_account_path(account), params: {
+        mail_account: { password: "newpassword1234", password_confirmation: "newpassword1234" }
+      }
+
+      assert_redirected_to admin_mail_domains_path
+      assert_match "パスワードを変更しました。", flash[:notice]
+      assert_equal "newpassword1234", account.reload.displayable_password
+    end
+
+    test "a password change with a mismatched confirmation keeps the old password" do
+      sign_in create_user(role: :platform_admin)
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      patch admin_mail_account_path(account), params: {
+        mail_account: { password: "newpassword1234", password_confirmation: "typo-password" }
+      }
+
+      assert_response :unprocessable_entity
+      assert_equal "password1234", account.reload.displayable_password
+    end
+
+    test "submitting an empty password change is refused instead of silently doing nothing" do
+      sign_in create_user(role: :platform_admin)
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      patch admin_mail_account_path(account), params: { mail_account: { password: "" } }
+
+      assert_redirected_to admin_mail_domains_path
+      assert_match "新しいパスワードを入力してください", flash[:alert]
+      assert_equal "password1234", account.reload.displayable_password
+    end
+
+    test "the address cannot be renamed through the password change form" do
+      sign_in create_user(role: :platform_admin)
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      patch admin_mail_account_path(account), params: {
+        mail_account: { local_part: "hijacked", password: "newpassword1234", password_confirmation: "newpassword1234" }
+      }
+
+      assert_equal "info", account.reload.local_part
+    end
+
+    test "a shop admin cannot change a mailbox password" do
+      sign_in create_user(role: :shop_admin, shop: create_shop)
+      account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")
+
+      patch admin_mail_account_path(account), params: {
+        mail_account: { password: "newpassword1234", password_confirmation: "newpassword1234" }
+      }
+
+      assert_redirected_to root_path
+      assert_equal "password1234", account.reload.displayable_password
+    end
+
     test "a platform admin can delete an address" do
       sign_in create_user(role: :platform_admin)
       account = @mail_domain.mail_accounts.create!(local_part: "info", password: "password1234")

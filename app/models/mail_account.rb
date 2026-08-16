@@ -15,8 +15,17 @@ class MailAccount < ApplicationRecord
 
   belongs_to :mail_domain
 
-  # The plaintext is only ever held in memory long enough to hash it; the
-  # column stores the SHA-512 crypt digest Dovecot authenticates against.
+  # Two columns, two jobs:
+  #   password_hash   -- SHA-512 crypt digest, what Dovecot authenticates
+  #                      against. Never reversible.
+  #   stored_password -- the same password kept recoverable, because an
+  #                      operator setting up Thunderbird months later needs
+  #                      to read it back off the screen. Encrypted at rest
+  #                      via Active Record Encryption, whose key lives in an
+  #                      environment variable, so a database dump or nightly
+  #                      backup on its own reveals nothing.
+  encrypts :stored_password
+
   attr_accessor :password, :password_confirmation
 
   before_validation :normalize_local_part
@@ -57,6 +66,20 @@ class MailAccount < ApplicationRecord
     synced_at.present? && synced_at >= updated_at
   end
 
+  # False when no encryption key is configured (a production server that
+  # hasn't set UME_ENCRYPTION_PRIMARY_KEY yet): the rest of the screen keeps
+  # working, only reading passwords back is unavailable.
+  def self.password_display_available?
+    Rails.application.config.x.mail_password_display
+  end
+
+  # The password to show on screen, or nil when it can't be shown -- either
+  # because display is unavailable, or because the address was registered
+  # before this was stored and only its digest exists.
+  def displayable_password
+    stored_password if self.class.password_display_available?
+  end
+
   # SHA-512 crypt ("$6$...") is what Dovecot's passwd-file scheme expects.
   # Returns nil when the platform's crypt(3) doesn't support it (macOS),
   # so the caller can report that instead of silently storing a DES hash.
@@ -78,6 +101,7 @@ class MailAccount < ApplicationRecord
     digest = self.class.sha512_crypt(password)
     if digest
       self.password_hash = digest
+      self.stored_password = password if self.class.password_display_available?
     else
       errors.add(:password, "を暗号化できませんでした(このサーバーのcrypt(3)がSHA-512に対応していません)")
     end

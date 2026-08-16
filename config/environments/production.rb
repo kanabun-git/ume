@@ -66,7 +66,10 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :sendmail
   config.action_mailer.sendmail_settings = {
     location: "/usr/sbin/sendmail",
-    arguments: "-i"
+    # Array, not a single string with spaces -- the `mail` gem shells out via
+    # IO.popen(argv_array) (no shell involved, so no shell-injection surface),
+    # and as of mail 2.9 raises ArgumentError if this is a String instead.
+    arguments: ["-i"]
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

@@ -1,0 +1,14 @@
+<p>サイト掲載のお問い合わせが届きました。</p>
+
+<table>
+  <tr><th>店舗名</th><td><%= @shop_inquiry.shop_name %></td></tr>
+  <tr><th>ご担当者名</th><td><%= @shop_inquiry.contact_name %></td></tr>
+  <tr><th>メールアドレス</th><td><%= @shop_inquiry.email %></td></tr>
+  <tr><th>電話番号</th><td><%= @shop_inquiry.phone %></td></tr>
+  <tr><th>希望エリア</th><td><%= @shop_inquiry.area_note.presence || "(未記入)" %></td></tr>
+</table>
+
+<p>お問い合わせ内容</p>
+<p><%= simple_format @shop_inquiry.message.presence || "(本文なし)" %></p>
+
+<p><%= link_to "運営管理画面で確認する", admin_shop_inquiry_url(@shop_inquiry) %></p>

@@ -16,6 +16,7 @@ class ShopInquiriesController < ApplicationController
     authorize @shop_inquiry
 
     if @shop_inquiry.save
+      ShopInquiryMailer.notify_admin(@shop_inquiry).deliver_now
       redirect_to root_path, notice: "お問い合わせを受け付けました。担当者よりご連絡いたします。"
     else
       render :new, status: :unprocessable_entity

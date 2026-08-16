@@ -274,6 +274,63 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 7-2. メールアドレス管理画面の別ドメイン設定(www.kanabun.tech)
+
+運営している3サイト(`fuzoku-zero.com` / `kanabun.tech` / `puremint.jp`)のメールアドレスを管理する画面は、ポータルサイトとは切り離した独立した管理画面として **https://www.kanabun.tech/mailadmin** で提供します。
+
+キャストポータル(7-1)と同じ仕組みで、同じアプリ・同じデータベースをそのまま使います。設定は以下だけです。
+
+1. DNS側で`kanabun.tech`と`www.kanabun.tech`のAレコードをこのVPSのIPに向ける(手順7と同様)。
+2. `/etc/systemd/system/ume-puma.service`に環境変数を追加します。
+
+   ```ini
+   Environment=MAIL_ADMIN_HOST=www.kanabun.tech
+   ```
+
+   設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。この環境変数を設定すると、
+
+   - `/mailadmin`は**このドメインでしか開けなくなる**(`fuzoku-zero.com/mailadmin`は404)
+   - 逆にこのドメインでは、`/mailadmin`とログイン画面**以外は何も配信されない**(ポータルサイトのトップページや`/admin`にアクセスしても404)
+
+   という双方向の切り離しが有効になります。ログイン画面にもポータルサイトの名前・デザインは一切出ません。
+
+3. nginxに、このドメイン用のserver blockを追加します(`server_name`だけが違う、手順7と同じ内容のブロック)。
+
+   ```nginx
+   server {
+       listen 80;
+       server_name kanabun.tech www.kanabun.tech;
+
+       location /assets/ {
+           root /home/deploy/ume/public;
+           expires max;
+           add_header Cache-Control public;
+       }
+
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+   ```
+
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   sudo certbot --nginx -d kanabun.tech -d www.kanabun.tech
+   ```
+
+4. 管理する3ドメインのメールをこのサーバーで受け取るため、各ドメインのDNSに**MXレコード**をこのサーバー宛で設定します(例: `MX 10 mail.fuzoku-zero.com`)。SPFレコードも各ドメインに設定してください(8-1参照)。すでに他社のメールサービスでそのドメインのメールを受けている場合は、MXを切り替えると既存のメールが届かなくなるため、移行の可否を必ず先に確認してください。
+
+5. メールボックスを実際に作成・削除できるようにするサーバー側の設定は「8-4. メールアドレス管理画面の連携」を参照してください。
+
+この設定を行わない場合(環境変数を設定しない場合)は、`/mailadmin`はどのドメインからでも開けます(開発環境と同じ挙動)。
+
+---
+
 ## 8. メール送信(Postfix)の設定
 
 **Vシリーズはリレーサーバー不要・直接送信可能**です。追加の設定なしで動くはずですが、以下だけ確認してください。
@@ -307,6 +364,129 @@ nc -zv -w5 aspmx.l.google.com 25
 # サイトの「パスワードを忘れた場合」から自分宛にテストメールを送信後
 sudo tail -30 /var/log/mail.log
 ```
+
+### 8-4. メールアドレス管理画面の連携(任意)
+
+メールアドレス管理画面(`/mailadmin`、下記7-2)では、運営している複数のサイト(ドメイン)ごとにメールアドレスを追加・削除し、そのアドレスからテストメールを送れます。**この設定を行わない場合、画面での登録は管理画面上の記録にとどまり、サーバー上のメールボックスは作られません**(その旨が画面に表示されます)。
+
+以下を設定すると、画面での追加・削除がそのままPostfix/Dovecotに反映されるようになります。
+
+#### 仕組み
+
+Railsアプリはroot権限を一切持ちません。代わりに、
+
+1. アプリ(`deploy`ユーザー)が、登録内容の全体像を `/var/lib/ume-mail/` 以下の2つのテキストファイルに書き出す
+2. root所有の `/usr/local/sbin/ume-mailboxctl` を **引数なしで** `sudo` 実行し、そのスクリプトがファイルを読んでPostfix/Dovecotの設定を作り直す
+
+という2段構成になっています。管理画面に入力された文字列がroot権限のコマンドラインに渡ることはなく、スクリプト側でも書式に合わない行が1つでもあれば何も変更せずに終了します。
+
+#### 手順
+
+```bash
+# 1. 仮想メールボックス用のユーザーと置き場所
+sudo useradd -r -u 5000 -d /var/mail/vhosts -s /usr/sbin/nologin vmail
+sudo mkdir -p /var/mail/vhosts /var/mail/vhosts-removed
+sudo chown -R vmail:vmail /var/mail/vhosts /var/mail/vhosts-removed
+
+# 2. アプリが書き出す受け渡しディレクトリ(deployユーザーが書き込めること)
+sudo mkdir -p /var/lib/ume-mail
+sudo chown deploy:deploy /var/lib/ume-mail
+sudo chmod 750 /var/lib/ume-mail
+
+# 3. 反映スクリプトを設置(リポジトリ同梱、root所有・他ユーザーは書き込み不可にする)
+sudo install -o root -g root -m 0755 /home/deploy/ume/script/ume-mailboxctl /usr/local/sbin/ume-mailboxctl
+
+# 4. このスクリプトだけ、引数なしでのsudo実行を許可する
+echo 'deploy ALL=(root) NOPASSWD: /usr/local/sbin/ume-mailboxctl ""' | sudo tee /etc/sudoers.d/ume-mailboxctl
+sudo chmod 440 /etc/sudoers.d/ume-mailboxctl
+sudo visudo -c
+```
+
+Postfixに仮想メールボックスの設定を追加します。
+
+```bash
+sudo postconf -e 'virtual_mailbox_domains = hash:/etc/postfix/virtual_mailbox_domains'
+sudo postconf -e 'virtual_mailbox_maps = hash:/etc/postfix/vmailbox'
+sudo postconf -e 'virtual_mailbox_base = /var/mail/vhosts'
+sudo postconf -e 'virtual_uid_maps = static:5000'
+sudo postconf -e 'virtual_gid_maps = static:5000'
+```
+
+> **注意**: 同じドメインを `mydestination`(サーバー自身のUnixメールボックスで受け取る設定)と `virtual_mailbox_domains` の両方に書くことはできません。`fuzoku-zero.com` をこの画面で管理する場合は、`sudo postconf -e 'mydestination = localhost'` のように `mydestination` から外してください(既存の`/var/mail/`配下のメールは残りますが、以後の配送先は`/var/mail/vhosts/`に変わります)。
+
+Dovecotで、このパスワードファイルを使って認証するようにします。
+
+```bash
+# /etc/dovecot/conf.d/10-auth.conf
+passdb {
+  driver = passwd-file
+  args = scheme=CRYPT username_format=%u /etc/dovecot/users
+}
+userdb {
+  driver = passwd-file
+  args = username_format=%u /etc/dovecot/users
+}
+```
+
+メールソフト(Thunderbird等)から送信できるようにするため、submission(587番ポート)を有効にします。
+
+```bash
+# /etc/postfix/master.cf の submission 行のコメントアウトを外す
+sudo postconf -M submission/inet="submission inet n - y - - smtpd"
+sudo postconf -P submission/inet/smtpd_tls_security_level=encrypt
+sudo postconf -P submission/inet/smtpd_sasl_auth_enable=yes
+sudo postconf -P submission/inet/smtpd_recipient_restrictions='permit_sasl_authenticated,reject'
+sudo systemctl restart postfix
+sudo ufw allow 587/tcp
+```
+
+SASL認証はDovecot側に任せます(上で設定した`/etc/dovecot/users`のアカウントでそのまま送信できます)。
+
+```bash
+sudo postconf -e 'smtpd_sasl_type = dovecot'
+sudo postconf -e 'smtpd_sasl_path = private/auth'
+```
+
+```
+# /etc/dovecot/conf.d/10-master.conf
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+}
+```
+
+最後に、アプリ側に反映コマンドの場所と、パスワード表示用の暗号化鍵を教えます。
+
+```bash
+# 暗号化鍵を1つ生成する(この値は再発行するとパスワード表示ができなくなるので、
+# パスワードマネージャー等に控えておくこと)
+openssl rand -hex 32
+```
+
+```ini
+# /etc/systemd/system/ume-puma.service の [Service] に追加
+Environment=UME_MAILBOXCTL=/usr/local/sbin/ume-mailboxctl
+Environment=UME_ENCRYPTION_PRIMARY_KEY=(上で生成した値)
+```
+
+`UME_ENCRYPTION_PRIMARY_KEY` は、管理画面でメールアドレスのパスワードを後から確認できるようにするためのものです(パスワードはこの鍵で暗号化して保存されるため、データベースのダンプやバックアップだけが漏れても平文は読めません)。**未設定でもメールアドレスの追加・削除・送信テストは動きます**が、パスワードの確認だけができなくなります。
+
+```bash
+sudo systemctl daemon-reload && sudo systemctl restart ume-puma
+```
+
+設定後、`/mailadmin`で「メールサーバーへ再反映する」を押すと、現在の登録内容がサーバーに反映されます。一覧の各アドレスが「反映済」になっていれば成功です。
+
+#### 運用上のメモ
+
+- 画面でメールアドレスを削除すると、そのメールボックスは即削除ではなく `/var/mail/vhosts-removed/(日時)/` に退避されます。誤削除に気付いた場合はここから戻せます(不要になったら手動で削除してください)。
+- パスワードは2つの形で保存されます。認証に使うSHA-512 cryptハッシュ(復元不可)と、管理画面での確認用に`UME_ENCRYPTION_PRIMARY_KEY`で暗号化したもの。DBのバックアップに平文は含まれません。
+- メールソフトの設定値(サーバー名・ポート・パスワード)は、管理画面の各アドレスの「メールソフトの設定とパスワードを表示」から確認できます。受信はIMAPS(993番)、送信はsubmission(587番/STARTTLS)、ユーザー名はメールアドレス全体(`info@example.com`)です。
+- 証明書のホスト名と、メールソフトに設定するサーバー名は一致させてください。Let's Encryptの証明書を`mail.example.com`で取得している場合は、管理画面の「サイト情報を編集」→「メールサーバーのホスト名」にそのホスト名を入れておくと、画面の案内もそれに合わせて表示されます。
+- 反映に失敗した場合は、画面上部に理由が表示されます。詳しいログは `sudo journalctl -u ume-puma` と `sudo tail -50 /var/log/mail.log` を確認してください。
 
 ---
 

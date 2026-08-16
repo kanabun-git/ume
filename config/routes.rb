@@ -80,6 +80,36 @@ Rails.application.routes.draw do
     cast_portal_routes.call
   end
 
+  # --- メールアドレス管理画面 (/mailadmin) ---
+  # 運営しているサイト(fuzoku-zero.com / kanabun.tech / puremint.jp)の
+  # メールアドレスを追加・削除するための、ポータルサイトとは切り離した管理画面。
+  #
+  # MAIL_ADMIN_HOST を設定すると、そのドメインでしか開けなくなる
+  # (本番では www.kanabun.tech を想定。キャストポータルと同じ仕組みで、
+  # ポータルサイトのドメインで /mailadmin を開くと404になる)。
+  # 開発・テストではホスト名を用意しなくても触れるよう制約を外す。
+  #
+  # 一覧(#index)が管理画面そのもので、新規登録フォームも同じ画面に並ぶため
+  # :new は使わない。
+  mail_admin_routes = lambda do
+    namespace :mailadmin, module: "mail_admin", as: "mail_admin" do
+      root to: "mail_domains#index"
+      resources :mail_domains, except: [:show, :new] do
+        resources :mail_accounts, only: [:create]
+      end
+      resources :mail_accounts, only: [:update, :destroy] do
+        member { post :test_delivery }
+        collection { post :sync }
+      end
+    end
+  end
+
+  if ENV["MAIL_ADMIN_HOST"].present?
+    constraints(host: ENV["MAIL_ADMIN_HOST"], &mail_admin_routes)
+  else
+    mail_admin_routes.call
+  end
+
   # --- Shop admin dashboard: manage own shop's content ---
   namespace :shop_admin do
     root to: "dashboard#show"

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "メールアドレス管理" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%# 独立した管理画面なので、検索結果には一切出さない。 %>
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <div class="mail-admin-shell">
+      <header class="mail-admin-header">
+        <%= link_to "メールアドレス管理", mail_admin_root_path, class: "mail-admin-brand" %>
+        <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
+      </header>
+      <main class="mail-admin-content">
+        <% if notice %><div class="notice"><%= notice %></div><% end %>
+        <% if alert %><div class="alert"><%= alert %></div><% end %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

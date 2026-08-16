@@ -20,6 +20,11 @@ class ApplicationController < ActionController::Base
   helper_method :discreet_cast_portal_host?
 
   def after_sign_in_path_for(resource)
+    # On the mail address management domain that screen is the only thing
+    # served (see MailAdminHostMiddleware), so signing in must land there
+    # rather than on the portal's back office.
+    return mail_admin_root_path if mail_admin_host? && resource.is_a?(User) && resource.platform_admin?
+
     case resource
     when User
       resource.platform_admin? ? admin_root_path : resource.shop_admin? ? shop_admin_root_path : cast_root_path
@@ -33,11 +38,20 @@ class ApplicationController < ActionController::Base
   private
 
   def resolve_layout
+    return "mail_admin_public" if mail_admin_host?
+
     "cast_portal_public" if discreet_cast_portal_host?
   end
 
   def discreet_cast_portal_host?
     ENV["CAST_PORTAL_HOST"].present? && request.host == ENV["CAST_PORTAL_HOST"]
+  end
+
+  # The dedicated domain the mail address management screen is served on
+  # (www.kanabun.tech in production). Used to keep the login screen there
+  # free of the portal's branding, the same way the cast portal does it.
+  def mail_admin_host?
+    ENV["MAIL_ADMIN_HOST"].present? && request.host == ENV["MAIL_ADMIN_HOST"]
   end
 
   def user_not_authorized

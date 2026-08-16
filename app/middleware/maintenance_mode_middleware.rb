@@ -7,6 +7,7 @@ class MaintenanceModeMiddleware
     /admin
     /shop_admin
     /cast
+    /mailadmin
     /users
     /assets
     /rails

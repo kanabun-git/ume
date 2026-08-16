@@ -1,0 +1,123 @@
+#!/bin/bash
+#
+# ume-mailboxctl -- メールアドレス管理画面(/mailadmin)で登録された内容を、
+# このサーバーのPostfix/Dovecotに反映する(root権限で動作する側の処理)。
+#
+# インストール手順・sudo設定は docs/vps_setup.md の
+# 「メールアドレス管理画面の連携」を参照。
+#
+# Railsアプリ(非root)はこのスクリプトを **引数なしで** 呼び出すだけで、
+# 管理画面で入力された文字列がroot権限のコマンドラインに渡ることはない。
+# 入力は下記2ファイルからのみ読み取り、書式に合わない行があれば
+# 何も変更せずに終了する。
+#
+#   $EXPORT_DIR/domains.txt   1行1ドメイン
+#   $EXPORT_DIR/accounts.tsv  メールアドレス <TAB> SHA-512 cryptハッシュ <TAB> メールボックスの相対パス
+#
+# 実行するたびに、この2ファイルの内容が「あるべき全体像」として扱われ、
+# 設定ファイルを丸ごと作り直す(消えたアドレスはファイルから消えるだけ)。
+
+set -euo pipefail
+
+EXPORT_DIR=${UME_MAIL_EXPORT_DIR:-/var/lib/ume-mail}
+VMAIL_ROOT=${UME_VMAIL_ROOT:-/var/mail/vhosts}
+# 削除されたメールボックスは即削除せず、ここへ退避する(誤操作からの復旧用)。
+ARCHIVE_ROOT=${UME_VMAIL_ARCHIVE_ROOT:-/var/mail/vhosts-removed}
+VMAIL_USER=${UME_VMAIL_USER:-vmail}
+VMAIL_GROUP=${UME_VMAIL_GROUP:-vmail}
+DOVECOT_USERS_FILE=${UME_DOVECOT_USERS_FILE:-/etc/dovecot/users}
+POSTFIX_VMAILBOX_FILE=${UME_POSTFIX_VMAILBOX_FILE:-/etc/postfix/vmailbox}
+POSTFIX_VDOMAINS_FILE=${UME_POSTFIX_VDOMAINS_FILE:-/etc/postfix/virtual_mailbox_domains}
+
+DOMAINS_FILE="$EXPORT_DIR/domains.txt"
+ACCOUNTS_FILE="$EXPORT_DIR/accounts.tsv"
+
+LABEL='[a-z0-9]([a-z0-9-]*[a-z0-9])?'
+DOMAIN_RE="^${LABEL}(\.${LABEL})+$"
+LOCAL_RE='[a-z0-9]([a-z0-9._-]*[a-z0-9])?'
+ADDRESS_RE="^${LOCAL_RE}@${LABEL}(\.${LABEL})+$"
+# crypt(3)のSHA-512形式。空白・制御文字は一切許可しない。
+HASH_RE='^\$6\$[A-Za-z0-9./]{1,16}\$[A-Za-z0-9./]+$'
+
+die() { echo "ume-mailboxctl: $*" >&2; exit 1; }
+
+[ "$(id -u)" -eq 0 ] || die "root権限で実行してください。"
+[ -f "$DOMAINS_FILE" ] || die "$DOMAINS_FILE がありません。"
+[ -f "$ACCOUNTS_FILE" ] || die "$ACCOUNTS_FILE がありません。"
+
+getent passwd "$VMAIL_USER" > /dev/null || die "ユーザー $VMAIL_USER が存在しません(docs/vps_setup.mdの手順を参照)。"
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+# --- 1. 入力の検証(1行でも不正なら、何も変更せず中断する) ----------------
+while IFS= read -r domain; do
+  [ -n "$domain" ] || continue
+  [[ "$domain" =~ $DOMAIN_RE ]] || die "domains.txt に不正なドメインがあります: $domain"
+done < "$DOMAINS_FILE"
+
+while IFS=$'\t' read -r address hash maildir extra; do
+  [ -n "$address" ] || continue
+  [ -z "${extra:-}" ] || die "accounts.tsv の列数が不正です: $address"
+  [[ "$address" =~ $ADDRESS_RE ]] || die "accounts.tsv に不正なアドレスがあります: $address"
+  [[ "$hash" =~ $HASH_RE ]] || die "accounts.tsv のパスワードハッシュが不正です: $address"
+  # メールボックスのパスは必ず「ドメイン/ローカルパート/」であること。
+  # ここが唯一ファイルシステムに触る値なので、アドレスから組み立て直した
+  # 文字列と完全一致するかどうかで判定する(".."等が入り込む余地を無くす)。
+  expected="${address#*@}/${address%@*}/"
+  [ "$maildir" = "$expected" ] || die "accounts.tsv のメールボックスのパスが不正です: $address"
+done < "$ACCOUNTS_FILE"
+
+# --- 2. 設定ファイルの生成 --------------------------------------------------
+# Postfix: このドメイン宛のメールを仮想メールボックスとして受け取る
+awk 'NF { print $0 "  OK" }' "$DOMAINS_FILE" > "$TMP_DIR/virtual_mailbox_domains"
+# Postfix: アドレス -> メールボックスの位置
+awk -F'\t' 'NF { print $1 "  " $3 }' "$ACCOUNTS_FILE" > "$TMP_DIR/vmailbox"
+# Dovecot: passwd-file形式
+# (アドレス:パスワード:uid:gid:gecos:ホーム:シェル:追加フィールド)
+vmail_uid=$(id -u "$VMAIL_USER")
+vmail_gid=$(id -g "$VMAIL_USER")
+awk -F'\t' -v uid="$vmail_uid" -v gid="$vmail_gid" -v root="$VMAIL_ROOT" \
+  'NF { home = root "/" $3; print $1 ":{SHA512-CRYPT}" $2 ":" uid ":" gid "::" home "::userdb_mail=maildir:" home }' \
+  "$ACCOUNTS_FILE" > "$TMP_DIR/users"
+
+install -o root -g root -m 0644 "$TMP_DIR/virtual_mailbox_domains" "$POSTFIX_VDOMAINS_FILE"
+install -o root -g root -m 0644 "$TMP_DIR/vmailbox" "$POSTFIX_VMAILBOX_FILE"
+# Dovecotのユーザーファイルはハッシュを含むため、Dovecotだけが読めれば良い。
+install -o root -g root -m 0600 "$TMP_DIR/users" "$DOVECOT_USERS_FILE"
+
+postmap "$POSTFIX_VDOMAINS_FILE"
+postmap "$POSTFIX_VMAILBOX_FILE"
+
+# --- 3. メールボックス(Maildir)の作成・退避 --------------------------------
+mkdir -p "$VMAIL_ROOT"
+chown "$VMAIL_USER":"$VMAIL_GROUP" "$VMAIL_ROOT"
+
+while IFS=$'\t' read -r address hash maildir; do
+  [ -n "$address" ] || continue
+  target="$VMAIL_ROOT/$maildir"
+  if [ ! -d "$target" ]; then
+    mkdir -p "$target"/{cur,new,tmp}
+    chown -R "$VMAIL_USER":"$VMAIL_GROUP" "$VMAIL_ROOT/${maildir%%/*}"
+    chmod -R 0700 "$target"
+  fi
+done < "$ACCOUNTS_FILE"
+
+# 登録から消えたメールボックスは削除ではなく退避(誤削除の復旧余地を残す)。
+if [ -d "$VMAIL_ROOT" ]; then
+  stamp=$(date +%Y%m%d%H%M%S)
+  while IFS= read -r existing; do
+    rel=${existing#"$VMAIL_ROOT/"}
+    if ! cut -f3 "$ACCOUNTS_FILE" | grep -Fxq "$rel/"; then
+      mkdir -p "$ARCHIVE_ROOT/$stamp/$(dirname "$rel")"
+      mv "$existing" "$ARCHIVE_ROOT/$stamp/$rel"
+      echo "退避しました: $rel -> $ARCHIVE_ROOT/$stamp/$rel"
+    fi
+  done < <(find "$VMAIL_ROOT" -mindepth 2 -maxdepth 2 -type d)
+fi
+
+# --- 4. 反映 ----------------------------------------------------------------
+systemctl reload postfix
+systemctl reload dovecot
+
+echo "ume-mailboxctl: $(grep -c . "$ACCOUNTS_FILE" || true)件のメールアドレスを反映しました。"

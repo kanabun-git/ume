@@ -352,6 +352,17 @@ end
 2.times { |i| Review.find_or_create_by!(shop: shop, member: dummy_member3, reviewer_name: dummy_member3.name, body: "また利用します。(#{i + 1})") { |r| r.rating = 3; r.status = :approved } }
 ensure_shop_visits(ShopMembership.find_or_create_by!(shop: shop, member: dummy_member3), 1)
 
+# メールアドレス管理画面(/mailadmin)が管理する3サイト。4サイト目以降は
+# 画面から登録できるので、ここにあるのは運用中の3つだけ。アドレスは
+# パスワードを伴うため種は撒かず、必ず画面から登録する。
+[
+  ["fuzoku-zero.com", "FuzokuZero", "風俗店ポータルサイト。"],
+  ["kanabun.tech", "kanabun.tech", "メールアドレス管理画面(/mailadmin)を置いているサイト。"],
+  ["puremint.jp", "PureMint", nil]
+].each do |domain, name, note|
+  MailDomain.find_or_initialize_by(domain: domain).update!(name: name, note: note)
+end
+
 puts "Seed data created."
 puts "platform_admin: #{platform_admin.email} / password1234"
 puts "shop_admin: #{shop_admin.email} / password1234"

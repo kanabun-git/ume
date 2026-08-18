@@ -88,6 +88,36 @@ class MailboxInboxTest < ActiveSupport::TestCase
     assert message.text_body.valid_encoding?
   end
 
+  test "summary_from decodes RFC 2047 encoded-word subjects and sender names" do
+    envelope = Net::IMAP::Envelope.new(
+      "Mon, 16 Aug 2026 12:00:00 +0900",
+      "=?ISO-2022-JP?B?GyRCJDRDbUo4RmJNRiROM05HJxsoQg==?=",
+      [Net::IMAP::Address.new("=?ISO-2022-JP?B?GyRCJEQkPiRWJEskORsoQg==?=", nil, "info", "example.com")],
+      nil, nil, nil, nil, nil, nil, nil
+    )
+    item = Struct.new(:attr).new({ "UID" => 1, "ENVELOPE" => envelope })
+
+    inbox = MailboxInbox.new(@mail_account)
+    summary = inbox.send(:summary_from, item)
+
+    assert_equal "ご注文内容の確認", summary.subject
+    assert_match "info@example.com", summary.from
+    refute_match "=?ISO-2022-JP", summary.from
+  end
+
+  test "summary_from falls back to the raw header text when decoding fails" do
+    envelope = Net::IMAP::Envelope.new(
+      "Mon, 16 Aug 2026 12:00:00 +0900", "件名そのまま", nil, nil, nil, nil, nil, nil, nil, nil
+    )
+    item = Struct.new(:attr).new({ "UID" => 1, "ENVELOPE" => envelope })
+
+    inbox = MailboxInbox.new(@mail_account)
+    summary = inbox.send(:summary_from, item)
+
+    assert_equal "件名そのまま", summary.subject
+    assert_nil summary.from
+  end
+
   private
 
   def with_password_display(available)

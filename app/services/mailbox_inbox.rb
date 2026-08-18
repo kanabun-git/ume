@@ -83,7 +83,7 @@ class MailboxInbox
     MessageSummary.new(
       uid: item.attr["UID"],
       from: format_address(envelope.from&.first),
-      subject: envelope.subject.to_s.presence || "(件名なし)",
+      subject: decode_header(envelope.subject).presence || "(件名なし)",
       date: parse_date(envelope.date)
     )
   end
@@ -130,7 +130,20 @@ class MailboxInbox
     return nil unless address
 
     mailbox = "#{address.mailbox}@#{address.host}"
-    address.name.present? ? "#{address.name} <#{mailbox}>" : mailbox
+    name = decode_header(address.name)
+    name.present? ? "#{name} <#{mailbox}>" : mailbox
+  end
+
+  # IMAP ENVELOPE fields (unlike the `mail` gem's Mail#subject/#from used in
+  # #parse_message below) come back as the raw header text, encoded-words
+  # and all -- e.g. "=?ISO-2022-JP?B?...?=" -- so list-view summaries need
+  # their own RFC 2047 decoding or Japanese subjects/names render as mojibake.
+  def decode_header(value)
+    return nil if value.nil?
+
+    Mail::Encodings.value_decode(value.to_s).presence || value.to_s
+  rescue StandardError
+    value.to_s
   end
 
   def parse_date(date_string)

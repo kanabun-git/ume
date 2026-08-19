@@ -179,10 +179,14 @@ Environment=UME_DATABASE_PASSWORD=(3で設定したパスワード)
 ExecStart=/home/deploy/.rbenv/shims/bundle exec puma -C config/puma.rb
 Restart=always
 RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target
 ```
+
+`StartLimitIntervalSec`/`StartLimitBurst`は、起動直後に毎回失敗するような壊れ方をしたとき(gem不足など)に無限リスタートし続けるのを防ぐための歯止めです。300秒間に10回失敗したら諦めて`failed`状態になり、`systemctl status`で一目で異常とわかるようになります(歯止めがないと、原因を直すまで5秒おきに再起動を繰り返し続け、気づくのが遅れます)。諦めた状態から復旧するときは、原因を直したあと`sudo systemctl reset-failed ume-puma && sudo systemctl start ume-puma`としてください。
 
 ```bash
 sudo systemctl daemon-reload
@@ -662,8 +666,10 @@ systemctl status ume-puma nginx postgresql postfix dovecot --no-pager
 
 | 目的 | コマンド |
 |---|---|
-| アプリの最新化 | `cd /home/deploy/ume && git pull && bundle install && RAILS_ENV=production UME_DATABASE_PASSWORD='...' bin/rails db:migrate && RAILS_ENV=production bin/rails assets:precompile && sudo systemctl restart ume-puma` |
+| アプリの最新化 | `cd /home/deploy/ume && UME_DATABASE_PASSWORD='...' bin/deploy`(`git pull`・`bundle install`・マイグレーション・アセットプリコンパイル・再起動を1コマンドで実行。`git pull`だけで済ませて`bundle install`を忘れると、Gemfile.lockとvendor/bundleがずれてPumaがBundler::GemNotFoundで再起動ループに陥るので、必ずこちらを使うこと) |
 | アプリの再起動のみ | `sudo systemctl restart ume-puma` |
 | ログ確認 | `sudo journalctl -u ume-puma -f` |
 | メールログ確認 | `sudo tail -f /var/log/mail.log` |
 | バックアップ一覧 | `cd /home/deploy/ume && RAILS_ENV=production UME_DATABASE_PASSWORD='...' bin/rails backup:list` |
+
+> **注意**: `/home/deploy/ume`で`git clean`は実行しないでください。`vendor/bundle`(インストール済みgemの実体)はGit管理外のディレクトリで、`git clean -fd`のような「作業ツリーを綺麗にする」操作で丸ごと消えてしまいます。消えた場合の復旧は`bin/deploy`(または`bundle install`)の再実行で直ります。

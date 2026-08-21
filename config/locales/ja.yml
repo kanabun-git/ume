@@ -31,3 +31,6 @@ ja:
         phone: 電話番号
         area_note: 希望エリア
         message: お問い合わせ内容
+      outreach_email_template:
+        subject: 件名
+        body: 本文

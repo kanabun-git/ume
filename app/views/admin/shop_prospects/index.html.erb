@@ -35,6 +35,7 @@
     <%= link_to "サイト掲載のお問い合わせ", new_shop_inquiry_path %>ページへ誘導し、
     そのリンクが実際にクリックされると下の一覧の「送信状況」に反映されます
     (メールアドレス未登録の候補は自動的にスキップされます)。
+    件名・本文の文面は<%= link_to "こちらから自由に編集", edit_admin_outreach_email_template_path %>できます。
   </p>
 
   <%# Deliberately NOT wrapping the table in this form: each row's 削除

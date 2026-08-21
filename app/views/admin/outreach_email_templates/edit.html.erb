@@ -1,0 +1,35 @@
+<% content_for :title, "営業メール文面の編集" %>
+
+<h1>営業メール文面の編集</h1>
+<p>
+  <%= link_to "営業先候補管理", admin_shop_prospects_path %>から一斉送信される、掲載案内メールの件名・本文を編集できます。
+  ここで保存した内容が、以後のすべての一斉送信に使われます(過去に送信済みのメールは影響を受けません)。
+</p>
+
+<div class="card">
+  <h2>差し込みプレースホルダー</h2>
+  <p>本文・件名の中に以下を書くと、送信時に候補ごとの内容へ自動的に置き換わります。</p>
+  <ul>
+    <li><code>%{name}</code> — 営業先の店舗名</li>
+    <li><code>%{listing_site_name}</code> — 掲載サイト名(未登録の候補では空欄になります)</li>
+    <li><code>%{registration_url}</code> — <strong>必須。</strong>クリック計測付きの「サイト掲載のお問い合わせ」ページへのリンクです。本文に必ず1箇所含めてください。</li>
+  </ul>
+</div>
+
+<% if @outreach_email_template.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% @outreach_email_template.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @outreach_email_template, url: admin_outreach_email_template_path, method: :patch, local: true, class: "form" do |f| %>
+  <label>件名</label>
+  <%= f.text_field :subject %>
+
+  <label>本文</label>
+  <%= f.text_area :body, rows: 16 %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

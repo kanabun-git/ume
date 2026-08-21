@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     resource :shop_membership, only: [:create]
   end
   resources :shop_inquiries, only: [:new, :create]
+  get "outreach/:token", to: "shop_prospect_outreach#click", as: :shop_prospect_outreach
 
   # --- Cast (女の子) dashboard: manage own profile, diary, shifts ---
   # `module: "cast_portal"` avoids clashing with the top-level Cast model
@@ -216,6 +217,7 @@ Rails.application.routes.draw do
       collection do
         post :import
         get :template
+        post :send_outreach_emails
       end
     end
     resources :reviews, only: [:index, :show, :destroy] do

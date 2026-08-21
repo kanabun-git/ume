@@ -16,10 +16,13 @@ class MaintenanceModeMiddleware
     /manifest.json
     /service-worker
     /shop_inquiries
+    /outreach
   ].freeze
   # /shop_inquiries stays open even during maintenance so the maintenance
   # page's "サイト掲載のお問い合わせ" banner/link (see maintenance/show.html.erb)
-  # actually works instead of bouncing back to itself.
+  # actually works instead of bouncing back to itself. /outreach stays open
+  # too, so a 営業メール link clicked during maintenance still records the
+  # click and reaches /shop_inquiries instead of dead-ending on this page.
 
   def initialize(app)
     @app = app

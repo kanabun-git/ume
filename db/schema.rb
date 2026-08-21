@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_155544) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_17_040000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -396,9 +396,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_155544) do
     t.string "listing_url"
     t.text "memo"
     t.string "name", null: false
+    t.datetime "outreach_email_sent_at"
+    t.datetime "outreach_link_clicked_at"
+    t.string "outreach_token", null: false
     t.string "phone"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["outreach_token"], name: "index_shop_prospects_on_outreach_token", unique: true
   end
 
   create_table "shop_subscriptions", force: :cascade do |t|

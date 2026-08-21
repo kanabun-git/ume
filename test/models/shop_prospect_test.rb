@@ -13,4 +13,12 @@ class ShopProspectTest < ActiveSupport::TestCase
 
     assert prospect.not_contacted?
   end
+
+  test "assigns a unique outreach_token on create" do
+    a = ShopProspect.create!(name: "候補A")
+    b = ShopProspect.create!(name: "候補B")
+
+    assert a.outreach_token.present?
+    assert_not_equal a.outreach_token, b.outreach_token
+  end
 end

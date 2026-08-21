@@ -61,6 +61,33 @@ module Admin
       send_data ::ShopProspectImport::TEMPLATE_CSV, filename: "shop_prospects_template.csv", type: "text/csv"
     end
 
+    def send_outreach_emails
+      authorize ::ShopProspect.new, :send_outreach_emails?
+
+      ids = Array(params[:shop_prospect_ids]).reject(&:blank?)
+      if ids.empty?
+        redirect_to admin_shop_prospects_path, alert: "送信先の営業先候補を選択してください。"
+        return
+      end
+
+      sent_count = 0
+      skipped_count = 0
+      policy_scope(::ShopProspect).where(id: ids).find_each do |prospect|
+        if prospect.email.blank?
+          skipped_count += 1
+          next
+        end
+
+        ShopProspectMailer.outreach_email(prospect).deliver_now
+        prospect.update!(outreach_email_sent_at: Time.current)
+        sent_count += 1
+      end
+
+      notice = "#{sent_count}件に営業メールを送信しました。"
+      notice += "(#{skipped_count}件はメールアドレス未登録のためスキップしました)" if skipped_count > 0
+      redirect_to admin_shop_prospects_path, notice: notice
+    end
+
     private
 
     def set_prospect

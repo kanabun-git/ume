@@ -13,5 +13,9 @@ class ShopProspect < ApplicationRecord
 
   validates :name, presence: true
 
+  # Every prospect gets a click-tracking token up front (not lazily at send
+  # time) so the outreach link stays the same even if a lead is re-emailed.
+  before_create { self.outreach_token ||= SecureRandom.hex(16) }
+
   default_scope { order(created_at: :desc) }
 end

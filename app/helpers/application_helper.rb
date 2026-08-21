@@ -39,6 +39,20 @@ module ApplicationHelper
     end
   end
 
+  # Badge shown in 営業先候補一覧 so it's obvious at a glance which leads have
+  # been emailed and, further, which of those actually clicked through (the
+  # strongest signal that outreach is landing) -- see ShopProspectMailer and
+  # ShopProspectOutreachController.
+  def outreach_status_badge(prospect)
+    if prospect.outreach_link_clicked_at.present?
+      content_tag(:span, "クリック済み(#{l prospect.outreach_link_clicked_at, format: :short})", class: "badge")
+    elsif prospect.outreach_email_sent_at.present?
+      content_tag(:span, "送信済み(#{l prospect.outreach_email_sent_at, format: :short})", class: "badge muted")
+    else
+      content_tag(:span, "未送信", class: "badge warning")
+    end
+  end
+
   NOWPRINTING_IMAGE_DEFAULTS = {
     portrait: "nowprinting_portrait.png",
     landscape: "nowprinting_landscape.png"

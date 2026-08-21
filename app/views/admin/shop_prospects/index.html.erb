@@ -28,28 +28,72 @@
   <button type="submit" class="btn secondary">絞り込む</button>
 </form>
 
-<table class="admin-table">
-  <thead><tr><th>店舗名</th><th>電話番号</th><th>メールアドレス</th><th>掲載サイト</th><th>ステータス</th><th>メモ</th><th></th></tr></thead>
-  <tbody>
-    <% @prospects.each do |prospect| %>
+<div class="card">
+  <h2>営業メールの一斉送信</h2>
+  <p>
+    選択した営業先候補へ、掲載案内メールを一斉送信します。メール本文のリンクは
+    <%= link_to "サイト掲載のお問い合わせ", new_shop_inquiry_path %>ページへ誘導し、
+    そのリンクが実際にクリックされると下の一覧の「送信状況」に反映されます
+    (メールアドレス未登録の候補は自動的にスキップされます)。
+  </p>
+
+  <%# Deliberately NOT wrapping the table in this form: each row's 削除
+      button below is itself a button_to, which renders its own <form>.
+      Nesting a <form> inside another is invalid HTML -- browsers silently
+      drop the inner <form> tag but keep its hidden _method=delete input,
+      which then gets submitted as part of THIS form and corrupts it. Instead,
+      this form stays empty and every checkbox/submit associates with it via
+      the HTML5 form="..." attribute, regardless of where they sit in the DOM. %>
+  <%= form_tag send_outreach_emails_admin_shop_prospects_path, method: :post, id: "outreach-form" do %><% end %>
+
+  <table class="admin-table">
+    <thead>
       <tr>
-        <td><%= prospect.name %></td>
-        <td><%= prospect.phone %></td>
-        <td><%= prospect.email %></td>
-        <td>
-          <% if prospect.listing_url.present? %>
-            <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
-          <% else %>
-            <%= prospect.listing_site_name %>
-          <% end %>
-        </td>
-        <td><%= status_label(prospect) %></td>
-        <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
-        <td>
-          <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
-          <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
-        </td>
+        <th><input type="checkbox" id="select-all-prospects"></th>
+        <th>店舗名</th>
+        <th>電話番号</th>
+        <th>メールアドレス</th>
+        <th>掲載サイト</th>
+        <th>ステータス</th>
+        <th>送信状況</th>
+        <th>メモ</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @prospects.each do |prospect| %>
+        <tr>
+          <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
+          <td><%= prospect.name %></td>
+          <td><%= prospect.phone %></td>
+          <td><%= prospect.email %></td>
+          <td>
+            <% if prospect.listing_url.present? %>
+              <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
+            <% else %>
+              <%= prospect.listing_site_name %>
+            <% end %>
+          </td>
+          <td><%= status_label(prospect) %></td>
+          <td><%= outreach_status_badge(prospect) %></td>
+          <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
+          <td>
+            <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
+            <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= submit_tag "選択した営業先へ一斉送信する", class: "btn", form: "outreach-form", data: { turbo_confirm: "選択した営業先へ営業メールを送信します。よろしいですか?" } %>
+</div>
+
+<script>
+  document.getElementById("select-all-prospects").addEventListener("change", function() {
+    var checked = this.checked;
+    document.querySelectorAll(".prospect-checkbox:not(:disabled)").forEach(function(box) {
+      box.checked = checked;
+    });
+  });
+</script>

@@ -18,6 +18,19 @@ module Admin
       assert_not ShopProspect.exists?(prospect.id)
     end
 
+    test "index filters by district_id and paginates" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      kinshicho = ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      ShopProspect.create!(name: "浅草店", genre: "ソープ/浅草")
+
+      get admin_shop_prospects_path(district_id: kinshicho.shop_prospect_district_id)
+
+      assert_response :success
+      assert_match "錦糸町店", response.body
+      assert_no_match "浅草店", response.body
+    end
+
     test "a shop admin cannot access the sales prospect screens" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

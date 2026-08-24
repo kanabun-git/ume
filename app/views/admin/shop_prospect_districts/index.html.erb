@@ -1,0 +1,21 @@
+<% content_for :title, "地区管理" %>
+
+<h1>地区管理</h1>
+<p>
+  <%= link_to "営業先候補管理", admin_shop_prospects_path %>で店舗を登録すると、ジャンル欄の「業種/地区」の地区部分から自動的に登録されます。
+  現在はすべて東京都内の掲載サイトを想定しており、都道府県は「東京」を初期値にしています。他の都道府県の地区が増えてきたら、ここで修正してください。
+</p>
+
+<table class="admin-table">
+  <thead><tr><th>都道府県</th><th>地区名</th><th>営業先件数</th><th></th></tr></thead>
+  <tbody>
+    <% @districts.each do |district| %>
+      <tr>
+        <td><%= district.prefecture %></td>
+        <td><%= district.name %></td>
+        <td><%= link_to "#{district.prospects_count}件", admin_shop_prospects_path(district_id: district.id) %></td>
+        <td><%= link_to "編集", edit_admin_shop_prospect_district_path(district) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

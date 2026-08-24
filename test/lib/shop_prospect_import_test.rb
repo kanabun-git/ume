@@ -49,6 +49,20 @@ class ShopProspectImportTest < ActiveSupport::TestCase
     assert_not ShopProspect.exists?(name: "【上野】")
   end
 
+  test "imported rows auto-register their district from genre" do
+    csv = <<~CSV
+      店舗名,ジャンル,電話番号,メールアドレス,URL
+      サンプル店舗A,ソープ/吉原,03-1111-1111,a@example.com,https://example.com/a
+      サンプル店舗B,デリヘル/吉原,03-2222-2222,b@example.com,https://example.com/b
+    CSV
+
+    ShopProspectImport.call(StringIO.new(csv))
+
+    assert_equal 1, ShopProspectDistrict.count
+    district = ShopProspectDistrict.find_by(name: "吉原")
+    assert_equal 2, district.shop_prospects.count
+  end
+
   test "strips a leading UTF-8 byte-order mark (as Excel adds on Windows)" do
     csv = "﻿店舗名,ジャンル,電話番号,メールアドレス,URL\nBOM付き店舗,,,,\n"
 

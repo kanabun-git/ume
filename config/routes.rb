@@ -221,6 +221,7 @@ Rails.application.routes.draw do
         delete :destroy_all
       end
     end
+    resources :shop_prospect_districts, only: [:index, :edit, :update]
     resources :reviews, only: [:index, :show, :destroy] do
       member do
         patch :approve

@@ -29,11 +29,20 @@
       <option value="<%= status %>" <%= "selected" if params[:status] == status %>><%= ApplicationHelper::STATUS_LABELS["ShopProspect"][status] %></option>
     <% end %>
   </select>
+
+  <label>地区(<%= link_to "地区管理", admin_shop_prospect_districts_path %>)</label>
+  <select name="district_id">
+    <option value="">すべて</option>
+    <% @districts.each do |district| %>
+      <option value="<%= district.id %>" <%= "selected" if params[:district_id].to_s == district.id.to_s %>><%= district.display_name %></option>
+    <% end %>
+  </select>
+
   <button type="submit" class="btn secondary">絞り込む</button>
 </form>
 
-<%= button_to (params[:status].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
-    destroy_all_admin_shop_prospects_path(status: params[:status]), method: :delete,
+<%= button_to (params[:status].present? || params[:district_id].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
+    destroy_all_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id]), method: :delete,
     form: { data: { turbo_confirm: "このボタンを押すと一括で削除されます。よろしいですか?" } },
     class: "btn danger" %>
 
@@ -56,12 +65,16 @@
       the HTML5 form="..." attribute, regardless of where they sit in the DOM. %>
   <%= form_tag send_outreach_emails_admin_shop_prospects_path, method: :post, id: "outreach-form" do %><% end %>
 
+  <p><%= page_entries_info @prospects %></p>
+  <%= paginate @prospects %>
+
   <table class="admin-table">
     <thead>
       <tr>
         <th><input type="checkbox" id="select-all-prospects"></th>
         <th>店舗名</th>
         <th>ジャンル</th>
+        <th>地区</th>
         <th>電話番号</th>
         <th>メールアドレス</th>
         <th>掲載サイト</th>
@@ -77,6 +90,7 @@
           <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
           <td><%= prospect.name %></td>
           <td><%= prospect.genre %></td>
+          <td><%= prospect.shop_prospect_district&.display_name %></td>
           <td><%= prospect.phone %></td>
           <td><%= prospect.email %></td>
           <td>
@@ -97,6 +111,8 @@
       <% end %>
     </tbody>
   </table>
+
+  <%= paginate @prospects %>
 
   <%= submit_tag "選択した営業先へ一斉送信する", class: "btn", form: "outreach-form", data: { turbo_confirm: "選択した営業先へ営業メールを送信します。よろしいですか?" } %>
 </div>

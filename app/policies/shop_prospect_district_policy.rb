@@ -1,0 +1,2 @@
+class ShopProspectDistrictPolicy < PlatformAdminPolicy
+end

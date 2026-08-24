@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -396,6 +396,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_140000) do
     t.index ["shop_membership_id"], name: "index_shop_point_transactions_on_shop_membership_id"
   end
 
+  create_table "shop_prospect_districts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "prefecture", default: "東京", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_shop_prospect_districts_on_name", unique: true
+  end
+
   create_table "shop_prospects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -408,9 +416,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_140000) do
     t.datetime "outreach_link_clicked_at"
     t.string "outreach_token", null: false
     t.string "phone"
+    t.bigint "shop_prospect_district_id"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["outreach_token"], name: "index_shop_prospects_on_outreach_token", unique: true
+    t.index ["shop_prospect_district_id"], name: "index_shop_prospects_on_shop_prospect_district_id"
   end
 
   create_table "shop_subscriptions", force: :cascade do |t|
@@ -532,6 +542,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_140000) do
   add_foreign_key "shop_memberships", "shops"
   add_foreign_key "shop_page_blocks", "shops"
   add_foreign_key "shop_point_transactions", "shop_memberships"
+  add_foreign_key "shop_prospects", "shop_prospect_districts"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"
   add_foreign_key "shop_visits", "shop_memberships"

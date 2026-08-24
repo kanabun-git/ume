@@ -6,8 +6,8 @@ module Admin
     before_action :set_prospect, only: [:edit, :update, :destroy]
 
     def index
-      @prospects = policy_scope(::ShopProspect)
-      @prospects = @prospects.where(status: params[:status]) if params[:status].present?
+      @prospects = filtered_prospects.page(params[:page]).per(50)
+      @districts = ::ShopProspectDistrict.all
     end
 
     def new
@@ -62,17 +62,17 @@ module Admin
     end
 
     # Bulk-clears bad CSV imports without deleting one row at a time.
-    # Respects the same ?status= filter as #index so an admin can wipe just
-    # one status bucket (e.g. 未アプローチ) instead of every prospect.
+    # Respects the same ?status=/?district_id= filters as #index so an admin
+    # can wipe just one bucket (e.g. a single district re-imported by
+    # mistake) instead of every prospect.
     def destroy_all
       authorize ::ShopProspect.new, :destroy?
 
-      prospects = policy_scope(::ShopProspect)
-      prospects = prospects.where(status: params[:status]) if params[:status].present?
-      count = prospects.count
-      prospects.destroy_all
+      count = filtered_prospects.count
+      filtered_prospects.destroy_all
 
-      redirect_to admin_shop_prospects_path(status: params[:status]), notice: "#{count}件の営業先候補を削除しました。"
+      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id]),
+        notice: "#{count}件の営業先候補を削除しました。"
     end
 
     def send_outreach_emails
@@ -103,6 +103,13 @@ module Admin
     end
 
     private
+
+    def filtered_prospects
+      prospects = policy_scope(::ShopProspect)
+      prospects = prospects.where(status: params[:status]) if params[:status].present?
+      prospects = prospects.where(shop_prospect_district_id: params[:district_id]) if params[:district_id].present?
+      prospects
+    end
 
     def set_prospect
       @prospect = ::ShopProspect.find(params[:id])

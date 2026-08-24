@@ -21,4 +21,39 @@ class ShopProspectTest < ActiveSupport::TestCase
     assert a.outreach_token.present?
     assert_not_equal a.outreach_token, b.outreach_token
   end
+
+  test "genre with a 業種/地区 slash auto-registers the district" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
+
+    assert_equal "錦糸町", prospect.shop_prospect_district.name
+    assert_equal "東京", prospect.shop_prospect_district.prefecture
+  end
+
+  test "two prospects with the same district share one ShopProspectDistrict row" do
+    a = ShopProspect.create!(name: "候補A", genre: "デリヘル/錦糸町")
+    b = ShopProspect.create!(name: "候補B", genre: "ソープ/錦糸町")
+
+    assert_equal a.shop_prospect_district_id, b.shop_prospect_district_id
+    assert_equal 1, ShopProspectDistrict.count
+  end
+
+  test "genre without a slash leaves the district unset" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル")
+
+    assert_nil prospect.shop_prospect_district
+  end
+
+  test "blank genre leaves the district unset" do
+    prospect = ShopProspect.create!(name: "候補店舗")
+
+    assert_nil prospect.shop_prospect_district
+  end
+
+  test "editing genre to a new district re-syncs it" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
+
+    prospect.update!(genre: "デリヘル/浅草")
+
+    assert_equal "浅草", prospect.shop_prospect_district.name
+  end
 end

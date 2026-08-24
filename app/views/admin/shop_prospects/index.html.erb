@@ -32,6 +32,16 @@
   <button type="submit" class="btn secondary">絞り込む</button>
 </form>
 
+<%# Plain onsubmit confirm, not data-turbo-confirm: Turbo Drive's JS isn't
+    loaded anywhere in this app (no @hotwired/turbo-rails in importmap.rb,
+    no javascript_importmap_tags in this layout), so data-turbo-confirm
+    attributes are inert everywhere -- this is the one mechanism that's
+    guaranteed to actually show a dialog. %>
+<%= button_to (params[:status].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
+    destroy_all_admin_shop_prospects_path(status: params[:status]), method: :delete,
+    form: { onsubmit: "return confirm('このボタンを押すと一括で削除されます。よろしいですか?')" },
+    class: "btn danger" %>
+
 <div class="card">
   <h2>営業メールの一斉送信</h2>
   <p>

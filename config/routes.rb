@@ -218,6 +218,7 @@ Rails.application.routes.draw do
         post :import
         get :template
         post :send_outreach_emails
+        delete :destroy_all
       end
     end
     resources :reviews, only: [:index, :show, :destroy] do

@@ -102,5 +102,40 @@ module Admin
 
       assert_redirected_to root_path
     end
+
+    test "destroy_all deletes every prospect" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "候補A")
+      ShopProspect.create!(name: "候補B")
+
+      delete destroy_all_admin_shop_prospects_path
+
+      assert_redirected_to admin_shop_prospects_path
+      assert_equal 0, ShopProspect.count
+    end
+
+    test "destroy_all with a status filter only deletes prospects with that status" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "未接触", status: :not_contacted)
+      ShopProspect.create!(name: "商談中", status: :negotiating)
+
+      delete destroy_all_admin_shop_prospects_path, params: { status: "not_contacted" }
+
+      assert_not ShopProspect.exists?(name: "未接触")
+      assert ShopProspect.exists?(name: "商談中")
+    end
+
+    test "a shop admin cannot bulk-delete sales prospects" do
+      user = create_user(role: :shop_admin, shop: create_shop)
+      sign_in user
+      ShopProspect.create!(name: "候補店舗")
+
+      delete destroy_all_admin_shop_prospects_path
+
+      assert_redirected_to root_path
+      assert_equal 1, ShopProspect.count
+    end
   end
 end

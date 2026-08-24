@@ -61,6 +61,20 @@ module Admin
       send_data ::ShopProspectImport::TEMPLATE_CSV, filename: "shop_prospects_template.csv", type: "text/csv"
     end
 
+    # Bulk-clears bad CSV imports without deleting one row at a time.
+    # Respects the same ?status= filter as #index so an admin can wipe just
+    # one status bucket (e.g. 未アプローチ) instead of every prospect.
+    def destroy_all
+      authorize ::ShopProspect.new, :destroy?
+
+      prospects = policy_scope(::ShopProspect)
+      prospects = prospects.where(status: params[:status]) if params[:status].present?
+      count = prospects.count
+      prospects.destroy_all
+
+      redirect_to admin_shop_prospects_path(status: params[:status]), notice: "#{count}件の営業先候補を削除しました。"
+    end
+
     def send_outreach_emails
       authorize ::ShopProspect.new, :send_outreach_emails?
 

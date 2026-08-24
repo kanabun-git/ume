@@ -56,4 +56,34 @@ class ShopProspectTest < ActiveSupport::TestCase
 
     assert_equal "浅草", prospect.shop_prospect_district.name
   end
+
+  test "backfill_districts! fills in the district for pre-existing rows without touching anything else" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
+    prospect.update_column(:shop_prospect_district_id, nil) # simulate a row saved before this feature existed
+
+    count = ShopProspect.backfill_districts!
+
+    assert_equal 1, count
+    assert_equal "錦糸町", prospect.reload.shop_prospect_district.name
+    assert ShopProspect.exists?(prospect.id)
+  end
+
+  test "backfill_districts! does not touch prospects without a usable genre" do
+    ShopProspect.create!(name: "地区なし候補", genre: "デリヘル")
+
+    count = ShopProspect.backfill_districts!
+
+    assert_equal 0, count
+    assert ShopProspect.exists?(name: "地区なし候補")
+  end
+
+  test "backfill_districts! is safe to run twice" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
+    prospect.update_column(:shop_prospect_district_id, nil)
+
+    ShopProspect.backfill_districts!
+    second_run_count = ShopProspect.backfill_districts!
+
+    assert_equal 0, second_run_count
+  end
 end

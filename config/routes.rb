@@ -217,6 +217,7 @@ Rails.application.routes.draw do
       collection do
         post :import
         get :template
+        get :export
         post :send_outreach_emails
         delete :destroy_all
       end

@@ -79,6 +79,52 @@ module Admin
       assert prospect.reload.outreach_email_sent_at.present?
     end
 
+    test "send_outreach_emails advances a not_contacted prospect to contacted" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      prospect = ShopProspect.create!(name: "候補店舗", email: "prospect@example.com", status: :not_contacted)
+
+      post send_outreach_emails_admin_shop_prospects_path, params: { shop_prospect_ids: [prospect.id] }
+
+      assert prospect.reload.contacted?
+    end
+
+    test "send_outreach_emails does not move a prospect already further along back to contacted" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      prospect = ShopProspect.create!(name: "候補店舗", email: "prospect@example.com", status: :negotiating)
+
+      post send_outreach_emails_admin_shop_prospects_path, params: { shop_prospect_ids: [prospect.id] }
+
+      assert prospect.reload.negotiating?
+    end
+
+    test "export downloads a CSV of the current filter" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      ShopProspect.create!(name: "浅草店", genre: "ソープ/浅草")
+
+      get export_admin_shop_prospects_path
+
+      assert_response :success
+      assert_match "錦糸町店", response.body
+      assert_match "浅草店", response.body
+      assert_match "東京ー錦糸町", response.body
+    end
+
+    test "export respects the district_id filter" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      kinshicho = ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      ShopProspect.create!(name: "浅草店", genre: "ソープ/浅草")
+
+      get export_admin_shop_prospects_path(district_id: kinshicho.shop_prospect_district_id)
+
+      assert_match "錦糸町店", response.body
+      assert_no_match "浅草店", response.body
+    end
+
     test "send_outreach_emails skips prospects without an email address" do
       admin = create_user(role: :platform_admin)
       sign_in admin

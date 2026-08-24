@@ -28,15 +28,44 @@ class ShopProspect < ApplicationRecord
 
   default_scope { order(created_at: :desc) }
 
+  # One-off catch-up for prospects saved before the district feature
+  # existed, whose genre already has a "/" but never got split out (the
+  # before_save callback only fires when genre itself changes). Never
+  # deletes or otherwise touches any prospect -- only fills in a currently
+  # blank shop_prospect_district_id. Safe to re-run (see
+  # lib/tasks/shop_prospects.rake).
+  def self.backfill_districts!
+    count = 0
+
+    where(shop_prospect_district_id: nil).find_each do |prospect|
+      district = prospect.send(:derive_shop_prospect_district)
+      next unless district
+
+      prospect.update_column(:shop_prospect_district_id, district.id)
+      count += 1
+    end
+
+    count
+  end
+
   private
 
   def sync_shop_prospect_district
     return unless genre_changed?
+
+    district = derive_shop_prospect_district
+    self.shop_prospect_district = district if district
+  end
+
+  # genre arrives as "業種/地区" (e.g. "デリヘル/錦糸町" -- see
+  # ShopProspectImport). Pulls out the 地区 half and looks up or registers
+  # the matching ShopProspectDistrict, or nil if genre has no "/" segment.
+  def derive_shop_prospect_district
     return if genre.blank? || !genre.include?("/")
 
     district_name = genre.split("/", 2).last.to_s.strip
     return if district_name.blank?
 
-    self.shop_prospect_district = ShopProspectDistrict.find_or_create_by!(name: district_name)
+    ShopProspectDistrict.find_or_create_by!(name: district_name)
   end
 end

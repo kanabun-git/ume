@@ -61,6 +61,13 @@ module Admin
       send_data ::ShopProspectImport::TEMPLATE_CSV, filename: "shop_prospects_template.csv", type: "text/csv"
     end
 
+    # Respects the same ?status=/?district_id= filters as #index, so an
+    # admin can export just what they're currently looking at.
+    def export
+      authorize ::ShopProspect.new, :export?
+      send_data ::ShopProspectImport.export(filtered_prospects), filename: "shop_prospects_#{Date.current}.csv", type: "text/csv"
+    end
+
     # Bulk-clears bad CSV imports without deleting one row at a time.
     # Respects the same ?status=/?district_id= filters as #index so an admin
     # can wipe just one bucket (e.g. a single district re-imported by
@@ -93,7 +100,14 @@ module Admin
         end
 
         ShopProspectMailer.outreach_email(prospect).deliver_now
-        prospect.update!(outreach_email_sent_at: Time.current)
+
+        attrs = { outreach_email_sent_at: Time.current }
+        # Only advance a still-untouched lead -- don't knock a prospect
+        # already further along (negotiating/won/lost) back down to
+        # merely "contacted" just because they got a re-send.
+        attrs[:status] = :contacted if prospect.not_contacted?
+        prospect.update!(attrs)
+
         sent_count += 1
       end
 

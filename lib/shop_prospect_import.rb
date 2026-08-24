@@ -4,23 +4,32 @@ require "csv"
 # Admin::ShopProspectsController#import). Rows are prepared by hand or
 # exported from a spreadsheet by the admin — this module never fetches
 # data from another site itself.
+#
+# The standard format matches what competitor listing directories (e.g.
+# mensheaven.jp) export when copy-pasted into a spreadsheet: a 店舗名,ジャンル
+# (業種/エリア combined, e.g. "ソープ/吉原"), 電話番号, メールアドレス, URL per
+# shop, with blank-ish rows acting as area section headers (e.g. "【吉原】,,,,")
+# that should be skipped rather than imported as prospects.
 module ShopProspectImport
   Result = Struct.new(:created_count, :error_rows, keyword_init: true)
 
-  HEADERS = %w[店舗名 電話番号 メールアドレス 掲載サイト名 掲載URL メモ].freeze
+  HEADERS = %w[店舗名 ジャンル 電話番号 メールアドレス URL].freeze
 
   HEADER_TO_ATTRIBUTE = {
     "店舗名" => :name,
+    "ジャンル" => :genre,
     "電話番号" => :phone,
     "メールアドレス" => :email,
-    "掲載サイト名" => :listing_site_name,
-    "掲載URL" => :listing_url,
-    "メモ" => :memo
+    "URL" => :listing_url
   }.freeze
+
+  # A section-header row from the source spreadsheet, e.g. "【吉原】,,,," --
+  # not a real shop, so it must not become a ShopProspect.
+  AREA_HEADER_PATTERN = /\A【.+】\z/
 
   TEMPLATE_CSV = CSV.generate do |csv|
     csv << HEADERS
-    csv << ["サンプル店舗", "03-1234-5678", "info@example.com", "○○ネット", "https://example.com/shop/123", "電話予約可、担当:田中様"]
+    csv << ["サンプル店舗", "デリヘル/新宿・歌舞伎町", "03-1234-5678", "info@example.com", "https://example.com/shop/123"]
   end.freeze
 
   module_function
@@ -30,6 +39,9 @@ module ShopProspectImport
     error_rows = []
 
     CSV.parse(strip_bom(file.read), headers: true).each_with_index do |row, index|
+      name = row["店舗名"]
+      next if name.present? && name.match?(AREA_HEADER_PATTERN)
+
       attrs = HEADER_TO_ATTRIBUTE.each_with_object({}) { |(header, attribute), memo| memo[attribute] = row[header] }
       prospect = ShopProspect.new(attrs)
 

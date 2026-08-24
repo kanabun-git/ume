@@ -96,7 +96,7 @@ module Admin
     end
 
     def prospect_params
-      params.require(:shop_prospect).permit(:name, :phone, :email, :listing_site_name, :listing_url, :status, :memo)
+      params.require(:shop_prospect).permit(:name, :genre, :phone, :email, :listing_site_name, :listing_url, :status, :memo)
     end
   end
 end

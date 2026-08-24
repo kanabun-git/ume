@@ -32,8 +32,8 @@ module Admin
       sign_in admin
 
       csv = <<~CSV
-        店舗名,電話番号,メールアドレス,掲載サイト名,掲載URL,メモ
-        インポート店舗A,03-1111-1111,a@example.com,○○ネット,https://example.com/a,
+        店舗名,ジャンル,電話番号,メールアドレス,URL
+        インポート店舗A,ソープ/吉原,03-1111-1111,a@example.com,https://example.com/a
       CSV
       file = Rack::Test::UploadedFile.new(StringIO.new(csv), "text/csv", original_filename: "prospects.csv")
 

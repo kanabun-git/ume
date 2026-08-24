@@ -9,7 +9,11 @@
     <%= link_to "CSVテンプレートをダウンロード", template_admin_shop_prospects_path, class: "btn secondary" %>
   </p>
   <%= form_with url: import_admin_shop_prospects_path, method: :post, local: true, multipart: true, class: "form" do |f| %>
-    <label>CSVファイル(店舗名,電話番号,メールアドレス,掲載サイト名,掲載URL,メモ)</label>
+    <label>CSVファイル(店舗名,ジャンル,電話番号,メールアドレス,URL)</label>
+    <p class="region-note">
+      他サイトの店舗一覧をスプレッドシートに貼り付けてエクスポートした形式にそのまま対応しています。
+      「【吉原】」のようなエリア見出し行は自動的にスキップされ、営業先として登録されません。
+    </p>
     <%= file_field_tag :file, accept: ".csv,text/csv" %>
     <%= submit_tag "アップロードして登録する", class: "btn" %>
   <% end %>
@@ -52,6 +56,7 @@
       <tr>
         <th><input type="checkbox" id="select-all-prospects"></th>
         <th>店舗名</th>
+        <th>ジャンル</th>
         <th>電話番号</th>
         <th>メールアドレス</th>
         <th>掲載サイト</th>
@@ -66,6 +71,7 @@
         <tr>
           <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
           <td><%= prospect.name %></td>
+          <td><%= prospect.genre %></td>
           <td><%= prospect.phone %></td>
           <td><%= prospect.email %></td>
           <td>

@@ -1,0 +1,29 @@
+<%# Makes every existing data-turbo-confirm attribute in the app (button_to's
+    "削除", present ticket "抽選を実行", the outreach bulk-send button, etc.)
+    actually show a confirm dialog before submitting. Turbo Drive's own JS,
+    which normally provides this, is never loaded anywhere in this app (no
+    @hotwired/turbo-rails pinned, no javascript_importmap_tags in any
+    layout) -- without this shim, every one of those attributes is silently
+    inert and the destructive action fires with zero confirmation. Included
+    from every page layout (not the mailer layout, which has no forms). %>
+<script>
+  (function () {
+    function confirmed(message) {
+      return !message || window.confirm(message);
+    }
+
+    document.addEventListener("submit", function (event) {
+      var form = event.target;
+      var message = form.getAttribute("data-turbo-confirm") ||
+        (event.submitter && event.submitter.getAttribute("data-turbo-confirm"));
+      if (!confirmed(message)) event.preventDefault();
+    });
+
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest("a[data-turbo-confirm]");
+      if (link && !confirmed(link.getAttribute("data-turbo-confirm"))) {
+        event.preventDefault();
+      }
+    });
+  })();
+</script>

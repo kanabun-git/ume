@@ -5,15 +5,29 @@
   <%= link_to "営業先候補管理", admin_shop_prospects_path %>で店舗を登録すると、ジャンル欄の「業種/地区」の地区部分から自動的に登録されます。
   現在はすべて東京都内の掲載サイトを想定しており、都道府県は「東京」を初期値にしています。他の都道府県の地区が増えてきたら、ここで修正してください。
 </p>
+<p>
+  ここで管理する地区は営業先候補を分類するための内部タグで、実際に店舗を掲載する際に使う<%= link_to "エリア管理", admin_areas_path %>とは別物です。
+  まだエリア管理に登録されていない都道府県・地区名は、下の一覧から直接エリアを追加登録できます。
+</p>
 
 <table class="admin-table">
-  <thead><tr><th>都道府県</th><th>地区名</th><th>営業先件数</th><th></th></tr></thead>
+  <thead><tr><th>都道府県</th><th>地区名</th><th>営業先件数</th><th>エリア管理への登録</th><th></th></tr></thead>
   <tbody>
     <% @districts.each do |district| %>
+      <% prefecture_area = @prefecture_areas[district.prefecture] %>
       <tr>
         <td><%= district.prefecture %></td>
         <td><%= district.name %></td>
         <td><%= link_to "#{district.prospects_count}件", admin_shop_prospects_path(district_id: district.id) %></td>
+        <td>
+          <% if @district_registered[district.id] %>
+            <span class="badge muted">登録済み</span>
+          <% elsif prefecture_area %>
+            <%= link_to "エリアに追加", new_admin_area_path(name: district.name, parent_id: prefecture_area.id), class: "btn secondary" %>
+          <% else %>
+            <%= link_to "都道府県(#{district.prefecture})を先に登録", new_admin_area_path(name: district.prefecture), class: "btn secondary" %>
+          <% end %>
+        </td>
         <td><%= link_to "編集", edit_admin_shop_prospect_district_path(district) %></td>
       </tr>
     <% end %>

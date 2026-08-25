@@ -18,6 +18,29 @@ module Admin
       assert_not Area.exists?(area.id)
     end
 
+    test "new prefills name and a validated parent_id from query params" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      prefecture = Area.create!(name: "東京", slug: "tokyo-prefill-test", region: "関東")
+
+      get new_admin_area_path(name: "錦糸町", parent_id: prefecture.id)
+
+      assert_response :success
+      assert_select "input#area_name[value=?]", "錦糸町"
+      assert_select "select#area_parent_id option[selected][value=?]", prefecture.id.to_s
+    end
+
+    test "new ignores a parent_id that isn't a real top-level area" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      child = Area.create!(name: "子エリア", slug: "child-prefill-test", parent: Area.create!(name: "親エリア", slug: "parent-prefill-test", region: "関東"))
+
+      get new_admin_area_path(name: "テスト", parent_id: child.id)
+
+      assert_response :success
+      assert_select "select#area_parent_id option[selected]", false
+    end
+
     test "a shop admin cannot access area management" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

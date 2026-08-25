@@ -10,7 +10,12 @@ module Admin
     end
 
     def new
-      @area = ::Area.new
+      # `name`/`parent_id` may arrive from 地区管理's "エリアに追加" link (see
+      # admin/shop_prospect_districts/index) -- they only prefill this GET
+      # form. parent_id is re-validated against real top-level areas here
+      # rather than trusted from the query string as-is.
+      parent_id = ::Area.where(parent_id: nil).where(id: params[:parent_id]).pick(:id)
+      @area = ::Area.new(name: params[:name], parent_id: parent_id)
       authorize @area
     end
 

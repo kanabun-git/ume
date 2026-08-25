@@ -11,6 +11,19 @@ module Admin
       @districts = policy_scope(::ShopProspectDistrict).left_joins(:shop_prospects)
         .select("shop_prospect_districts.*, COUNT(shop_prospects.id) AS prospects_count")
         .group("shop_prospect_districts.id")
+
+      # Lets an admin add a district to the site's own Area taxonomy
+      # straight from here when it's missing there (see #index.html.erb) --
+      # ShopProspectDistrict and Area are deliberately separate tables (one
+      # tracks sales leads, the other real listed shops), so nothing keeps
+      # them in sync automatically.
+      @prefecture_areas = ::Area.where(parent_id: nil).index_by(&:name)
+      child_area_names_by_parent_id = ::Area.where.not(parent_id: nil)
+        .group_by(&:parent_id).transform_values { |areas| areas.map(&:name).to_set }
+      @district_registered = @districts.index_by(&:id).transform_values do |district|
+        prefecture_area = @prefecture_areas[district.prefecture]
+        prefecture_area.present? && child_area_names_by_parent_id[prefecture_area.id]&.include?(district.name) || false
+      end
     end
 
     def edit

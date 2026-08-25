@@ -22,11 +22,12 @@ class ShopProspectTest < ActiveSupport::TestCase
     assert_not_equal a.outreach_token, b.outreach_token
   end
 
-  test "genre with a 業種/地区 slash auto-registers the district" do
+  test "genre with a 業種/地区 slash auto-registers the district and strips genre down to 業種" do
     prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
 
     assert_equal "錦糸町", prospect.shop_prospect_district.name
     assert_equal "東京", prospect.shop_prospect_district.prefecture
+    assert_equal "デリヘル", prospect.genre
   end
 
   test "two prospects with the same district share one ShopProspectDistrict row" do
@@ -57,14 +58,16 @@ class ShopProspectTest < ActiveSupport::TestCase
     assert_equal "浅草", prospect.shop_prospect_district.name
   end
 
-  test "backfill_districts! fills in the district for pre-existing rows without touching anything else" do
-    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
-    prospect.update_column(:shop_prospect_district_id, nil) # simulate a row saved before this feature existed
+  test "backfill_districts! fills in the district and strips genre for pre-existing rows without touching anything else" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル")
+    prospect.update_columns(genre: "デリヘル/錦糸町", shop_prospect_district_id: nil) # simulate a row saved before this feature existed
 
     count = ShopProspect.backfill_districts!
 
     assert_equal 1, count
-    assert_equal "錦糸町", prospect.reload.shop_prospect_district.name
+    prospect.reload
+    assert_equal "錦糸町", prospect.shop_prospect_district.name
+    assert_equal "デリヘル", prospect.genre
     assert ShopProspect.exists?(prospect.id)
   end
 
@@ -78,11 +81,47 @@ class ShopProspectTest < ActiveSupport::TestCase
   end
 
   test "backfill_districts! is safe to run twice" do
-    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/錦糸町")
-    prospect.update_column(:shop_prospect_district_id, nil)
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル")
+    prospect.update_columns(genre: "デリヘル/錦糸町", shop_prospect_district_id: nil)
 
     ShopProspect.backfill_districts!
     second_run_count = ShopProspect.backfill_districts!
+
+    assert_equal 0, second_run_count
+  end
+
+  test "backfill_contacted_status! advances a not_contacted prospect that already has an outreach_email_sent_at" do
+    prospect = ShopProspect.create!(name: "候補店舗", outreach_email_sent_at: 1.day.ago)
+
+    count = ShopProspect.backfill_contacted_status!
+
+    assert_equal 1, count
+    assert prospect.reload.contacted?
+  end
+
+  test "backfill_contacted_status! does not touch a prospect with no outreach_email_sent_at" do
+    prospect = ShopProspect.create!(name: "候補店舗")
+
+    count = ShopProspect.backfill_contacted_status!
+
+    assert_equal 0, count
+    assert prospect.reload.not_contacted?
+  end
+
+  test "backfill_contacted_status! does not move a prospect further along back to contacted" do
+    prospect = ShopProspect.create!(name: "候補店舗", status: :negotiating, outreach_email_sent_at: 1.day.ago)
+
+    count = ShopProspect.backfill_contacted_status!
+
+    assert_equal 0, count
+    assert prospect.reload.negotiating?
+  end
+
+  test "backfill_contacted_status! is safe to run twice" do
+    ShopProspect.create!(name: "候補店舗", outreach_email_sent_at: 1.day.ago)
+
+    ShopProspect.backfill_contacted_status!
+    second_run_count = ShopProspect.backfill_contacted_status!
 
     assert_equal 0, second_run_count
   end

@@ -31,6 +31,20 @@ module Admin
       assert_no_match "浅草店", response.body
     end
 
+    test "index filters by prefecture" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      osaka_district = ShopProspectDistrict.create!(name: "梅田", prefecture: "大阪")
+      ShopProspect.create!(name: "梅田店", shop_prospect_district: osaka_district)
+
+      get admin_shop_prospects_path(prefecture: "東京")
+
+      assert_response :success
+      assert_match "錦糸町店", response.body
+      assert_no_match "梅田店", response.body
+    end
+
     test "a shop admin cannot access the sales prospect screens" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user
@@ -184,6 +198,19 @@ module Admin
 
       assert_not ShopProspect.exists?(name: "未接触")
       assert ShopProspect.exists?(name: "商談中")
+    end
+
+    test "destroy_all with a prefecture filter only deletes prospects in that prefecture" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      osaka_district = ShopProspectDistrict.create!(name: "梅田", prefecture: "大阪")
+      ShopProspect.create!(name: "梅田店", shop_prospect_district: osaka_district)
+
+      delete destroy_all_admin_shop_prospects_path, params: { prefecture: "東京" }
+
+      assert_not ShopProspect.exists?(name: "錦糸町店")
+      assert ShopProspect.exists?(name: "梅田店")
     end
 
     test "a shop admin cannot bulk-delete sales prospects" do

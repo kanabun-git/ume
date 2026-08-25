@@ -13,7 +13,8 @@ class ShopProspectImportTest < ActiveSupport::TestCase
 
     assert_equal 2, result.created_count
     assert_empty result.error_rows
-    assert ShopProspect.exists?(name: "サンプル店舗A", phone: "03-1111-1111", genre: "ソープ/吉原")
+    assert ShopProspect.exists?(name: "サンプル店舗A", phone: "03-1111-1111", genre: "ソープ")
+    assert_equal "吉原", ShopProspect.find_by(name: "サンプル店舗A").shop_prospect_district.name
     assert ShopProspect.exists?(name: "サンプル店舗B", listing_url: "https://example.com/b")
   end
 

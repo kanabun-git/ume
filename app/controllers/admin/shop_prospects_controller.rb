@@ -8,6 +8,7 @@ module Admin
     def index
       @prospects = filtered_prospects.page(params[:page]).per(50)
       @districts = ::ShopProspectDistrict.all
+      @prefectures = ::ShopProspectDistrict.distinct.reorder(:prefecture).pluck(:prefecture)
     end
 
     def new
@@ -78,7 +79,7 @@ module Admin
       count = filtered_prospects.count
       filtered_prospects.destroy_all
 
-      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id]),
+      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]),
         notice: "#{count}件の営業先候補を削除しました。"
     end
 
@@ -122,6 +123,9 @@ module Admin
       prospects = policy_scope(::ShopProspect)
       prospects = prospects.where(status: params[:status]) if params[:status].present?
       prospects = prospects.where(shop_prospect_district_id: params[:district_id]) if params[:district_id].present?
+      if params[:prefecture].present?
+        prospects = prospects.joins(:shop_prospect_district).where(shop_prospect_districts: { prefecture: params[:prefecture] })
+      end
       prospects
     end
 

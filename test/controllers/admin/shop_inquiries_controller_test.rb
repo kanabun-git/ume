@@ -56,6 +56,39 @@ module Admin
       assert_not inquiry.reload.archived?
     end
 
+    test "destroy permanently deletes an archived inquiry" do
+      admin = create_user(role: :platform_admin)
+      inquiry = ShopInquiry.create!(shop_name: "アーカイブ店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222", archived_at: Time.current)
+      sign_in admin
+
+      delete admin_shop_inquiry_path(inquiry)
+
+      assert_redirected_to archived_admin_shop_inquiries_path
+      assert_not ShopInquiry.exists?(inquiry.id)
+    end
+
+    test "destroy refuses to delete an inquiry that is not archived yet" do
+      admin = create_user(role: :platform_admin)
+      inquiry = ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222")
+      sign_in admin
+
+      delete admin_shop_inquiry_path(inquiry)
+
+      assert_redirected_to admin_shop_inquiries_path
+      assert ShopInquiry.exists?(inquiry.id)
+    end
+
+    test "a shop admin cannot destroy an inquiry" do
+      shop_admin = create_user(role: :shop_admin, shop: create_shop)
+      inquiry = ShopInquiry.create!(shop_name: "アーカイブ店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222", archived_at: Time.current)
+      sign_in shop_admin
+
+      delete admin_shop_inquiry_path(inquiry)
+
+      assert_redirected_to root_path
+      assert ShopInquiry.exists?(inquiry.id)
+    end
+
     test "a shop admin cannot archive an inquiry" do
       shop_admin = create_user(role: :shop_admin, shop: create_shop)
       inquiry = ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222")

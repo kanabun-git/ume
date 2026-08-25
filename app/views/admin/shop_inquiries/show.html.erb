@@ -31,6 +31,9 @@
 
 <% if @shop_inquiry.archived? %>
   <%= button_to "一覧に戻す", unarchive_admin_shop_inquiry_path(@shop_inquiry), method: :patch, class: "btn secondary" %>
+  <%= button_to "完全に削除する", admin_shop_inquiry_path(@shop_inquiry), method: :delete,
+      form: { data: { turbo_confirm: "このお問い合わせを完全に削除します。この操作は元に戻せません。よろしいですか?" } },
+      class: "btn danger" %>
 <% else %>
   <%= button_to "アーカイブする", archive_admin_shop_inquiry_path(@shop_inquiry), method: :patch,
       form: { data: { turbo_confirm: "このお問い合わせをアーカイブしますか?一覧から見えなくなりますが、削除はされずアーカイブ済み一覧から確認できます。" } },

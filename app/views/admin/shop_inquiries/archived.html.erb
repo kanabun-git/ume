@@ -19,6 +19,9 @@
         <td>
           <%= link_to "詳細", admin_shop_inquiry_path(inquiry) %>
           <%= button_to "一覧に戻す", unarchive_admin_shop_inquiry_path(inquiry), method: :patch %>
+          <%= button_to "完全に削除する", admin_shop_inquiry_path(inquiry), method: :delete,
+              form: { data: { turbo_confirm: "このお問い合わせを完全に削除します。この操作は元に戻せません。よろしいですか?" } },
+              class: "btn danger" %>
         </td>
       </tr>
     <% end %>

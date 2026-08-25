@@ -27,6 +27,10 @@ class ShopInquiryPolicy < ApplicationPolicy
     index?
   end
 
+  def destroy?
+    index?
+  end
+
   class Scope < Scope
     def resolve
       user&.platform_admin? ? scope.all : scope.none

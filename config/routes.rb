@@ -246,7 +246,7 @@ Rails.application.routes.draw do
     # separate attachment id to moderate against, unlike :toggle_hidden above).
     patch "diary_entries/:id/toggle_video_hidden", to: "diary_images#toggle_video_hidden", as: :toggle_video_hidden_diary_entry
 
-    resources :shop_inquiries, only: [:index, :show] do
+    resources :shop_inquiries, only: [:index, :show, :destroy] do
       member do
         patch :update_status
         patch :archive

@@ -1,6 +1,6 @@
 module Admin
   class ShopInquiriesController < BaseController
-    before_action :set_shop_inquiry, only: [:show, :update_status, :archive, :unarchive]
+    before_action :set_shop_inquiry, only: [:show, :update_status, :archive, :unarchive, :destroy]
 
     def index
       authorize ::ShopInquiry, :index?
@@ -35,6 +35,20 @@ module Admin
     def unarchive
       @shop_inquiry.update!(archived_at: nil)
       redirect_to archived_admin_shop_inquiries_path, notice: "お問い合わせをアーカイブから戻しました。"
+    end
+
+    # Only archived inquiries can be permanently deleted -- an inquiry still
+    # in the active list has to be archived first, so deletion always goes
+    # through the same deliberate two-step (archive, then delete) the
+    # confirmation dialog on the archived screen already implies.
+    def destroy
+      unless @shop_inquiry.archived?
+        redirect_to admin_shop_inquiries_path, alert: "アーカイブ済みのお問い合わせのみ削除できます。"
+        return
+      end
+
+      @shop_inquiry.destroy!
+      redirect_to archived_admin_shop_inquiries_path, notice: "お問い合わせを完全に削除しました。"
     end
 
     private

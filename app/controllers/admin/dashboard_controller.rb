@@ -5,6 +5,7 @@ module Admin
       @pending_reviews_count = ::Review.pending.count
       @shops_count = ::Shop.count
       @casts_count = ::Cast.count
+      @shop_inquiries_count = ::ShopInquiry.active.count
     end
   end
 end

@@ -247,7 +247,12 @@ Rails.application.routes.draw do
     patch "diary_entries/:id/toggle_video_hidden", to: "diary_images#toggle_video_hidden", as: :toggle_video_hidden_diary_entry
 
     resources :shop_inquiries, only: [:index, :show] do
-      member { patch :update_status }
+      member do
+        patch :update_status
+        patch :archive
+        patch :unarchive
+      end
+      collection { get :archived }
     end
 
     get "analytics", to: "analytics#index", as: :analytics

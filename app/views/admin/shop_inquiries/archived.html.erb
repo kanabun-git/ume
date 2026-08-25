@@ -1,0 +1,28 @@
+<% content_for :title, "アーカイブ済みのお問い合わせ" %>
+
+<h1>アーカイブ済みのお問い合わせ</h1>
+<p>一覧からアーカイブされたお問い合わせです。削除はされておらず、内容の確認や一覧への復元ができます。</p>
+<p><%= link_to "お問い合わせ一覧に戻る", admin_shop_inquiries_path %></p>
+
+<table class="admin-table">
+  <thead><tr><th>店舗名</th><th>ご担当者</th><th>電話番号</th><th>希望エリア</th><th>受付日時</th><th>アーカイブ日時</th><th>状態</th><th></th></tr></thead>
+  <tbody>
+    <% @shop_inquiries.each do |inquiry| %>
+      <tr>
+        <td><%= link_to inquiry.shop_name, admin_shop_inquiry_path(inquiry) %></td>
+        <td><%= inquiry.contact_name %></td>
+        <td><%= inquiry.phone %></td>
+        <td><%= inquiry.area_note %></td>
+        <td><%= inquiry.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= inquiry.archived_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><span class="badge <%= "muted" if inquiry.closed? %>"><%= status_label(inquiry) %></span></td>
+        <td>
+          <%= link_to "詳細", admin_shop_inquiry_path(inquiry) %>
+          <%= button_to "一覧に戻す", unarchive_admin_shop_inquiry_path(inquiry), method: :patch %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @shop_inquiries %>

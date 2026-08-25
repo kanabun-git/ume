@@ -22,4 +22,16 @@ class ShopInquiryTest < ActiveSupport::TestCase
 
     assert inquiry.pending?
   end
+
+  test "defaults to not archived, and .active/.archived scopes split on archived_at" do
+    active = ShopInquiry.create!(shop_name: "現役店舗", contact_name: "担当者", email: "a@example.com", phone: "03-0000-0000")
+    archived = ShopInquiry.create!(shop_name: "アーカイブ店舗", contact_name: "担当者", email: "b@example.com", phone: "03-0000-0001", archived_at: Time.current)
+
+    assert_not active.archived?
+    assert archived.archived?
+    assert_includes ShopInquiry.active, active
+    assert_not_includes ShopInquiry.active, archived
+    assert_includes ShopInquiry.archived, archived
+    assert_not_includes ShopInquiry.archived, active
+  end
 end

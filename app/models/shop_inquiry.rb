@@ -7,4 +7,11 @@ class ShopInquiry < ApplicationRecord
   validates :phone, presence: true
 
   default_scope { order(created_at: :desc) }
+
+  scope :active, -> { where(archived_at: nil) }
+  scope :archived, -> { where.not(archived_at: nil) }
+
+  def archived?
+    archived_at.present?
+  end
 end

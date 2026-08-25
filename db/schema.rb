@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -223,6 +223,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
     t.index ["reset_password_token"], name: "index_members_on_reset_password_token", unique: true
   end
 
+  create_table "outreach_email_templates", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "phone_verification_codes", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "consumed_at"
@@ -337,6 +344,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
   end
 
   create_table "shop_inquiries", force: :cascade do |t|
+    t.datetime "archived_at"
     t.string "area_note"
     t.string "contact_name", null: false
     t.datetime "created_at", null: false
@@ -418,16 +426,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
     t.index ["shop_membership_id"], name: "index_shop_point_transactions_on_shop_membership_id"
   end
 
+  create_table "shop_prospect_districts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "prefecture", default: "東京", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_shop_prospect_districts_on_name", unique: true
+  end
+
   create_table "shop_prospects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
+    t.string "genre"
     t.string "listing_site_name"
     t.string "listing_url"
     t.text "memo"
     t.string "name", null: false
+    t.datetime "outreach_email_sent_at"
+    t.datetime "outreach_link_clicked_at"
+    t.string "outreach_token", null: false
     t.string "phone"
+    t.bigint "shop_prospect_district_id"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["outreach_token"], name: "index_shop_prospects_on_outreach_token", unique: true
+    t.index ["shop_prospect_district_id"], name: "index_shop_prospects_on_shop_prospect_district_id"
   end
 
   create_table "shop_subscriptions", force: :cascade do |t|
@@ -550,6 +573,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_16_130401) do
   add_foreign_key "shop_memberships", "shops"
   add_foreign_key "shop_page_blocks", "shops"
   add_foreign_key "shop_point_transactions", "shop_memberships"
+  add_foreign_key "shop_prospects", "shop_prospect_districts"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"
   add_foreign_key "shop_visits", "shop_memberships"

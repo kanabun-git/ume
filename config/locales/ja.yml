@@ -42,3 +42,27 @@ ja:
         phone: 電話番号
         area_note: 希望エリア
         message: お問い合わせ内容
+      outreach_email_template:
+        subject: 件名
+        body: 本文
+  # Kaminari's own gem locale file (kaminari-core) only ships English
+  # strings -- without this, every paginated screen shows raw
+  # "translation missing: ja.views.pagination.next" text. Went unnoticed
+  # until 営業先候補管理 became the first admin list with enough rows
+  # (200+) to actually need more than one page.
+  views:
+    pagination:
+      first: "&laquo; 最初"
+      last: "最後 &raquo;"
+      previous: "&lsaquo; 前へ"
+      next: "次へ &rsaquo;"
+      truncate: "&hellip;"
+  helpers:
+    page_entries_info:
+      one_page:
+        display_entries:
+          zero: 0件
+          one: 1件
+          other: "%{count}件"
+      more_pages:
+        display_entries: "全%{total}件中 %{first}&nbsp;-&nbsp;%{last}件を表示"

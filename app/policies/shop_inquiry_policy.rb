@@ -19,6 +19,18 @@ class ShopInquiryPolicy < ApplicationPolicy
     index?
   end
 
+  def archive?
+    index?
+  end
+
+  def unarchive?
+    index?
+  end
+
+  def destroy?
+    index?
+  end
+
   class Scope < Scope
     def resolve
       user&.platform_admin? ? scope.all : scope.none

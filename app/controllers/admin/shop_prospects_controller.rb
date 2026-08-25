@@ -6,8 +6,9 @@ module Admin
     before_action :set_prospect, only: [:edit, :update, :destroy]
 
     def index
-      @prospects = policy_scope(::ShopProspect)
-      @prospects = @prospects.where(status: params[:status]) if params[:status].present?
+      @prospects = filtered_prospects.page(params[:page]).per(50)
+      @districts = ::ShopProspectDistrict.all
+      @prefectures = ::ShopProspectDistrict.distinct.reorder(:prefecture).pluck(:prefecture)
     end
 
     def new
@@ -61,7 +62,72 @@ module Admin
       send_data ::ShopProspectImport::TEMPLATE_CSV, filename: "shop_prospects_template.csv", type: "text/csv"
     end
 
+    # Respects the same ?status=/?district_id= filters as #index, so an
+    # admin can export just what they're currently looking at.
+    def export
+      authorize ::ShopProspect.new, :export?
+      send_data ::ShopProspectImport.export(filtered_prospects), filename: "shop_prospects_#{Date.current}.csv", type: "text/csv"
+    end
+
+    # Bulk-clears bad CSV imports without deleting one row at a time.
+    # Respects the same ?status=/?district_id= filters as #index so an admin
+    # can wipe just one bucket (e.g. a single district re-imported by
+    # mistake) instead of every prospect.
+    def destroy_all
+      authorize ::ShopProspect.new, :destroy?
+
+      count = filtered_prospects.count
+      filtered_prospects.destroy_all
+
+      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]),
+        notice: "#{count}件の営業先候補を削除しました。"
+    end
+
+    def send_outreach_emails
+      authorize ::ShopProspect.new, :send_outreach_emails?
+
+      ids = Array(params[:shop_prospect_ids]).reject(&:blank?)
+      if ids.empty?
+        redirect_to admin_shop_prospects_path, alert: "送信先の営業先候補を選択してください。"
+        return
+      end
+
+      sent_count = 0
+      skipped_count = 0
+      policy_scope(::ShopProspect).where(id: ids).find_each do |prospect|
+        if prospect.email.blank?
+          skipped_count += 1
+          next
+        end
+
+        ShopProspectMailer.outreach_email(prospect).deliver_now
+
+        attrs = { outreach_email_sent_at: Time.current }
+        # Only advance a still-untouched lead -- don't knock a prospect
+        # already further along (negotiating/won/lost) back down to
+        # merely "contacted" just because they got a re-send.
+        attrs[:status] = :contacted if prospect.not_contacted?
+        prospect.update!(attrs)
+
+        sent_count += 1
+      end
+
+      notice = "#{sent_count}件に営業メールを送信しました。"
+      notice += "(#{skipped_count}件はメールアドレス未登録のためスキップしました)" if skipped_count > 0
+      redirect_to admin_shop_prospects_path, notice: notice
+    end
+
     private
+
+    def filtered_prospects
+      prospects = policy_scope(::ShopProspect)
+      prospects = prospects.where(status: params[:status]) if params[:status].present?
+      prospects = prospects.where(shop_prospect_district_id: params[:district_id]) if params[:district_id].present?
+      if params[:prefecture].present?
+        prospects = prospects.joins(:shop_prospect_district).where(shop_prospect_districts: { prefecture: params[:prefecture] })
+      end
+      prospects
+    end
 
     def set_prospect
       @prospect = ::ShopProspect.find(params[:id])
@@ -69,7 +135,7 @@ module Admin
     end
 
     def prospect_params
-      params.require(:shop_prospect).permit(:name, :phone, :email, :listing_site_name, :listing_url, :status, :memo)
+      params.require(:shop_prospect).permit(:name, :genre, :phone, :email, :listing_site_name, :listing_url, :status, :memo)
     end
   end
 end

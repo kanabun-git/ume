@@ -9,13 +9,18 @@
     <%= link_to "CSVテンプレートをダウンロード", template_admin_shop_prospects_path, class: "btn secondary" %>
   </p>
   <%= form_with url: import_admin_shop_prospects_path, method: :post, local: true, multipart: true, class: "form" do |f| %>
-    <label>CSVファイル(店舗名,電話番号,メールアドレス,掲載サイト名,掲載URL,メモ)</label>
+    <label>CSVファイル(店舗名,ジャンル,電話番号,メールアドレス,URL)</label>
+    <p class="region-note">
+      他サイトの店舗一覧をスプレッドシートに貼り付けてエクスポートした形式にそのまま対応しています。
+      「【吉原】」のようなエリア見出し行は自動的にスキップされ、営業先として登録されません。
+    </p>
     <%= file_field_tag :file, accept: ".csv,text/csv" %>
     <%= submit_tag "アップロードして登録する", class: "btn" %>
   <% end %>
 </div>
 
 <%= link_to "新規登録", new_admin_shop_prospect_path, class: "btn" %>
+<%= link_to "この一覧をCSVダウンロード", export_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]), class: "btn secondary" %>
 
 <form class="form" method="get">
   <label>進捗ステータス</label>
@@ -25,31 +30,107 @@
       <option value="<%= status %>" <%= "selected" if params[:status] == status %>><%= ApplicationHelper::STATUS_LABELS["ShopProspect"][status] %></option>
     <% end %>
   </select>
+
+  <label>都道府県</label>
+  <select name="prefecture">
+    <option value="">すべて</option>
+    <% @prefectures.each do |prefecture| %>
+      <option value="<%= prefecture %>" <%= "selected" if params[:prefecture] == prefecture %>><%= prefecture %></option>
+    <% end %>
+  </select>
+
+  <label>地区(<%= link_to "地区管理", admin_shop_prospect_districts_path %>)</label>
+  <select name="district_id">
+    <option value="">すべて</option>
+    <% @districts.each do |district| %>
+      <option value="<%= district.id %>" <%= "selected" if params[:district_id].to_s == district.id.to_s %>><%= district.display_name %></option>
+    <% end %>
+  </select>
+
   <button type="submit" class="btn secondary">絞り込む</button>
 </form>
 
-<table class="admin-table">
-  <thead><tr><th>店舗名</th><th>電話番号</th><th>メールアドレス</th><th>掲載サイト</th><th>ステータス</th><th>メモ</th><th></th></tr></thead>
-  <tbody>
-    <% @prospects.each do |prospect| %>
+<%= button_to (params[:status].present? || params[:district_id].present? || params[:prefecture].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
+    destroy_all_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]), method: :delete,
+    form: { data: { turbo_confirm: "このボタンを押すと一括で削除されます。よろしいですか?" } },
+    class: "btn danger" %>
+
+<div class="card">
+  <h2>営業メールの一斉送信</h2>
+  <p>
+    選択した営業先候補へ、掲載案内メールを一斉送信します。メール本文のリンクは
+    <%= link_to "サイト掲載のお問い合わせ", new_shop_inquiry_path %>ページへ誘導し、
+    そのリンクが実際にクリックされると下の一覧の「送信状況」に反映されます
+    (メールアドレス未登録の候補は自動的にスキップされます)。
+    件名・本文の文面は<%= link_to "こちらから自由に編集", edit_admin_outreach_email_template_path %>できます。
+  </p>
+
+  <%# Deliberately NOT wrapping the table in this form: each row's 削除
+      button below is itself a button_to, which renders its own <form>.
+      Nesting a <form> inside another is invalid HTML -- browsers silently
+      drop the inner <form> tag but keep its hidden _method=delete input,
+      which then gets submitted as part of THIS form and corrupts it. Instead,
+      this form stays empty and every checkbox/submit associates with it via
+      the HTML5 form="..." attribute, regardless of where they sit in the DOM. %>
+  <%= form_tag send_outreach_emails_admin_shop_prospects_path, method: :post, id: "outreach-form" do %><% end %>
+
+  <p><%= page_entries_info @prospects %></p>
+  <%= paginate @prospects %>
+
+  <table class="admin-table">
+    <thead>
       <tr>
-        <td><%= prospect.name %></td>
-        <td><%= prospect.phone %></td>
-        <td><%= prospect.email %></td>
-        <td>
-          <% if prospect.listing_url.present? %>
-            <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
-          <% else %>
-            <%= prospect.listing_site_name %>
-          <% end %>
-        </td>
-        <td><%= status_label(prospect) %></td>
-        <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
-        <td>
-          <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
-          <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
-        </td>
+        <th><input type="checkbox" id="select-all-prospects"></th>
+        <th>店舗名</th>
+        <th>ジャンル</th>
+        <th>地区</th>
+        <th>電話番号</th>
+        <th>メールアドレス</th>
+        <th>掲載サイト</th>
+        <th>ステータス</th>
+        <th>送信状況</th>
+        <th>メモ</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @prospects.each do |prospect| %>
+        <tr>
+          <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
+          <td><%= prospect.name %></td>
+          <td><%= prospect.genre %></td>
+          <td><%= prospect.shop_prospect_district&.display_name %></td>
+          <td><%= prospect.phone %></td>
+          <td><%= prospect.email %></td>
+          <td>
+            <% if prospect.listing_url.present? %>
+              <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
+            <% else %>
+              <%= prospect.listing_site_name %>
+            <% end %>
+          </td>
+          <td><%= status_label(prospect) %></td>
+          <td><%= outreach_status_badge(prospect) %></td>
+          <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
+          <td>
+            <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
+            <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= paginate @prospects %>
+
+  <%= submit_tag "選択した営業先へ一斉送信する", class: "btn", form: "outreach-form", data: { turbo_confirm: "選択した営業先へ営業メールを送信します。よろしいですか?" } %>
+</div>
+
+<script>
+  document.getElementById("select-all-prospects").addEventListener("change", function() {
+    var checked = this.checked;
+    document.querySelectorAll(".prospect-checkbox:not(:disabled)").forEach(function(box) {
+      box.checked = checked;
+    });
+  });
+</script>

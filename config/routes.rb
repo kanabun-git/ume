@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     resource :shop_membership, only: [:create]
   end
   resources :shop_inquiries, only: [:new, :create]
+  get "outreach/:token", to: "shop_prospect_outreach#click", as: :shop_prospect_outreach
 
   # --- Cast (女の子) dashboard: manage own profile, diary, shifts ---
   # `module: "cast_portal"` avoids clashing with the top-level Cast model
@@ -251,7 +252,13 @@ Rails.application.routes.draw do
       collection do
         post :import
         get :template
+        get :export
+        post :send_outreach_emails
+        delete :destroy_all
       end
+    end
+    resources :shop_prospect_districts, only: [:index, :edit, :update] do
+      member { post :register_area }
     end
     resources :reviews, only: [:index, :show, :destroy] do
       member do
@@ -276,13 +283,19 @@ Rails.application.routes.draw do
     # separate attachment id to moderate against, unlike :toggle_hidden above).
     patch "diary_entries/:id/toggle_video_hidden", to: "diary_images#toggle_video_hidden", as: :toggle_video_hidden_diary_entry
 
-    resources :shop_inquiries, only: [:index, :show] do
-      member { patch :update_status }
+    resources :shop_inquiries, only: [:index, :show, :destroy] do
+      member do
+        patch :update_status
+        patch :archive
+        patch :unarchive
+      end
+      collection { get :archived }
     end
 
     get "analytics", to: "analytics#index", as: :analytics
 
     resource :setting, only: [:edit, :update]
+    resource :outreach_email_template, only: [:edit, :update]
     resource :basic_setting, only: [:edit, :update]
 
     get "data_backups", to: "data_backups#index", as: :data_backups

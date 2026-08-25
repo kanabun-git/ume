@@ -7,14 +7,14 @@
 </p>
 <p>
   ここで管理する地区は営業先候補を分類するための内部タグで、実際に店舗を掲載する際に使う<%= link_to "エリア管理", admin_areas_path %>とは別物です。
-  まだエリア管理に登録されていない都道府県・地区名は、下の一覧から直接エリアを追加登録できます。
+  まだエリア管理に登録されていない都道府県・地区名は、下の一覧の「エリアに登録」ボタン1つで登録できます(都道府県自体が未登録の場合も自動的にまとめて登録されます)。
+  URL用のスラッグ(半角英数字の識別子)は自動生成されるため、分かりやすい値に変更したい場合は登録後に「エリア管理」から編集してください。
 </p>
 
 <table class="admin-table">
   <thead><tr><th>都道府県</th><th>地区名</th><th>営業先件数</th><th>エリア管理への登録</th><th></th></tr></thead>
   <tbody>
     <% @districts.each do |district| %>
-      <% prefecture_area = @prefecture_areas[district.prefecture] %>
       <tr>
         <td><%= district.prefecture %></td>
         <td><%= district.name %></td>
@@ -22,10 +22,8 @@
         <td>
           <% if @district_registered[district.id] %>
             <span class="badge muted">登録済み</span>
-          <% elsif prefecture_area %>
-            <%= link_to "エリアに追加", new_admin_area_path(name: district.name, parent_id: prefecture_area.id), class: "btn secondary" %>
           <% else %>
-            <%= link_to "都道府県(#{district.prefecture})を先に登録", new_admin_area_path(name: district.prefecture), class: "btn secondary" %>
+            <%= button_to "エリアに登録", register_area_admin_shop_prospect_district_path(district), method: :post, class: "btn secondary" %>
           <% end %>
         </td>
         <td><%= link_to "編集", edit_admin_shop_prospect_district_path(district) %></td>

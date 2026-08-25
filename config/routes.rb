@@ -222,7 +222,9 @@ Rails.application.routes.draw do
         delete :destroy_all
       end
     end
-    resources :shop_prospect_districts, only: [:index, :edit, :update]
+    resources :shop_prospect_districts, only: [:index, :edit, :update] do
+      member { post :register_area }
+    end
     resources :reviews, only: [:index, :show, :destroy] do
       member do
         patch :approve

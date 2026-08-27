@@ -1,0 +1,22 @@
+<% content_for :title, "お問い合わせ返信の定型文編集" %>
+
+<h1>お問い合わせ返信の定型文編集</h1>
+<p>
+  <%= link_to "掲載のお問い合わせ", admin_shop_inquiries_path %>の詳細画面で返信欄を開いたとき、まだ返信していない問い合わせに初期入力される本文を編集できます。
+  ここで保存した内容が、以後すべての未返信の問い合わせに使われます(既に返信済みの問い合わせには影響しません)。実際に送信する際は、この本文を自由に書き換えてから送信できます。
+</p>
+
+<% if @shop_inquiry_reply_template.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% @shop_inquiry_reply_template.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @shop_inquiry_reply_template, url: admin_shop_inquiry_reply_template_path, method: :patch, local: true, class: "form" do |f| %>
+  <label>本文</label>
+  <%= f.text_area :body, rows: 10 %>
+
+  <%= f.submit "保存する", class: "btn" %>
+<% end %>

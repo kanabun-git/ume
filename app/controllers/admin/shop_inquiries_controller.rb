@@ -16,6 +16,7 @@ module Admin
     end
 
     def show
+      @reply_body = @shop_inquiry.reply_body.presence || ::ShopInquiryReplyTemplate.instance.body
     end
 
     def update_status

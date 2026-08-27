@@ -16,6 +16,31 @@ module Admin
       assert inquiry.reload.in_progress?
     end
 
+    test "show pre-fills the reply textarea with the default template when not yet replied" do
+      admin = create_user(role: :platform_admin)
+      inquiry = ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222")
+      sign_in admin
+
+      get admin_shop_inquiry_path(inquiry)
+
+      assert_response :success
+      assert_select "textarea#reply_body", text: ShopInquiryReplyTemplate.instance.body
+    end
+
+    test "show pre-fills the reply textarea with the previous reply, not the template, once already replied" do
+      admin = create_user(role: :platform_admin)
+      inquiry = ShopInquiry.create!(
+        shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222",
+        reply_body: "以前送った返信内容", replied_at: 1.day.ago
+      )
+      sign_in admin
+
+      get admin_shop_inquiry_path(inquiry)
+
+      assert_response :success
+      assert_select "textarea#reply_body", text: "以前送った返信内容"
+    end
+
     test "reply sends an email to the inquirer and records the reply" do
       admin = create_user(role: :platform_admin)
       inquiry = ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222")

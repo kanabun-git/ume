@@ -297,6 +297,7 @@ Rails.application.routes.draw do
 
     resource :setting, only: [:edit, :update]
     resource :outreach_email_template, only: [:edit, :update]
+    resource :shop_inquiry_reply_template, only: [:edit, :update]
     resource :basic_setting, only: [:edit, :update]
 
     get "data_backups", to: "data_backups#index", as: :data_backups

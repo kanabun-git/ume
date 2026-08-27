@@ -369,6 +369,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_090000) do
     t.index ["shop_prospect_id"], name: "index_shop_inquiries_on_shop_prospect_id"
   end
 
+  create_table "shop_inquiry_reply_templates", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "shop_member_benefit_grants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "shop_member_benefit_id", null: false

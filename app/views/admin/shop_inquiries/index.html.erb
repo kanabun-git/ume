@@ -2,7 +2,10 @@
 
 <h1>掲載のお問い合わせ</h1>
 <p>店舗掲載を検討している方からの問い合わせ一覧です。内容を確認の上、担当者よりご連絡ください。連絡が済んだら状態を更新し、実際の掲載は「店舗管理」から新規店舗登録を行ってください。</p>
-<p><%= link_to "アーカイブ済み一覧を見る", archived_admin_shop_inquiries_path %></p>
+<p>
+  <%= link_to "アーカイブ済み一覧を見る", archived_admin_shop_inquiries_path %>
+  ／ <%= link_to "返信の定型文を編集する", edit_admin_shop_inquiry_reply_template_path %>
+</p>
 
 <table class="admin-table">
   <thead><tr><th>店舗名</th><th>ご担当者</th><th>電話番号</th><th>希望エリア</th><th>受付日時</th><th>状態</th><th>返信</th><th></th></tr></thead>

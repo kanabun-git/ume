@@ -26,8 +26,13 @@
   <p><span class="badge warning">未返信</span></p>
 <% end %>
 <%= form_with url: reply_admin_shop_inquiry_path(@shop_inquiry), method: :patch, local: true, class: "form" do %>
-  <label>返信内容(<%= @shop_inquiry.email %> 宛にメールで送信されます)</label>
-  <%= text_area_tag :reply_body, @shop_inquiry.reply_body, rows: 6 %>
+  <label>
+    返信内容(<%= @shop_inquiry.email %> 宛にメールで送信されます)
+    <% unless @shop_inquiry.replied_at %>
+      — <%= link_to "定型文を編集する", edit_admin_shop_inquiry_reply_template_path %>
+    <% end %>
+  </label>
+  <%= text_area_tag :reply_body, @reply_body, rows: 6 %>
   <%= submit_tag "返信メールを送信する", class: "btn" %>
 <% end %>
 

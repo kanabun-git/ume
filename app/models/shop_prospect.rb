@@ -45,7 +45,7 @@ class ShopProspect < ApplicationRecord
       next unless parts
 
       business_type, district_name = parts
-      district = ShopProspectDistrict.find_or_create_by!(name: district_name)
+      district = ShopProspectDistrict.find_or_register(district_name)
       prospect.update_columns(shop_prospect_district_id: district.id, genre: business_type)
       count += 1
     end
@@ -73,7 +73,7 @@ class ShopProspect < ApplicationRecord
     return unless parts
 
     business_type, district_name = parts
-    self.shop_prospect_district = ShopProspectDistrict.find_or_create_by!(name: district_name)
+    self.shop_prospect_district = ShopProspectDistrict.find_or_register(district_name)
     self.genre = business_type
   end
 

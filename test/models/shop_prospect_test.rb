@@ -30,6 +30,12 @@ class ShopProspectTest < ActiveSupport::TestCase
     assert_equal "デリヘル", prospect.genre
   end
 
+  test "a district name already known to be outside 東京 is registered with the correct prefecture right away" do
+    prospect = ShopProspect.create!(name: "候補店舗", genre: "デリヘル/船橋")
+
+    assert_equal "千葉", prospect.shop_prospect_district.prefecture
+  end
+
   test "two prospects with the same district share one ShopProspectDistrict row" do
     a = ShopProspect.create!(name: "候補A", genre: "デリヘル/錦糸町")
     b = ShopProspect.create!(name: "候補B", genre: "ソープ/錦糸町")

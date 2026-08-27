@@ -10,4 +10,15 @@ namespace :shop_prospects do
     count = ShopProspect.backfill_contacted_status!
     puts "#{count}件の営業先候補のステータスを「アプローチ済み」に更新しました。"
   end
+
+  desc "Correct districts auto-registered with the wrong prefecture (e.g. 東京ー船橋 -> 千葉ー船橋); see ShopProspectDistrict::KNOWN_PREFECTURE_CORRECTIONS (never deletes or otherwise modifies a district; safe to re-run)"
+  task fix_district_prefectures: :environment do
+    corrected = ShopProspectDistrict.fix_known_prefectures!
+    if corrected.empty?
+      puts "修正が必要な地区はありませんでした。"
+    else
+      corrected.each { |name, from, to| puts "#{name}: #{from} → #{to}" }
+      puts "#{corrected.size}件の地区の都道府県を修正しました。"
+    end
+  end
 end

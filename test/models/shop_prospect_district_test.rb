@@ -20,4 +20,31 @@ class ShopProspectDistrictTest < ActiveSupport::TestCase
 
     assert_equal "東京ー錦糸町", district.display_name
   end
+
+  test "fix_known_prefectures! corrects a district that was mis-defaulted to 東京" do
+    funabashi = ShopProspectDistrict.create!(name: "船橋") # defaults to 東京, but it's in 千葉
+
+    corrected = ShopProspectDistrict.fix_known_prefectures!
+
+    assert_equal [["船橋", "東京", "千葉"]], corrected
+    assert_equal "千葉", funabashi.reload.prefecture
+  end
+
+  test "fix_known_prefectures! does not touch a district that's already correct, or one outside the known list" do
+    ShopProspectDistrict.create!(name: "錦糸町") # correctly 東京, not in the correction list
+
+    corrected = ShopProspectDistrict.fix_known_prefectures!
+
+    assert_empty corrected
+    assert_equal "東京", ShopProspectDistrict.find_by(name: "錦糸町").prefecture
+  end
+
+  test "fix_known_prefectures! is safe to run twice" do
+    ShopProspectDistrict.create!(name: "船橋")
+
+    ShopProspectDistrict.fix_known_prefectures!
+    second_run = ShopProspectDistrict.fix_known_prefectures!
+
+    assert_empty second_run
+  end
 end

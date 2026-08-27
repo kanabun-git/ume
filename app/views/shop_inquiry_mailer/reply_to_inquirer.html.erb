@@ -1,0 +1,11 @@
+<p><%= @shop_inquiry.contact_name %> 様</p>
+
+<p>この度は「風俗Zero」への掲載についてお問い合わせいただき、誠にありがとうございます。<br>
+以下、担当者よりご返信させていただきます。</p>
+
+<p><%= simple_format @body %></p>
+
+<hr>
+
+<p>【お問い合わせ内容】</p>
+<p><%= simple_format @shop_inquiry.message.presence || "(本文なし)" %></p>

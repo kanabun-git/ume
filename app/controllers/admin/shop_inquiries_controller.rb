@@ -1,6 +1,6 @@
 module Admin
   class ShopInquiriesController < BaseController
-    before_action :set_shop_inquiry, only: [:show, :update_status, :archive, :unarchive, :destroy]
+    before_action :set_shop_inquiry, only: [:show, :update_status, :archive, :unarchive, :destroy, :reply]
 
     def index
       authorize ::ShopInquiry, :index?
@@ -25,6 +25,24 @@ module Admin
       else
         redirect_to admin_shop_inquiries_path, alert: "不正なステータスです。"
       end
+    end
+
+    # Sends the shop an actual email (see ShopInquiryMailer#reply_to_inquirer)
+    # -- unlike a review's shop_reply, an inquiry is never shown anywhere
+    # public, so email is the only way to get a reply back to them.
+    def reply
+      body = params[:reply_body].to_s.strip
+      if body.blank?
+        redirect_to admin_shop_inquiry_path(@shop_inquiry), alert: "返信内容を入力してください。"
+        return
+      end
+
+      @shop_inquiry.reply_body = body
+      @shop_inquiry.replied_at = Time.current
+      ShopInquiryMailer.reply_to_inquirer(@shop_inquiry).deliver_now
+      @shop_inquiry.save!
+
+      redirect_to admin_shop_inquiry_path(@shop_inquiry), notice: "返信メールを送信しました。"
     end
 
     def archive

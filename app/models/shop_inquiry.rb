@@ -16,4 +16,11 @@ class ShopInquiry < ApplicationRecord
   def archived?
     archived_at.present?
   end
+
+  # Drives the bold-red 店舗名 highlight on 掲載のお問い合わせ管理's index --
+  # a lead that's gone unreplied for over a day is easy to lose track of
+  # among newer ones.
+  def reply_overdue?
+    replied_at.nil? && created_at < 1.day.ago
+  end
 end

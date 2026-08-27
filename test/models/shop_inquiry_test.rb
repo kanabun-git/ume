@@ -34,4 +34,16 @@ class ShopInquiryTest < ActiveSupport::TestCase
     assert_includes ShopInquiry.archived, archived
     assert_not_includes ShopInquiry.archived, active
   end
+
+  test "reply_overdue? is true only once unreplied and over a day old" do
+    fresh_unreplied = ShopInquiry.create!(shop_name: "新規", contact_name: "担当者", email: "a@example.com", phone: "03-0000-0000")
+    old_unreplied = ShopInquiry.create!(shop_name: "古い未返信", contact_name: "担当者", email: "b@example.com", phone: "03-0000-0001")
+    old_unreplied.update_column(:created_at, 2.days.ago)
+    old_replied = ShopInquiry.create!(shop_name: "古い返信済み", contact_name: "担当者", email: "c@example.com", phone: "03-0000-0002")
+    old_replied.update_columns(created_at: 2.days.ago, replied_at: 1.hour.ago)
+
+    assert_not fresh_unreplied.reply_overdue?
+    assert old_unreplied.reply_overdue?
+    assert_not old_replied.reply_overdue?
+  end
 end

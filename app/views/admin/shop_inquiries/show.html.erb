@@ -15,6 +15,22 @@
 <h2>お問い合わせ内容</h2>
 <p><%= simple_format @shop_inquiry.message.presence || "(本文なし)" %></p>
 
+<h2>返信</h2>
+<% if @shop_inquiry.replied_at %>
+  <p>
+    <span class="badge muted">返信済み(<%= @shop_inquiry.replied_at.strftime("%Y-%m-%d %H:%M") %>)</span>
+  </p>
+  <p><%= simple_format @shop_inquiry.reply_body %></p>
+  <p><small>内容を修正して再送する場合は、以下にあらためて入力して送信してください(前回の返信内容は上書きされます)。</small></p>
+<% else %>
+  <p><span class="badge warning">未返信</span></p>
+<% end %>
+<%= form_with url: reply_admin_shop_inquiry_path(@shop_inquiry), method: :patch, local: true, class: "form" do %>
+  <label>返信内容(<%= @shop_inquiry.email %> 宛にメールで送信されます)</label>
+  <%= text_area_tag :reply_body, @shop_inquiry.reply_body, rows: 6 %>
+  <%= submit_tag "返信メールを送信する", class: "btn" %>
+<% end %>
+
 <h2>対応状況</h2>
 <p>
   <% ShopInquiry.statuses.each_key do |status| %>

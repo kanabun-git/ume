@@ -27,6 +27,10 @@ class ShopInquiryPolicy < ApplicationPolicy
     index?
   end
 
+  def reply?
+    index?
+  end
+
   def destroy?
     index?
   end

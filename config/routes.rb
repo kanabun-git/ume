@@ -288,6 +288,7 @@ Rails.application.routes.draw do
         patch :update_status
         patch :archive
         patch :unarchive
+        patch :reply
       end
       collection { get :archived }
     end

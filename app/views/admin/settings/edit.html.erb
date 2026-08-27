@@ -20,7 +20,7 @@
     <label>案内メッセージ(空欄の場合は標準メッセージを表示。メンテナンス画像を設定した場合はメッセージより画像が優先されます)</label>
     <%= f.text_area :maintenance_message, placeholder: "例: 8/10 22:00〜24:00の間、サーバーメンテナンスのためサイトをご利用いただけません。" %>
 
-    <label>メンテナンス画像(任意。設定すると上記のメッセージの代わりに表示されます)</label>
+    <label>メンテナンス画像(任意。設定すると見出し・案内文・囲み枠は表示されなくなり、画像とお問い合わせバナーだけが表示されます)</label>
     <% if @site_setting.maintenance_image.attached? %>
       <div class="image-setting-preview">
         <%= image_tag @site_setting.maintenance_image %>

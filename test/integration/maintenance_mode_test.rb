@@ -21,16 +21,19 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a maintenance image takes priority over the message" do
+  test "a maintenance image drops the heading, message, and card -- only the image and banner remain" do
     setting = SiteSetting.instance
     setting.update!(maintenance_message: "このメッセージは表示されないはず")
-    setting.maintenance_image.attach(io: StringIO.new(png_bytes), filename: "maintenance.png", content_type: "image/png")
+    setting.maintenance_image.attach(png_upload(filename: "maintenance.png"))
 
     with_maintenance_mode_on do
       get root_path
 
       assert_select ".maintenance-image img"
       assert_select "p", text: /このメッセージは表示されないはず/, count: 0
+      assert_select "h1", count: 0
+      assert_select ".card", count: 0
+      assert_select "a.maintenance-banner-link[href=?]", new_shop_inquiry_path
     end
   end
 
@@ -43,7 +46,7 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
   end
 
   test "with a banner image, it links to the shop inquiry page instead of the text link" do
-    SiteSetting.instance.maintenance_banner_image.attach(io: StringIO.new(png_bytes), filename: "banner.png", content_type: "image/png")
+    SiteSetting.instance.maintenance_banner_image.attach(png_upload(filename: "banner.png"))
 
     with_maintenance_mode_on do
       get root_path
@@ -74,9 +77,5 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     yield
   ensure
     SiteSetting.instance.update!(maintenance_mode: false)
-  end
-
-  def png_bytes
-    Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
   end
 end

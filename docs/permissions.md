@@ -23,6 +23,11 @@
 | 契約(ShopSubscription) | 変更 | × | × | × | ○ |
 | ユーザーアカウント全般 | 変更 | × | ×(自分のプロフィールの一部のみ) | △(自店舗のキャストのみ) | ○ |
 
+`/mailadmin`(各サイトのメールアドレスの追加・削除・送信テスト)はこの表の対象外。
+上記のUser/ロールに基づく認可の仕組みを一切使わず、専用のBasic認証
+(`MAIL_ADMIN_HTTP_AUTH_USER`/`PASSWORD`)だけで保護される、完全に別系統の画面
+(詳細は [screens.md](screens.md) の5、`app/controllers/mail_admin/base_controller.rb`)。
+
 ## 実装対応表(Pundit Policy)
 
 | Policy クラス | 対象モデル | 主な制御内容 |

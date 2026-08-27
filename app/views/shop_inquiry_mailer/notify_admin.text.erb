@@ -1,0 +1,12 @@
+サイト掲載のお問い合わせが届きました。
+
+店舗名: <%= @shop_inquiry.shop_name %>
+ご担当者名: <%= @shop_inquiry.contact_name %>
+メールアドレス: <%= @shop_inquiry.email %>
+電話番号: <%= @shop_inquiry.phone %>
+希望エリア: <%= @shop_inquiry.area_note.presence || "(未記入)" %>
+
+お問い合わせ内容:
+<%= @shop_inquiry.message.presence || "(本文なし)" %>
+
+運営管理画面で確認する: <%= admin_shop_inquiry_url(@shop_inquiry) %>

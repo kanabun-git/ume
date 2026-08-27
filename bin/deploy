@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+# Run on the VPS to pull and apply the latest code in one step, so a deploy
+# can never be just "git pull" + restart -- the gap that let vendor/bundle
+# drift out of sync with Gemfile.lock and crash-loop Puma with
+# Bundler::GemNotFound (see docs/vps_setup.md section 12).
+FileUtils.chdir APP_ROOT do
+  unless ENV["UME_DATABASE_PASSWORD"]
+    abort "UME_DATABASE_PASSWORD is not set. Run: export UME_DATABASE_PASSWORD='...' first."
+  end
+
+  puts "== Pulling latest code =="
+  system!("git", "pull")
+
+  puts "\n== Installing gems =="
+  system!("bundle", "install")
+
+  puts "\n== Running migrations =="
+  system!({ "RAILS_ENV" => "production" }, "bin/rails", "db:migrate")
+
+  puts "\n== Precompiling assets =="
+  system!({ "RAILS_ENV" => "production" }, "bin/rails", "assets:precompile")
+
+  puts "\n== Restarting ume-puma =="
+  system!("sudo", "systemctl", "restart", "ume-puma")
+
+  puts "\n== Done. Checking service status =="
+  system("sudo", "systemctl", "status", "ume-puma", "--no-pager", "-l")
+end

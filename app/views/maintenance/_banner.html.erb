@@ -1,0 +1,9 @@
+<div class="maintenance-banner">
+  <% if site_setting.maintenance_banner_image.attached? %>
+    <%= link_to new_shop_inquiry_path do %>
+      <%= image_tag rails_blob_path(site_setting.maintenance_banner_image) %>
+    <% end %>
+  <% else %>
+    <%= link_to "店舗様からのサイト掲載のお問い合わせはこちら", new_shop_inquiry_path, class: "maintenance-banner-link" %>
+  <% end %>
+</div>

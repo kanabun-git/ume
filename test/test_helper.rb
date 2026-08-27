@@ -101,5 +101,15 @@ module ActionDispatch
         shop: shop
       }.merge(attrs))
     end
+
+    # メールアドレス管理画面(/mailadmin)は、ポータルサイトのDevise/Userログイン
+    # とは無関係のBasic認証で保護されている(MailAdmin::BaseController)。
+    # config/application.rbが開発・テストで設定する固定のダミー資格情報を使う。
+    def mail_admin_auth_headers
+      { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(
+        Rails.application.config.x.mail_admin_http_auth_user,
+        Rails.application.config.x.mail_admin_http_auth_password
+      ) }
+    end
   end
 end

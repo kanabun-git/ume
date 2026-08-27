@@ -853,3 +853,48 @@ img, video, iframe { max-width: 100%; }
   .coupon-simple-item a { flex-wrap: wrap; }
   .coupon-simple-shop { order: 4; width: 100%; }
 }
+
+/* --- メールアドレス管理画面 (/mailadmin) ---------------------------------- */
+/* Its own site rather than a section of the portal's back office: a plain
+   full-width shell with a single header, no portal sidebar or branding. */
+.mail-admin-shell { min-height: 100vh; background: #f6f2f3; }
+.mail-admin-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 24px; background: #2f3542; color: #fff;
+}
+.mail-admin-brand { color: #fff; font-weight: bold; font-size: 1.05rem; text-decoration: none; }
+.mail-admin-brand:hover { color: #fff; text-decoration: none; }
+.mail-admin-header form { margin: 0; }
+.mail-admin-header .link-button {
+  background: transparent; border: 1px solid rgba(255, 255, 255, .5); color: #fff;
+  padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: .85rem;
+}
+.mail-admin-header .link-button:hover { background: rgba(255, 255, 255, .14); }
+.mail-admin-content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.mail-admin-public { max-width: 520px; }
+
+.mail-server-warning { background: #fff8e1; border: 1px solid #e0b23a; color: #9a6b00; padding: 10px 14px; border-radius: 4px; }
+.mail-test-error { color: #b5204f; font-size: .8rem; }
+/* The per-row 送信テスト form: keep the address field and its button on one
+   line inside the table cell instead of stacking like a full-width form. */
+.inline-form { display: flex; gap: 6px; align-items: center; }
+.inline-form input[type=email] { padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: .85rem; min-width: 180px; }
+.inline-form .btn { margin-top: 0; flex-shrink: 0; padding: 6px 12px; font-size: .85rem; }
+.mail-local-part-row { display: flex; gap: 8px; align-items: center; }
+.mail-local-part-row input[type=text] { flex: 1; }
+.mail-domain-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.mail-domain-actions .btn { margin-top: 0; }
+.mail-account-table td .btn { margin-top: 0; white-space: nowrap; }
+.mail-account-table td { vertical-align: top; }
+.mail-inbox-link { margin-top: 6px !important; }
+.mail-message-body { line-height: 1.6; word-break: break-word; }
+/* The per-address "メールソフトの設定" drawer, opened from its own table row. */
+.mail-settings-row > td { background: #faf6f7; }
+.mail-client-settings summary { cursor: pointer; font-weight: bold; font-size: .9rem; color: var(--brand-dark); }
+.mail-client-settings-body { margin-top: 12px; }
+.mail-settings-table { width: 100%; border-collapse: collapse; }
+.mail-settings-table th, .mail-settings-table td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; font-size: .85rem; vertical-align: top; }
+.mail-settings-table th { width: 220px; white-space: nowrap; }
+.mail-settings-table code { background: #fff; border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; }
+.mail-settings-hint { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
+.mail-password-form { max-width: 420px; }

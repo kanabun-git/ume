@@ -7,6 +7,7 @@ class MaintenanceModeMiddleware
     /admin
     /shop_admin
     /cast
+    /mailadmin
     /users
     /assets
     /rails
@@ -53,10 +54,11 @@ class MaintenanceModeMiddleware
   end
 
   def render_maintenance_page
+    setting = SiteSetting.instance
     body = ApplicationController.render(
       template: "maintenance/show",
       layout: false,
-      locals: { site_setting: SiteSetting.instance }
+      locals: { site_setting: setting }
     )
     [503, { "Content-Type" => "text/html; charset=utf-8", "Retry-After" => "3600" }, [body]]
   end

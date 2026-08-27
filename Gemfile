@@ -19,6 +19,10 @@ gem "jbuilder"
 # Used by lib/data_export.rb; ships as a default gem today, but stdlib is
 # dropping it starting Ruby 3.4, so pin it explicitly here.
 gem "csv"
+# Used by MailboxRoundTripTest (メールアドレス管理画面の送受信テスト) to log in
+# via IMAP and confirm a test message actually arrived; same default-gem
+# situation as csv above, pinned explicitly for the same reason.
+gem "net-imap"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

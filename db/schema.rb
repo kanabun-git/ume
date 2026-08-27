@@ -171,6 +171,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_220000) do
     t.index ["slug"], name: "index_genres_on_slug", unique: true
   end
 
+  create_table "mail_accounts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "last_round_trip_error"
+    t.boolean "last_round_trip_succeeded"
+    t.datetime "last_round_trip_tested_at"
+    t.text "last_test_error"
+    t.datetime "last_test_sent_at"
+    t.boolean "last_test_succeeded"
+    t.string "last_test_to"
+    t.string "local_part", null: false
+    t.bigint "mail_domain_id", null: false
+    t.string "password_hash", null: false
+    t.text "stored_password"
+    t.datetime "synced_at"
+    t.datetime "updated_at", null: false
+    t.index ["mail_domain_id", "local_part"], name: "index_mail_accounts_on_mail_domain_id_and_local_part", unique: true
+    t.index ["mail_domain_id"], name: "index_mail_accounts_on_mail_domain_id"
+  end
+
+  create_table "mail_domains", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "domain", null: false
+    t.string "mail_server_host"
+    t.string "name", null: false
+    t.text "note"
+    t.datetime "updated_at", null: false
+    t.index ["domain"], name: "index_mail_domains_on_domain", unique: true
+  end
+
   create_table "member_ranks", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "min_approved_count", null: false
@@ -524,6 +553,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_220000) do
   add_foreign_key "diary_entries", "casts"
   add_foreign_key "favorites", "casts"
   add_foreign_key "favorites", "members"
+  add_foreign_key "mail_accounts", "mail_domains"
   add_foreign_key "phone_verification_codes", "members"
   add_foreign_key "present_ticket_entries", "members"
   add_foreign_key "present_ticket_entries", "present_tickets"

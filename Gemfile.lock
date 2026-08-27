@@ -371,6 +371,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kaminari
+  net-imap
   pg (~> 1.1)
   puma (>= 5.0)
   pundit

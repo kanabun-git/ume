@@ -262,6 +262,7 @@ form.form textarea { min-height: 120px; }
 .btn.danger { background: #b5204f; }
 .btn.disabled { background: #c7c9cc; color: #6b6f76; cursor: not-allowed; box-shadow: none; }
 .present-ticket-sms-warning { color: #b5204f; font-size: .82rem; margin-left: 8px; }
+.text-danger { color: #b5204f; font-weight: bold; }
 
 .admin-shell { display: flex; min-height: 100vh; }
 .admin-shell .sidebar { width: 220px; background: #22252b; color: #fff; padding: 20px 0; }

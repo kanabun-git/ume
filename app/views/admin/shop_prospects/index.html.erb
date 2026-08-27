@@ -89,15 +89,17 @@
         <th>掲載サイト</th>
         <th>ステータス</th>
         <th>送信状況</th>
+        <th>問い合わせ</th>
         <th>メモ</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
       <% @prospects.each do |prospect| %>
+        <% inquiry = prospect.shop_inquiries.first %>
         <tr>
           <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
-          <td><%= prospect.name %></td>
+          <td class="<%= "text-danger" if inquiry %>"><%= prospect.name %></td>
           <td><%= prospect.genre %></td>
           <td><%= prospect.shop_prospect_district&.display_name %></td>
           <td><%= prospect.phone %></td>
@@ -111,6 +113,11 @@
           </td>
           <td><%= status_label(prospect) %></td>
           <td><%= outreach_status_badge(prospect) %></td>
+          <td>
+            <% if inquiry %>
+              <%= link_to "問い合わせあり(#{status_label(inquiry)})", admin_shop_inquiry_path(inquiry), class: "text-danger" %>
+            <% end %>
+          </td>
           <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
           <td>
             <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>

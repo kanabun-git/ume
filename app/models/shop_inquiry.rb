@@ -1,4 +1,6 @@
 class ShopInquiry < ApplicationRecord
+  belongs_to :shop_prospect, optional: true
+
   enum :status, { pending: 0, in_progress: 1, closed: 2 }, default: :pending
 
   validates :shop_name, presence: true

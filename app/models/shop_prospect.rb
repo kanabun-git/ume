@@ -4,6 +4,7 @@
 # Admin::ShopProspectsController#import), never by automated scraping.
 class ShopProspect < ApplicationRecord
   belongs_to :shop_prospect_district, optional: true
+  has_many :shop_inquiries, dependent: :nullify
 
   enum :status, {
     not_contacted: 0,

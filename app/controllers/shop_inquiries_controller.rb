@@ -13,9 +13,16 @@ class ShopInquiriesController < ApplicationController
     end
 
     @shop_inquiry = ShopInquiry.new(shop_inquiry_params)
+    # If this visitor arrived via a 営業先候補 outreach email's tracking
+    # link (see ShopProspectOutreachController#click), link the inquiry back
+    # to that prospect so 営業先候補管理 can show it converted.
+    if session[:shop_prospect_outreach_token].present?
+      @shop_inquiry.shop_prospect = ShopProspect.find_by(outreach_token: session[:shop_prospect_outreach_token])
+    end
     authorize @shop_inquiry
 
     if @shop_inquiry.save
+      session.delete(:shop_prospect_outreach_token)
       redirect_to root_path, notice: "お問い合わせを受け付けました。担当者よりご連絡いたします。"
     else
       render :new, status: :unprocessable_entity

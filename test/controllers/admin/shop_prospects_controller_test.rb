@@ -45,6 +45,20 @@ module Admin
       assert_no_match "梅田店", response.body
     end
 
+    test "index highlights a prospect that has a linked inquiry" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      prospect = ShopProspect.create!(name: "問い合わせ済み候補", email: "prospect@example.com")
+      ShopProspect.create!(name: "未反応候補", email: "other@example.com")
+      ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222", shop_prospect: prospect)
+
+      get admin_shop_prospects_path
+
+      assert_response :success
+      assert_select "td.text-danger", text: "問い合わせ済み候補"
+      assert_select "a.text-danger", text: /問い合わせあり/
+    end
+
     test "a shop admin cannot access the sales prospect screens" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

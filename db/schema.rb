@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -323,8 +323,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_100000) do
     t.text "message"
     t.string "phone", null: false
     t.string "shop_name", null: false
+    t.bigint "shop_prospect_id"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["shop_prospect_id"], name: "index_shop_inquiries_on_shop_prospect_id"
   end
 
   create_table "shop_member_benefit_grants", force: :cascade do |t|
@@ -535,6 +537,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_100000) do
   add_foreign_key "shop_daily_views", "shops"
   add_foreign_key "shop_favorites", "members"
   add_foreign_key "shop_favorites", "shops"
+  add_foreign_key "shop_inquiries", "shop_prospects"
   add_foreign_key "shop_member_benefit_grants", "shop_member_benefits"
   add_foreign_key "shop_member_benefit_grants", "shop_memberships"
   add_foreign_key "shop_member_benefits", "shop_member_ranks"

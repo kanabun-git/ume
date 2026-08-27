@@ -5,7 +5,15 @@
 class ShopProspectOutreachController < ApplicationController
   def click
     prospect = ShopProspect.find_by(outreach_token: params[:token])
-    prospect.update_column(:outreach_link_clicked_at, Time.current) if prospect && prospect.outreach_link_clicked_at.nil?
+
+    if prospect
+      prospect.update_column(:outreach_link_clicked_at, Time.current) if prospect.outreach_link_clicked_at.nil?
+      # Stashed in session (rather than a URL/hidden-field param) so the
+      # link back to this prospect survives the visitor browsing away from
+      # the inquiry form and coming back before submitting -- see
+      # ShopInquiriesController#create, which reads and clears this.
+      session[:shop_prospect_outreach_token] = prospect.outreach_token
+    end
 
     redirect_to new_shop_inquiry_path
   end

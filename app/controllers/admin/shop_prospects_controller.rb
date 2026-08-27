@@ -6,7 +6,7 @@ module Admin
     before_action :set_prospect, only: [:edit, :update, :destroy]
 
     def index
-      @prospects = filtered_prospects.page(params[:page]).per(50)
+      @prospects = filtered_prospects.includes(:shop_inquiries).page(params[:page]).per(50)
       @districts = ::ShopProspectDistrict.all
       @prefectures = ::ShopProspectDistrict.distinct.reorder(:prefecture).pluck(:prefecture)
     end

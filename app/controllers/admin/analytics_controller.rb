@@ -7,9 +7,10 @@ module Admin
       @range_start = Date.current - (RANGE_DAYS - 1)
       @range_end = Date.current
       @dates = (@range_start..@range_end).to_a
-      @page_type = params[:page_type] == "cast" ? "cast" : "shop"
+      @page_type = %w[cast page].include?(params[:page_type]) ? params[:page_type] : "shop"
 
-      if @page_type == "cast"
+      case @page_type
+      when "cast"
         @selected_cast = ::Cast.find(params[:cast_id]) if params[:cast_id].present?
 
         scope = ::CastDailyView.where(view_date: @range_start..@range_end)
@@ -17,6 +18,15 @@ module Admin
         @daily_totals = scope.group(:view_date).sum(:views_count)
 
         @top_casts = top_records(daily_view_class: ::CastDailyView, association: :cast_id, record_class: ::Cast) unless @selected_cast
+      when "page"
+        @selected_page_key = ::PageDailyView::PAGE_KEYS.key?(params[:page_key]) ? params[:page_key] : "index"
+
+        @daily_totals = ::PageDailyView.where(view_date: @range_start..@range_end, page_key: @selected_page_key)
+          .group(:view_date).sum(:views_count)
+
+        @page_totals = ::PageDailyView::PAGE_KEYS.keys.index_with do |key|
+          ::PageDailyView.where(view_date: @range_start..@range_end, page_key: key).sum(:views_count)
+        end
       else
         @selected_shop = ::Shop.find(params[:shop_id]) if params[:shop_id].present?
 

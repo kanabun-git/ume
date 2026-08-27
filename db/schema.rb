@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -228,6 +228,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_220000) do
     t.datetime "created_at", null: false
     t.string "subject", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "page_daily_views", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "page_key", null: false
+    t.datetime "updated_at", null: false
+    t.date "view_date", null: false
+    t.integer "views_count", default: 0, null: false
+    t.index ["page_key", "view_date"], name: "index_page_daily_views_on_page_key_and_view_date", unique: true
   end
 
   create_table "phone_verification_codes", force: :cascade do |t|

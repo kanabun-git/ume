@@ -15,4 +15,10 @@ class TopControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a.top-gate-age-link[href=?]", "https://www.google.com/"
   end
+
+  test "visiting the gate page records a page view for analytics" do
+    assert_difference -> { PageDailyView.where(page_key: "index").sum(:views_count) }, 1 do
+      get root_path
+    end
+  end
 end

@@ -5,6 +5,7 @@
 <p>
   <%= link_to "店舗ページ", admin_analytics_path(page_type: "shop"), class: "btn #{'secondary' unless @page_type == 'shop'}" %>
   <%= link_to "女の子ページ", admin_analytics_path(page_type: "cast"), class: "btn #{'secondary' unless @page_type == 'cast'}" %>
+  <%= link_to "TOP・ポータルページ", admin_analytics_path(page_type: "page"), class: "btn #{'secondary' unless @page_type == 'page'}" %>
 </p>
 
 <% if @page_type == "shop" %>
@@ -19,7 +20,7 @@
     <%= @selected_shop ? "#{@selected_shop.name} の閲覧数推移" : "全店舗合計の閲覧数推移" %>
     (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
   </h2>
-<% else %>
+<% elsif @page_type == "cast" %>
   <%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
     <%= hidden_field_tag :page_type, "cast" %>
     <label>女の子で絞り込む</label>
@@ -29,6 +30,18 @@
 
   <h2>
     <%= @selected_cast ? "#{@selected_cast.name} の閲覧数推移" : "全女の子合計の閲覧数推移" %>
+    (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
+  </h2>
+<% else %>
+  <%= form_with url: admin_analytics_path, method: :get, local: true, class: "form" do %>
+    <%= hidden_field_tag :page_type, "page" %>
+    <label>ページで絞り込む</label>
+    <%= select_tag :page_key, options_for_select(PageDailyView::PAGE_KEYS.invert, @selected_page_key) %>
+    <button type="submit" class="btn secondary">表示</button>
+  <% end %>
+
+  <h2>
+    <%= PageDailyView.label_for(@selected_page_key) %> の閲覧数推移
     (<%= @range_start.strftime("%Y-%m-%d") %> 〜 <%= @range_end.strftime("%Y-%m-%d") %>)
   </h2>
 <% end %>
@@ -66,7 +79,7 @@
       <p class="region-note">この期間の閲覧データがまだありません。</p>
     <% end %>
   <% end %>
-<% else %>
+<% elsif @page_type == "cast" %>
   <% if @selected_cast %>
     <%= link_to "全女の子合計に戻る", admin_analytics_path(page_type: "cast"), class: "btn secondary" %>
   <% else %>
@@ -89,4 +102,17 @@
       <p class="region-note">この期間の閲覧データがまだありません。</p>
     <% end %>
   <% end %>
+<% else %>
+  <h2>ページ別閲覧数(直近<%= @range_days %>日)</h2>
+  <table class="admin-table">
+    <thead><tr><th>ページ</th><th>閲覧数</th></tr></thead>
+    <tbody>
+      <% PageDailyView::PAGE_KEYS.each_key do |key| %>
+        <tr>
+          <td><%= link_to PageDailyView.label_for(key), admin_analytics_path(page_type: "page", page_key: key) %></td>
+          <td><%= @page_totals[key] %>件</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>

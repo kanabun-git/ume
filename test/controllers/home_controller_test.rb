@@ -45,6 +45,18 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "visiting the kanto portal records a kanto page view for analytics" do
+    assert_difference -> { PageDailyView.where(page_key: "kanto").sum(:views_count) }, 1 do
+      get kanto_home_path
+    end
+  end
+
+  test "visiting the chubu portal records a chubu page view for analytics" do
+    assert_difference -> { PageDailyView.where(page_key: "chubu").sum(:views_count) }, 1 do
+      get chubu_home_path
+    end
+  end
+
   test "today's shift preview is filtered to the current region" do
     kanto_area = create_area(region: "関東")
     chubu_area = create_area(region: "中部")

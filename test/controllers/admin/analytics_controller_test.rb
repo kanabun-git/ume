@@ -62,6 +62,32 @@ module Admin
       assert_not_includes @response.body, "女の子別閲覧数ランキング"
     end
 
+    test "shows the daily total for INDEX/関東/中部 pages and a comparison table" do
+      admin = create_user(role: :platform_admin)
+      PageDailyView.create!(page_key: "index", view_date: Date.current, views_count: 10)
+      PageDailyView.create!(page_key: "kanto", view_date: Date.current, views_count: 5)
+      PageDailyView.create!(page_key: "chubu", view_date: Date.current, views_count: 2)
+      sign_in admin
+
+      get admin_analytics_path(page_type: "page")
+
+      assert_response :success
+      assert_includes @response.body, "INDEXページ の閲覧数推移"
+      assert_includes @response.body, "関東ポータル"
+      assert_includes @response.body, "中部ポータル"
+    end
+
+    test "filtering the page analytics by page_key shows only that page's trend" do
+      admin = create_user(role: :platform_admin)
+      PageDailyView.create!(page_key: "kanto", view_date: Date.current, views_count: 7)
+      sign_in admin
+
+      get admin_analytics_path(page_type: "page", page_key: "kanto")
+
+      assert_response :success
+      assert_includes @response.body, "関東ポータル の閲覧数推移"
+    end
+
     test "a shop admin cannot access analytics" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

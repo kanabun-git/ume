@@ -1,3 +1,5 @@
 class TopController < ApplicationController
-  def index; end
+  def index
+    PageDailyView.record!("index")
+  end
 end

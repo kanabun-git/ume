@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   def index
     @region = Area::ACTIVE_REGIONS.include?(params[:region]) ? params[:region] : Area::ACTIVE_REGIONS.first
+    PageDailyView.record!(@region == "中部" ? "chubu" : "kanto")
     @areas = Area.where(parent_id: nil, region: @region).includes(:children)
     @genres = Genre.all
     @ranked_shops = Shop.ranked.in_region(@region).limit(10)

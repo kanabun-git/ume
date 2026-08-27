@@ -79,7 +79,7 @@ module Admin
       count = filtered_prospects.count
       filtered_prospects.destroy_all
 
-      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]),
+      redirect_to admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture], sent: params[:sent]),
         notice: "#{count}件の営業先候補を削除しました。"
     end
 
@@ -94,26 +94,37 @@ module Admin
 
       sent_count = 0
       skipped_count = 0
+      failed_count = 0
       policy_scope(::ShopProspect).where(id: ids).find_each do |prospect|
         if prospect.email.blank?
           skipped_count += 1
           next
         end
 
-        ShopProspectMailer.outreach_email(prospect).deliver_now
+        begin
+          ShopProspectMailer.outreach_email(prospect).deliver_now
 
-        attrs = { outreach_email_sent_at: Time.current }
-        # Only advance a still-untouched lead -- don't knock a prospect
-        # already further along (negotiating/won/lost) back down to
-        # merely "contacted" just because they got a re-send.
-        attrs[:status] = :contacted if prospect.not_contacted?
-        prospect.update!(attrs)
+          attrs = { outreach_email_sent_at: Time.current }
+          # Only advance a still-untouched lead -- don't knock a prospect
+          # already further along (negotiating/won/lost) back down to
+          # merely "contacted" just because they got a re-send.
+          attrs[:status] = :contacted if prospect.not_contacted?
+          prospect.update!(attrs)
 
-        sent_count += 1
+          sent_count += 1
+        rescue StandardError => e
+          # One bad recipient (malformed address, delivery rejection, etc.)
+          # used to raise and abort the whole batch, silently leaving every
+          # prospect after it in the selection unsent. Log and keep going
+          # instead, so a large "select all" batch always finishes.
+          failed_count += 1
+          Rails.logger.error("営業メール送信に失敗しました prospect_id=#{prospect.id}: #{e.class}: #{e.message}")
+        end
       end
 
       notice = "#{sent_count}件に営業メールを送信しました。"
       notice += "(#{skipped_count}件はメールアドレス未登録のためスキップしました)" if skipped_count > 0
+      notice += "(#{failed_count}件は送信に失敗しました。メールアドレスをご確認のうえ再度お試しください)" if failed_count > 0
       redirect_to admin_shop_prospects_path, notice: notice
     end
 
@@ -125,6 +136,10 @@ module Admin
       prospects = prospects.where(shop_prospect_district_id: params[:district_id]) if params[:district_id].present?
       if params[:prefecture].present?
         prospects = prospects.joins(:shop_prospect_district).where(shop_prospect_districts: { prefecture: params[:prefecture] })
+      end
+      case params[:sent]
+      when "sent" then prospects = prospects.where.not(outreach_email_sent_at: nil)
+      when "not_sent" then prospects = prospects.where(outreach_email_sent_at: nil)
       end
       prospects
     end

@@ -20,7 +20,7 @@
 </div>
 
 <%= link_to "新規登録", new_admin_shop_prospect_path, class: "btn" %>
-<%= link_to "この一覧をCSVダウンロード", export_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]), class: "btn secondary" %>
+<%= link_to "この一覧をCSVダウンロード", export_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture], sent: params[:sent]), class: "btn secondary" %>
 
 <form class="form" method="get">
   <label>進捗ステータス</label>
@@ -47,11 +47,18 @@
     <% end %>
   </select>
 
+  <label>営業メール送信状況</label>
+  <select name="sent">
+    <option value="">すべて</option>
+    <option value="sent" <%= "selected" if params[:sent] == "sent" %>>送信済み</option>
+    <option value="not_sent" <%= "selected" if params[:sent] == "not_sent" %>>未送信</option>
+  </select>
+
   <button type="submit" class="btn secondary">絞り込む</button>
 </form>
 
-<%= button_to (params[:status].present? || params[:district_id].present? || params[:prefecture].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
-    destroy_all_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture]), method: :delete,
+<%= button_to (params[:status].present? || params[:district_id].present? || params[:prefecture].present? || params[:sent].present? ? "この絞り込み結果を一括削除する" : "営業先候補を一括削除する"),
+    destroy_all_admin_shop_prospects_path(status: params[:status], district_id: params[:district_id], prefecture: params[:prefecture], sent: params[:sent]), method: :delete,
     form: { data: { turbo_confirm: "このボタンを押すと一括で削除されます。よろしいですか?" } },
     class: "btn danger" %>
 

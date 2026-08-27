@@ -127,6 +127,45 @@ module Admin
       assert prospect.reload.negotiating?
     end
 
+    test "send_outreach_emails keeps processing the rest of the batch even if one recipient's send raises" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      bad = ShopProspect.create!(name: "問題のある候補", email: "bad@example.com")
+      good = ShopProspect.create!(name: "正常な候補", email: "good@example.com")
+      original_outreach_email = ShopProspectMailer.method(:outreach_email)
+
+      ShopProspectMailer.define_singleton_method(:outreach_email) do |prospect|
+        raise StandardError, "boom" if prospect.id == bad.id
+        original_outreach_email.call(prospect)
+      end
+
+      begin
+        post send_outreach_emails_admin_shop_prospects_path, params: { shop_prospect_ids: [bad.id, good.id] }
+      ensure
+        ShopProspectMailer.define_singleton_method(:outreach_email, original_outreach_email)
+      end
+
+      assert_redirected_to admin_shop_prospects_path
+      assert good.reload.outreach_email_sent_at.present?
+      assert_nil bad.reload.outreach_email_sent_at
+      assert_match "1件は送信に失敗しました", flash[:notice]
+    end
+
+    test "index filters by outreach email sent status" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      sent = ShopProspect.create!(name: "送信済み候補", outreach_email_sent_at: 1.day.ago)
+      not_sent = ShopProspect.create!(name: "未送信候補")
+
+      get admin_shop_prospects_path(sent: "sent")
+      assert_match "送信済み候補", response.body
+      assert_no_match "未送信候補", response.body
+
+      get admin_shop_prospects_path(sent: "not_sent")
+      assert_no_match "送信済み候補", response.body
+      assert_match "未送信候補", response.body
+    end
+
     test "export downloads a CSV of the current filter" do
       admin = create_user(role: :platform_admin)
       sign_in admin

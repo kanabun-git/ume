@@ -63,6 +63,24 @@
     class: "btn danger" %>
 
 <div class="card">
+  <h2>営業メール実績(現在の絞り込み結果、送信済みの候補が対象)</h2>
+  <p>
+    送信数 <strong><%= @outreach_sent_count %></strong>件 /
+    クリック数 <strong><%= @outreach_clicked_count %></strong>件 /
+    クリック率 <strong><%= @outreach_click_rate %>%</strong> /
+    クリックから掲載のお問い合わせにつながった件数 <strong><%= @outreach_converted_count %></strong>件
+  </p>
+  <p><small>日別クリック率(直近<%= @outreach_stats_range_days %>日、送信した日を基準に集計。あとから届くクリックも反映されるため、直近の日ほど数値は低めに出ます)</small></p>
+  <div class="analytics-chart">
+    <% @outreach_daily_stats.each do |stat| %>
+      <div class="analytics-bar-col" title="<%= stat[:date].strftime('%Y-%m-%d') %>: 送信<%= stat[:sent] %>件中<%= stat[:clicked] %>件クリック(<%= stat[:rate] %>%)">
+        <div class="analytics-bar" style="height: <%= stat[:rate] %>%"></div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card">
   <h2>営業メールの一斉送信</h2>
   <p>
     選択した営業先候補へ、掲載案内メールを一斉送信します。メール本文のリンクは
@@ -81,70 +99,87 @@
       the HTML5 form="..." attribute, regardless of where they sit in the DOM. %>
   <%= form_tag send_outreach_emails_admin_shop_prospects_path, method: :post, id: "outreach-form" do %><% end %>
 
-  <p><%= page_entries_info @prospects %></p>
-  <%= paginate @prospects %>
+  <p>
+    <%= @prospects.size %>件(<%= @grouped_prospects.size %>地区)。地区の見出しをクリックすると開閉できます。
+    <button type="button" id="select-all-prospects" class="btn secondary">すべて選択</button>
+    <button type="button" id="deselect-all-prospects" class="btn secondary">すべて解除</button>
+  </p>
 
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th><input type="checkbox" id="select-all-prospects"></th>
-        <th>店舗名</th>
-        <th>ジャンル</th>
-        <th>地区</th>
-        <th>電話番号</th>
-        <th>メールアドレス</th>
-        <th>掲載サイト</th>
-        <th>ステータス</th>
-        <th>送信状況</th>
-        <th>問い合わせ</th>
-        <th>メモ</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @prospects.each do |prospect| %>
-        <% inquiry = prospect.shop_inquiries.first %>
-        <tr>
-          <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
-          <td class="<%= "text-danger" if inquiry %>"><%= prospect.name %></td>
-          <td><%= prospect.genre %></td>
-          <td><%= prospect.shop_prospect_district&.display_name %></td>
-          <td><%= prospect.phone %></td>
-          <td><%= prospect.email %></td>
-          <td>
-            <% if prospect.listing_url.present? %>
-              <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
-            <% else %>
-              <%= prospect.listing_site_name %>
-            <% end %>
-          </td>
-          <td><%= status_label(prospect) %></td>
-          <td><%= outreach_status_badge(prospect) %></td>
-          <td>
-            <% if inquiry %>
-              <%= link_to "問い合わせあり(#{status_label(inquiry)})", admin_shop_inquiry_path(inquiry), class: "text-danger" %>
-            <% end %>
-          </td>
-          <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
-          <td>
-            <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
-            <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
-  <%= paginate @prospects %>
+  <% @grouped_prospects.each do |district, prospects| %>
+    <details class="prospect-group">
+      <summary><%= district&.display_name || "地区未設定" %>(<%= prospects.size %>件)</summary>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="select-all-in-group"></th>
+            <th>店舗名</th>
+            <th>ジャンル</th>
+            <th>地区</th>
+            <th>電話番号</th>
+            <th>メールアドレス</th>
+            <th>掲載サイト</th>
+            <th>ステータス</th>
+            <th>送信状況</th>
+            <th>問い合わせ</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% prospects.each do |prospect| %>
+            <% inquiry = prospect.shop_inquiries.first %>
+            <tr>
+              <td><%= check_box_tag "shop_prospect_ids[]", prospect.id, false, class: "prospect-checkbox", form: "outreach-form", disabled: prospect.email.blank? %></td>
+              <td class="<%= "text-danger" if inquiry %>"><%= prospect.name %></td>
+              <td><%= prospect.genre %></td>
+              <td><%= prospect.shop_prospect_district&.display_name %></td>
+              <td><%= prospect.phone %></td>
+              <td><%= prospect.email %></td>
+              <td>
+                <% if prospect.listing_url.present? %>
+                  <%= link_to prospect.listing_site_name.presence || prospect.listing_url, prospect.listing_url, target: "_blank", rel: "noopener" %>
+                <% else %>
+                  <%= prospect.listing_site_name %>
+                <% end %>
+              </td>
+              <td><%= status_label(prospect) %></td>
+              <td><%= outreach_status_badge(prospect) %></td>
+              <td>
+                <% if inquiry %>
+                  <%= link_to "問い合わせあり(#{status_label(inquiry)})", admin_shop_inquiry_path(inquiry), class: "text-danger" %>
+                <% end %>
+              </td>
+              <td><%= truncate(prospect.memo.to_s, length: 40) %></td>
+              <td>
+                <%= link_to "編集", edit_admin_shop_prospect_path(prospect) %>
+                <%= button_to "削除", admin_shop_prospect_path(prospect), method: :delete, form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </details>
+  <% end %>
 
   <%= submit_tag "選択した営業先へ一斉送信する", class: "btn", form: "outreach-form", data: { turbo_confirm: "選択した営業先へ営業メールを送信します。よろしいですか?" } %>
 </div>
 
 <script>
-  document.getElementById("select-all-prospects").addEventListener("change", function() {
-    var checked = this.checked;
-    document.querySelectorAll(".prospect-checkbox:not(:disabled)").forEach(function(box) {
+  function setAllChecked(checked, scope) {
+    (scope || document).querySelectorAll(".prospect-checkbox:not(:disabled)").forEach(function(box) {
       box.checked = checked;
+    });
+  }
+
+  document.getElementById("select-all-prospects").addEventListener("click", function() {
+    setAllChecked(true);
+  });
+  document.getElementById("deselect-all-prospects").addEventListener("click", function() {
+    setAllChecked(false);
+  });
+  document.querySelectorAll(".select-all-in-group").forEach(function(box) {
+    box.addEventListener("change", function() {
+      setAllChecked(this.checked, this.closest("details"));
     });
   });
 </script>

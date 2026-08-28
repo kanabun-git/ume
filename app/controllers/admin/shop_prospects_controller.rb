@@ -5,10 +5,24 @@ module Admin
   class ShopProspectsController < BaseController
     before_action :set_prospect, only: [:edit, :update, :destroy]
 
+    OUTREACH_STATS_RANGE_DAYS = 30
+
     def index
-      @prospects = filtered_prospects.includes(:shop_inquiries).page(params[:page]).per(50)
+      @prospects = filtered_prospects.includes(:shop_prospect_district, :shop_inquiries)
+      # Grouped by district and rendered as collapsible <details> sections
+      # (see the view) instead of paginated -- with a couple hundred
+      # prospects across ~50 districts, a flat 50-per-page list made it easy
+      # to miss rows sitting on a different page (see 営業メール一斉送信 fix).
+      # Folding keeps every row in the page/DOM (so "select all" and bulk
+      # actions always see the complete filtered set) while only showing
+      # a handful of district sections at a time.
+      @grouped_prospects = @prospects.group_by(&:shop_prospect_district).sort_by do |district, _|
+        district ? [0, district.prefecture, district.name] : [1, "", ""]
+      end
       @districts = ::ShopProspectDistrict.all
       @prefectures = ::ShopProspectDistrict.distinct.reorder(:prefecture).pluck(:prefecture)
+
+      load_outreach_click_stats
     end
 
     def new
@@ -130,18 +144,62 @@ module Admin
 
     private
 
-    def filtered_prospects
+    # Click-through performance for the outreach emails matched by the
+    # current filter (status/prefecture/district_id -- deliberately ignores
+    # the sent/not_sent filter itself, since these stats are only about
+    # emails that were actually sent). "件別のクリック率" buckets by the day
+    # the email was *sent*, not the day it was clicked, so each day's rate
+    # is a running conversion figure for that day's batch (it can keep
+    # climbing after the fact as more recipients click later).
+    def load_outreach_click_stats
+      sent_scope = base_prospects_scope.where.not(outreach_email_sent_at: nil)
+
+      @outreach_sent_count = sent_scope.count
+      @outreach_clicked_count = sent_scope.where.not(outreach_link_clicked_at: nil).count
+      @outreach_click_rate = rate_percent(@outreach_clicked_count, @outreach_sent_count)
+      @outreach_converted_count = sent_scope.where.not(outreach_link_clicked_at: nil).joins(:shop_inquiries).distinct.count
+
+      sent_by_day = Hash.new(0)
+      clicked_by_day = Hash.new(0)
+      sent_scope.pluck(:outreach_email_sent_at, :outreach_link_clicked_at).each do |sent_at, clicked_at|
+        day = sent_at.to_date
+        sent_by_day[day] += 1
+        clicked_by_day[day] += 1 if clicked_at
+      end
+
+      @outreach_stats_range_days = OUTREACH_STATS_RANGE_DAYS
+      range_start = Date.current - (@outreach_stats_range_days - 1)
+      @outreach_daily_stats = (range_start..Date.current).map do |date|
+        { date: date, sent: sent_by_day[date], clicked: clicked_by_day[date], rate: rate_percent(clicked_by_day[date], sent_by_day[date]) }
+      end
+    end
+
+    def rate_percent(numerator, denominator)
+      return 0.0 if denominator.zero?
+
+      (numerator.to_f / denominator * 100).round(1)
+    end
+
+    # Status/prefecture/district filters shared by the main list and the
+    # outreach click stats -- the sent/not_sent filter is applied on top of
+    # this only for the main list (see filtered_prospects), since the click
+    # stats are about sent emails specifically regardless of that filter.
+    def base_prospects_scope
       prospects = policy_scope(::ShopProspect)
       prospects = prospects.where(status: params[:status]) if params[:status].present?
       prospects = prospects.where(shop_prospect_district_id: params[:district_id]) if params[:district_id].present?
       if params[:prefecture].present?
         prospects = prospects.joins(:shop_prospect_district).where(shop_prospect_districts: { prefecture: params[:prefecture] })
       end
-      case params[:sent]
-      when "sent" then prospects = prospects.where.not(outreach_email_sent_at: nil)
-      when "not_sent" then prospects = prospects.where(outreach_email_sent_at: nil)
-      end
       prospects
+    end
+
+    def filtered_prospects
+      case params[:sent]
+      when "sent" then base_prospects_scope.where.not(outreach_email_sent_at: nil)
+      when "not_sent" then base_prospects_scope.where(outreach_email_sent_at: nil)
+      else base_prospects_scope
+      end
     end
 
     def set_prospect

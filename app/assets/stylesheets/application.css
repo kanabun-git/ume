@@ -197,6 +197,13 @@ table.admin-table { width: 100%; border-collapse: collapse; background: #fff; }
 table.admin-table th, table.admin-table td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; font-size: .9rem; }
 table.admin-table th { background: #f4f0f1; }
 
+.prospect-group { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+.prospect-group summary { cursor: pointer; padding: 10px 14px; font-weight: bold; background: #f4f0f1; list-style: none; }
+.prospect-group summary::-webkit-details-marker { display: none; }
+.prospect-group summary::before { content: "▶ "; }
+.prospect-group[open] summary::before { content: "▼ "; }
+.prospect-group table.admin-table { border-top: 1px solid var(--border); }
+
 .account-setup-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 16px 0; }
 .account-setup-box label { display: block; font-weight: bold; margin: 12px 0 4px; font-size: .9rem; }
 .account-setup-box label:first-child { margin-top: 0; }

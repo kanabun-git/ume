@@ -18,7 +18,7 @@ module Admin
       assert_not ShopProspect.exists?(prospect.id)
     end
 
-    test "index filters by district_id and paginates" do
+    test "index filters by district_id" do
       admin = create_user(role: :platform_admin)
       sign_in admin
       kinshicho = ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
@@ -29,6 +29,69 @@ module Admin
       assert_response :success
       assert_match "錦糸町店", response.body
       assert_no_match "浅草店", response.body
+    end
+
+    test "index groups prospects into a collapsible section per district" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "錦糸町店", genre: "デリヘル/錦糸町")
+      osaka_district = ShopProspectDistrict.create!(name: "梅田", prefecture: "大阪")
+      ShopProspect.create!(name: "梅田店", shop_prospect_district: osaka_district)
+
+      get admin_shop_prospects_path
+
+      assert_response :success
+      assert_select "details.prospect-group", count: 2
+      assert_select "details.prospect-group summary", text: /東京ー錦糸町/
+      assert_select "details.prospect-group summary", text: /大阪ー梅田/
+    end
+
+    test "index shows the outreach click rate and click-to-inquiry conversion count" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      clicked_with_inquiry = ShopProspect.create!(name: "成約候補", email: "a@example.com",
+        outreach_email_sent_at: 2.days.ago, outreach_link_clicked_at: 1.day.ago)
+      ShopInquiry.create!(shop_name: "新規店舗", contact_name: "担当太郎", email: "owner@example.com",
+        phone: "03-1111-2222", shop_prospect: clicked_with_inquiry)
+      ShopProspect.create!(name: "クリックのみ候補", email: "b@example.com",
+        outreach_email_sent_at: 2.days.ago, outreach_link_clicked_at: 1.day.ago)
+      ShopProspect.create!(name: "未クリック候補", email: "c@example.com", outreach_email_sent_at: 2.days.ago)
+
+      get admin_shop_prospects_path
+
+      assert_response :success
+      assert_select "h2", text: /営業メール実績/
+      assert_match(/送信数.*<strong>3<\/strong>件/m, response.body)
+      assert_match(/クリック数.*<strong>2<\/strong>件/m, response.body)
+      assert_match(/クリックから掲載のお問い合わせにつながった件数.*<strong>1<\/strong>件/m, response.body)
+    end
+
+    test "index click stats ignore the sent/not_sent list filter" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "送信済み候補", email: "a@example.com",
+        outreach_email_sent_at: 1.day.ago, outreach_link_clicked_at: 1.day.ago)
+      ShopProspect.create!(name: "未送信候補", email: "b@example.com")
+
+      get admin_shop_prospects_path(sent: "not_sent")
+
+      assert_response :success
+      assert_no_match "送信済み候補", response.body
+      assert_match "未送信候補", response.body
+      assert_match(/送信数.*<strong>1<\/strong>件/m, response.body)
+      assert_match(/クリック数.*<strong>1<\/strong>件/m, response.body)
+    end
+
+    test "index buckets daily click stats by the day the email was sent" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+      ShopProspect.create!(name: "候補店舗", email: "a@example.com",
+        outreach_email_sent_at: 2.days.ago, outreach_link_clicked_at: Time.current)
+
+      get admin_shop_prospects_path
+
+      assert_response :success
+      assert_match "#{2.days.ago.to_date.strftime('%Y-%m-%d')}: 送信1件中1件クリック(100.0%)", response.body
     end
 
     test "index filters by prefecture" do

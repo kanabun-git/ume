@@ -2,6 +2,7 @@
 
 <h1><%= @shop.name %> 管理ダッシュボード</h1>
 <p>ステータス: <span class="badge <%= "muted" unless @shop.approved? %>"><%= status_label(@shop) %></span></p>
+<p><%= link_to "店舗ページのデザインをプレビュー", shop_path(@shop), class: "btn secondary", target: "_blank" %></p>
 
 <div class="card">
   <h2>在籍キャスト (<%= @shop.casts.count %>名)</h2>

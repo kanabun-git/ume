@@ -25,6 +25,14 @@ class MaintenanceModeMiddleware
   # too, so a 営業メール link clicked during maintenance still records the
   # click and reaches /shop_inquiries instead of dead-ending on this page.
 
+  # /shops/:id and /casts/:id are the public URLs shop_admin's "プレビューを
+  # 見る" links point to (see ApplicationController#can_preview_shop?) --
+  # they stay blocked by maintenance mode for everyone else, but a signed-in
+  # platform admin or the shop's own shop admin needs to keep reaching them
+  # (e.g. to demo a shop's design) even while the rest of the public site is
+  # down.
+  PREVIEWABLE_PATH_PATTERN = %r{\A/(shops|casts)/(\d+)(?:/|\z)}
+
   def initialize(app)
     @app = app
   end
@@ -32,7 +40,7 @@ class MaintenanceModeMiddleware
   def call(env)
     request = ActionDispatch::Request.new(env)
 
-    if maintenance_mode? && !allowed_path?(request.path)
+    if maintenance_mode? && !allowed_path?(request.path) && !previewable_by_current_user?(env, request.path)
       return render_maintenance_page
     end
 
@@ -43,6 +51,19 @@ class MaintenanceModeMiddleware
 
   def allowed_path?(path)
     ALLOWED_PATH_PREFIXES.any? { |prefix| path == prefix || path.start_with?("#{prefix}/") }
+  end
+
+  def previewable_by_current_user?(env, path)
+    user = env["warden"]&.user(:user)
+    return false unless user
+    return true if user.platform_admin?
+    return false unless user.shop_admin?
+
+    match = PREVIEWABLE_PATH_PATTERN.match(path)
+    return false unless match
+
+    shop_id = match[1] == "shops" ? match[2].to_i : ::Cast.where(id: match[2]).pick(:shop_id)
+    shop_id.present? && shop_id == user.shop_id
   end
 
   def maintenance_mode?

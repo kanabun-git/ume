@@ -76,6 +76,7 @@
 
   <h2>店舗詳細ページのデザイン</h2>
   <p><small>店舗詳細ページ(会員・一般ユーザーが見る画面)の背景色・文字色・基調色(ボタンやバッジの色)・背景画像を、サイト標準のデザインから変更できます。空欄のままにすると標準デザインのままになります。</small></p>
+  <p><%= link_to "デザインのプレビューを見る", shop_path(@shop), class: "btn secondary", target: "_blank" %></p>
 
   <label>背景色</label>
   <%= f.color_field :page_background_color, value: @shop.page_background_color.presence || "#f7f2f0" %>

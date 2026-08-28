@@ -79,6 +79,16 @@ module ShopAdmin
       assert shop.design_change_pending?
     end
 
+    test "the edit screen shows a design preview link" do
+      shop = create_shop
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      get edit_shop_admin_shop_path
+
+      assert_select "a[href=?]", shop_path(shop), text: "デザインのプレビューを見る"
+    end
+
     test "a shop admin can unpublish their own shop back into draft" do
       shop = create_shop(published: true)
       user = create_user(role: :shop_admin, shop: shop)

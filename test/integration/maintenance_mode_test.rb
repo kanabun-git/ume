@@ -70,6 +70,61 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "an anonymous visitor cannot preview a shop or cast page during maintenance" do
+    shop = create_shop
+    cast = create_cast(shop: shop)
+
+    with_maintenance_mode_on do
+      get shop_path(shop)
+      assert_response :service_unavailable
+
+      get cast_path(cast)
+      assert_response :service_unavailable
+    end
+  end
+
+  test "a platform admin can preview any shop or cast page during maintenance" do
+    shop = create_shop
+    cast = create_cast(shop: shop)
+    admin = create_user(role: :platform_admin)
+    sign_in admin
+
+    with_maintenance_mode_on do
+      get shop_path(shop)
+      assert_response :success
+
+      get cast_path(cast)
+      assert_response :success
+    end
+  end
+
+  test "a shop admin can preview their own shop and cast pages during maintenance" do
+    shop = create_shop
+    cast = create_cast(shop: shop)
+    shop_admin = create_user(role: :shop_admin, shop: shop)
+    sign_in shop_admin
+
+    with_maintenance_mode_on do
+      get shop_path(shop)
+      assert_response :success
+
+      get cast_path(cast)
+      assert_response :success
+    end
+  end
+
+  test "a shop admin cannot preview another shop's page during maintenance" do
+    shop = create_shop
+    other_shop = create_shop
+    shop_admin = create_user(role: :shop_admin, shop: shop)
+    sign_in shop_admin
+
+    with_maintenance_mode_on do
+      get shop_path(other_shop)
+      assert_response :service_unavailable
+    end
+  end
+
   private
 
   def with_maintenance_mode_on

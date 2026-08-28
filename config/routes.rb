@@ -119,7 +119,12 @@ Rails.application.routes.draw do
   # --- Shop admin dashboard: manage own shop's content ---
   namespace :shop_admin do
     root to: "dashboard#show"
-    resource :shop, only: [:edit, :update]
+    resource :shop, only: [:edit, :update] do
+      member do
+        patch :publish
+        patch :unpublish
+      end
+    end
     resources :casts
     resources :coupons do
       resources :usages, only: [:index, :create], controller: "coupon_usages"
@@ -174,6 +179,7 @@ Rails.application.routes.draw do
       member do
         patch :approve
         patch :suspend
+        patch :confirm_design
       end
       resources :shop_page_blocks, except: [:show] do
         member do

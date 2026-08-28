@@ -22,10 +22,14 @@ class CastsController < ApplicationController
   end
 
   def show
-    @cast = Cast.visible.joins(:shop).merge(Shop.visible).find(params[:id])
-    @cast.increment!(:view_count)
-    CastDailyView.record!(@cast)
+    @cast = Cast.visible.find(params[:id])
     @shop = @cast.shop
+    raise ActiveRecord::RecordNotFound unless @shop.visible? || can_preview_shop?(@shop)
+
+    if @shop.visible?
+      @cast.increment!(:view_count)
+      CastDailyView.record!(@cast)
+    end
     @diary_entries = @cast.diary_entries.visible.limit(10)
   end
 end

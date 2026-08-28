@@ -17,6 +17,18 @@ module ShopAdmin
       end
     end
 
+    def publish
+      authorize @shop, :update?
+      @shop.publish!
+      redirect_to shop_admin_root_path, notice: "店舗ページを公開しました。公開ページに表示されます。"
+    end
+
+    def unpublish
+      authorize @shop, :update?
+      @shop.unpublish!
+      redirect_to shop_admin_root_path, notice: "店舗ページを非公開(下書き)にしました。公開ページからは見えなくなります。"
+    end
+
     private
 
     def set_shop

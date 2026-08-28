@@ -26,7 +26,8 @@ module TestRecords
       area: create_area,
       genre: create_genre,
       plan: create_plan,
-      status: :approved
+      status: :approved,
+      published: true
     }.merge(attrs))
   end
 

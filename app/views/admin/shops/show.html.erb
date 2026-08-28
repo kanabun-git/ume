@@ -2,6 +2,13 @@
 
 <h1><%= @shop.name %></h1>
 <p>状態: <%= status_label(@shop) %> / エリア: <%= @shop.area.name %> / ジャンル: <%= @shop.genre.name %> / プラン: <%= @shop.plan.name %></p>
+<p>
+  公開状況: <span class="badge <%= "muted" unless @shop.published? %>"><%= @shop.published? ? "公開中" : "非公開(下書き)" %></span>
+  <% if @shop.design_change_pending? %>
+    <span class="badge warning">デザイン変更あり(<%= l @shop.design_updated_at, format: :short %>)</span>
+    <%= button_to "確認", confirm_design_admin_shop_path(@shop), method: :patch %>
+  <% end %>
+</p>
 <p>閲覧数: <%= @shop.view_count %></p>
 <p><%= simple_format @shop.description.to_s %></p>
 

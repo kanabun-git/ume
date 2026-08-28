@@ -21,6 +21,13 @@ class ShopPolicy < ApplicationPolicy
     user.platform_admin?
   end
 
+  # Publishing/unpublishing the shop's page is self-service for the shop
+  # admin (see update?) -- clearing the "design changed" notice raised by a
+  # publish, on the other hand, is a platform-admin-only acknowledgement.
+  def confirm_design?
+    user.platform_admin?
+  end
+
   def destroy?
     user.platform_admin?
   end

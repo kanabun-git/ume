@@ -27,6 +27,18 @@
         <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
       </div>
       <div class="content">
+        <% if current_shop.published? %>
+          <div class="notice">
+            公開中です。公開ページに表示されています。
+            <%= button_to "非公開にする(下書きに戻す)", unpublish_shop_admin_shop_path, method: :patch, class: "link-button",
+                form: { data: { turbo_confirm: "非公開にすると、公開ページから一時的に見えなくなります。よろしいですか?" } } %>
+          </div>
+        <% else %>
+          <div class="alert">
+            非公開(下書き)です。公開ページには表示されません。デザインやキャスト情報の準備ができたら公開してください。
+            <%= button_to "公開する", publish_shop_admin_shop_path, method: :patch, class: "link-button" %>
+          </div>
+        <% end %>
         <% if notice %><div class="notice"><%= notice %></div><% end %>
         <% if alert %><div class="alert"><%= alert %></div><% end %>
         <%= yield %>

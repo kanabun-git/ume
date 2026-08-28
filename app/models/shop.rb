@@ -46,7 +46,13 @@ class Shop < ApplicationRecord
   after_create :seed_default_page_blocks
   after_create :seed_default_cast_page_blocks
 
-  scope :visible, -> { approved }
+  # `status` (承認待ち/承認済み/停止) is the platform admin's business gate;
+  # `published` is a separate, shop-admin-controlled switch for design/content
+  # readiness -- a shop can be approved but still unpublished while the shop
+  # admin is building/redesigning its page, so both must hold for the shop
+  # (and, via this scope, its casts -- see Cast/Shop.visible usages) to
+  # actually appear on the public site.
+  scope :visible, -> { approved.where(published: true) }
   scope :ranked, -> { visible.joins(:plan).order(Arel.sql("plans.priority_weight * shops.view_count DESC")) }
   # Areas can be a prefecture (region set directly) or a city belonging to
   # one (region only set on its parent), so match either.
@@ -58,6 +64,30 @@ class Shop < ApplicationRecord
 
   def approved_reviews
     reviews.approved
+  end
+
+  def visible?
+    approved? && published?
+  end
+
+  # Going live stamps design_updated_at so the platform admin's shop list
+  # can flag "this shop just published a design change" -- see
+  # Admin::ShopsController#confirm_design, which clears it back to nil once
+  # reviewed. Re-publishing after further edits stamps it again.
+  def publish!
+    update!(published: true, design_updated_at: Time.current)
+  end
+
+  def unpublish!
+    update!(published: false)
+  end
+
+  def confirm_design_reviewed!
+    update!(design_updated_at: nil)
+  end
+
+  def design_change_pending?
+    design_updated_at.present?
   end
 
   # The "地方" (Kanto/Chubu/...) this shop belongs to — area can be either

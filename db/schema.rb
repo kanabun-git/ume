@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_28_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_123700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -505,6 +505,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_090000) do
     t.string "coverage_area_note"
     t.datetime "created_at", null: false
     t.text "description"
+    t.datetime "design_updated_at"
     t.text "editor_review"
     t.boolean "event_ongoing", default: false, null: false
     t.bigint "genre_id", null: false
@@ -518,6 +519,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_090000) do
     t.bigint "plan_id", null: false
     t.datetime "pr_badge_until"
     t.string "price_note"
+    t.boolean "published", default: false, null: false
     t.boolean "recruiting_cast", default: false, null: false
     t.text "recruiting_message"
     t.boolean "recruiting_staff", default: false, null: false

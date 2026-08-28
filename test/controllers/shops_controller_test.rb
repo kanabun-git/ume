@@ -40,6 +40,57 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "an unpublished (draft) shop's detail page is not publicly reachable" do
+    shop = create_shop(published: false)
+
+    get shop_path(shop)
+
+    assert_response :not_found
+  end
+
+  test "the shop's own admin can preview an unpublished shop's detail page" do
+    shop = create_shop(published: false, name: "下書き中の店舗")
+    user = create_user(role: :shop_admin, shop: shop)
+    sign_in user
+
+    get shop_path(shop)
+
+    assert_response :success
+    assert_includes response.body, shop.name
+  end
+
+  test "a platform admin can preview an unpublished shop's detail page" do
+    shop = create_shop(published: false, name: "下書き中の店舗")
+    admin = create_user(role: :platform_admin)
+    sign_in admin
+
+    get shop_path(shop)
+
+    assert_response :success
+  end
+
+  test "another shop's admin cannot preview an unpublished shop's detail page" do
+    shop = create_shop(published: false)
+    other_shop = create_shop
+    user = create_user(role: :shop_admin, shop: other_shop)
+    sign_in user
+
+    get shop_path(shop)
+
+    assert_response :not_found
+  end
+
+  test "previewing an unpublished shop does not record a public view" do
+    shop = create_shop(published: false)
+    user = create_user(role: :shop_admin, shop: shop)
+    sign_in user
+
+    get shop_path(shop)
+
+    assert_nil ShopDailyView.find_by(shop: shop, view_date: Date.current)
+    assert_equal 0, shop.reload.view_count
+  end
+
   test "viewing a shop records a daily view" do
     shop = create_shop
 

@@ -18,9 +18,13 @@ class ShopsController < ApplicationController
   end
 
   def show
-    @shop = Shop.visible.find(params[:id])
-    @shop.increment!(:view_count)
-    ShopDailyView.record!(@shop)
+    @shop = Shop.find(params[:id])
+    raise ActiveRecord::RecordNotFound unless @shop.visible? || can_preview_shop?(@shop)
+
+    if @shop.visible?
+      @shop.increment!(:view_count)
+      ShopDailyView.record!(@shop)
+    end
     @casts = @shop.casts.visible
     @reviews = @shop.approved_reviews.limit(10)
     @coupons = @shop.coupons.active

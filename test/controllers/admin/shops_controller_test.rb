@@ -65,5 +65,38 @@ module Admin
         assert_select "button", text: "復帰"
       end
     end
+
+    test "platform admin can confirm a shop's design change notice" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop(design_updated_at: Time.current)
+      sign_in admin
+
+      patch confirm_design_admin_shop_path(shop)
+
+      assert_redirected_to admin_shops_path
+      assert_not shop.reload.design_change_pending?
+    end
+
+    test "a shop admin cannot confirm their own design change notice" do
+      shop = create_shop(design_updated_at: Time.current)
+      shop_admin = create_user(role: :shop_admin, shop: shop)
+      sign_in shop_admin
+
+      patch confirm_design_admin_shop_path(shop)
+
+      assert shop.reload.design_change_pending?
+    end
+
+    test "index shows a design change notice with a confirm button for a shop that just published" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop(design_updated_at: Time.current)
+      sign_in admin
+
+      get admin_shops_path
+
+      assert_select "form[action=?]", confirm_design_admin_shop_path(shop) do
+        assert_select "button", text: "確認"
+      end
+    end
   end
 end

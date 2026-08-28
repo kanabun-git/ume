@@ -19,6 +19,18 @@ class ApplicationController < ActionController::Base
   layout :resolve_layout
   helper_method :discreet_cast_portal_host?
 
+  # Lets a shop's own admin (or a platform admin) view its public-facing
+  # page/cast pages even while the shop is unapproved or unpublished --
+  # the same shop_path/cast_path used by shop_admin's "プレビューを見る"
+  # links, so a shop under construction has one URL that just becomes
+  # public once actually published instead of a separate preview URL.
+  def can_preview_shop?(shop)
+    return false unless current_user
+
+    current_user.platform_admin? || (current_user.shop_admin? && current_user.shop_id == shop.id)
+  end
+  helper_method :can_preview_shop?
+
   def after_sign_in_path_for(resource)
     case resource
     when User

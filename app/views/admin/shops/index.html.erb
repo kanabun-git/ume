@@ -4,7 +4,7 @@
 <%= link_to "新規店舗登録", new_admin_shop_path, class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>店舗名</th><th>エリア</th><th>ジャンル</th><th>プラン</th><th>状態</th><th></th></tr></thead>
+  <thead><tr><th>店舗名</th><th>エリア</th><th>ジャンル</th><th>プラン</th><th>状態</th><th>公開状況</th><th></th></tr></thead>
   <tbody>
     <% @shops.each do |shop| %>
       <tr>
@@ -13,6 +13,14 @@
         <td><%= shop.genre.name %></td>
         <td><%= shop.plan.name %></td>
         <td><span class="badge <%= "muted" unless shop.approved? %>"><%= status_label(shop) %></span></td>
+        <td>
+          <span class="badge <%= "muted" unless shop.published? %>"><%= shop.published? ? "公開中" : "非公開(下書き)" %></span>
+          <% if shop.design_change_pending? %>
+            <br>
+            <span class="badge warning">デザイン変更あり(<%= l shop.design_updated_at, format: :short %>)</span>
+            <%= button_to "確認", confirm_design_admin_shop_path(shop), method: :patch %>
+          <% end %>
+        </td>
         <td>
           <%= link_to "編集", edit_admin_shop_path(shop) %>
           <% unless shop.approved? %>

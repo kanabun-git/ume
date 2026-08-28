@@ -22,6 +22,38 @@ class CastsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show 404s for a cast whose shop is unpublished (draft)" do
+    cast = create_cast(shop: create_shop(published: false))
+
+    get cast_path(cast)
+
+    assert_response :not_found
+  end
+
+  test "the shop's own admin can preview a cast whose shop is unpublished" do
+    shop = create_shop(published: false)
+    cast = create_cast(shop: shop, name: "下書き中のキャスト")
+    user = create_user(role: :shop_admin, shop: shop)
+    sign_in user
+
+    get cast_path(cast)
+
+    assert_response :success
+    assert_includes response.body, cast.name
+  end
+
+  test "previewing a cast on an unpublished shop does not record a view" do
+    shop = create_shop(published: false)
+    cast = create_cast(shop: shop)
+    user = create_user(role: :shop_admin, shop: shop)
+    sign_in user
+
+    get cast_path(cast)
+
+    assert_equal 0, cast.reload.view_count
+    assert_nil CastDailyView.find_by(cast: cast, view_date: Date.current)
+  end
+
   test "viewing a cast records a daily view and increments its view count" do
     cast = create_cast
 

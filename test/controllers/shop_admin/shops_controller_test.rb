@@ -66,6 +66,30 @@ module ShopAdmin
       assert shop.reload.page_background_image.attached?
     end
 
+    test "a shop admin can publish their own shop, which stamps a design change notice" do
+      shop = create_shop(published: false)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      patch publish_shop_admin_shop_path
+
+      assert_redirected_to shop_admin_root_path
+      shop.reload
+      assert shop.published?
+      assert shop.design_change_pending?
+    end
+
+    test "a shop admin can unpublish their own shop back into draft" do
+      shop = create_shop(published: true)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      patch unpublish_shop_admin_shop_path
+
+      assert_redirected_to shop_admin_root_path
+      assert_not shop.reload.published?
+    end
+
     private
 
     def upload_png

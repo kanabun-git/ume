@@ -1,6 +1,6 @@
 module Admin
   class ShopsController < BaseController
-    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend]
+    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend, :confirm_design]
 
     def index
       @shops = policy_scope(::Shop)
@@ -56,6 +56,14 @@ module Admin
     def destroy
       @shop.destroy
       redirect_to admin_shops_path, notice: "店舗を削除しました。"
+    end
+
+    # Acknowledges a shop admin's published design change (see
+    # Shop#publish!) -- doesn't gate the publish itself, just clears the
+    # "デザイン変更あり" notice once the platform admin has looked it over.
+    def confirm_design
+      @shop.confirm_design_reviewed!
+      redirect_to admin_shops_path, notice: "#{@shop.name} のデザイン変更を確認済みにしました。"
     end
 
     private

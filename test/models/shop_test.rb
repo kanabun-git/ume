@@ -59,4 +59,50 @@ class ShopTest < ActiveSupport::TestCase
 
     assert_equal "#b32a56", shop.darkened_page_accent_color
   end
+
+  test ".visible requires both approved status and published" do
+    approved_and_published = create_shop(status: :approved, published: true)
+    approved_but_draft = create_shop(status: :approved, published: false)
+    published_but_pending = create_shop(status: :pending, published: true)
+
+    assert_includes Shop.visible, approved_and_published
+    assert_not_includes Shop.visible, approved_but_draft
+    assert_not_includes Shop.visible, published_but_pending
+  end
+
+  test "#visible? mirrors the .visible scope" do
+    assert create_shop(status: :approved, published: true).visible?
+    assert_not create_shop(status: :approved, published: false).visible?
+    assert_not create_shop(status: :pending, published: true).visible?
+  end
+
+  test "#publish! turns the shop public and stamps design_updated_at" do
+    shop = create_shop(published: false)
+
+    shop.publish!
+
+    assert shop.published?
+    assert shop.design_updated_at.present?
+  end
+
+  test "#unpublish! takes the shop out of public view" do
+    shop = create_shop(published: true, design_updated_at: 1.day.ago)
+
+    shop.unpublish!
+
+    assert_not shop.published?
+  end
+
+  test "#confirm_design_reviewed! clears the design change notice" do
+    shop = create_shop(design_updated_at: Time.current)
+
+    shop.confirm_design_reviewed!
+
+    assert_not shop.design_change_pending?
+  end
+
+  test "#design_change_pending? is true only once a design_updated_at is set" do
+    assert_not create_shop(design_updated_at: nil).design_change_pending?
+    assert create_shop(design_updated_at: Time.current).design_change_pending?
+  end
 end

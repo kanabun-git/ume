@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 
 # Shared row-by-row CSV exporter that pairs with AdminCsvImport, used by the
 # platform admin's master-data screens (genres, areas, plans, member
@@ -10,13 +11,14 @@ module AdminCsvExport
   module_function
 
   def call(records, headers, header_to_attribute)
-    CSV.generate do |csv|
-      csv << headers
+    csv = CSV.generate do |rows|
+      rows << headers
       records.each do |record|
         row = headers.map { |header| header_to_attribute[header] && record.public_send(header_to_attribute[header]) }
         row = yield(row, record) if block_given?
-        csv << row
+        rows << row
       end
     end
+    CsvBom.wrap(csv)
   end
 end

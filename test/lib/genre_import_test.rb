@@ -41,4 +41,11 @@ class GenreImportTest < ActiveSupport::TestCase
     rows = CSV.parse(csv, headers: true)
     assert_equal ["ソープ", "soap", "3"], rows.first.fields
   end
+
+  test "TEMPLATE_CSV and export both start with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], GenreImport::TEMPLATE_CSV.bytes.first(3)
+
+    csv = GenreImport.export(Genre.none)
+    assert_equal [0xEF, 0xBB, 0xBF], csv.bytes.first(3)
+  end
 end

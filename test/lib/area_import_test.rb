@@ -47,4 +47,9 @@ class AreaImportTest < ActiveSupport::TestCase
     assert_equal "", tokyo_row["親エリアのスラッグ"].to_s
     assert_equal "tokyo", shinjuku_row["親エリアのスラッグ"]
   end
+
+  test "TEMPLATE_CSV and export both start with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], AreaImport::TEMPLATE_CSV.bytes.first(3)
+    assert_equal [0xEF, 0xBB, 0xBF], AreaImport.export(Area.none).bytes.first(3)
+  end
 end

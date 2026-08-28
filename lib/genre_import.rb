@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 require "admin_csv_import"
 require "admin_csv_export"
 
@@ -13,10 +14,10 @@ module GenreImport
     "表示順" => :position
   }.freeze
 
-  TEMPLATE_CSV = CSV.generate do |csv|
+  TEMPLATE_CSV = CsvBom.wrap(CSV.generate do |csv|
     csv << HEADERS
     csv << ["ソープ", "soap", "1"]
-  end.freeze
+  end).freeze
 
   module_function
 

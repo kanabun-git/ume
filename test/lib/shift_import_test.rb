@@ -47,4 +47,8 @@ class ShiftImportTest < ActiveSupport::TestCase
 
     assert_equal 1, result.created_count
   end
+
+  test "TEMPLATE_CSV starts with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], ShiftImport::TEMPLATE_CSV.bytes.first(3)
+  end
 end

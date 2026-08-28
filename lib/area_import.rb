@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 require "admin_csv_import"
 require "admin_csv_export"
 
@@ -17,11 +18,11 @@ module AreaImport
     "表示順" => :position
   }.freeze
 
-  TEMPLATE_CSV = CSV.generate do |csv|
+  TEMPLATE_CSV = CsvBom.wrap(CSV.generate do |csv|
     csv << HEADERS
     csv << ["東京都", "とうきょうと", "tokyo", "関東", "1", ""]
     csv << ["新宿", "しんじゅく", "shinjuku", "", "1", "tokyo"]
-  end.freeze
+  end).freeze
 
   module_function
 

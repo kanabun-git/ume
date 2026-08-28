@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 
 # Bulk-imports Shift rows from a shop-admin-uploaded CSV (see
 # ShopAdmin::ShiftsController#import). Each row is matched to one of the
@@ -9,10 +10,10 @@ module ShiftImport
 
   HEADERS = %w[キャスト名 勤務日 開始時刻 終了時刻 翌日にまたぐ メモ].freeze
 
-  TEMPLATE_CSV = CSV.generate do |csv|
+  TEMPLATE_CSV = CsvBom.wrap(CSV.generate do |csv|
     csv << HEADERS
     csv << ["ゆい", "2026-08-10", "18:00", "02:00", "true", "体験入店"]
-  end.freeze
+  end).freeze
 
   module_function
 

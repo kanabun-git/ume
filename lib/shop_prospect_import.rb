@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 require "admin_csv_export"
 
 # Bulk-imports/exports ShopProspect rows as CSV (see
@@ -29,10 +30,10 @@ module ShopProspectImport
   # not a real shop, so it must not become a ShopProspect.
   AREA_HEADER_PATTERN = /\A【.+】\z/
 
-  TEMPLATE_CSV = CSV.generate do |csv|
+  TEMPLATE_CSV = CsvBom.wrap(CSV.generate do |csv|
     csv << HEADERS
     csv << ["サンプル店舗", "デリヘル/新宿・歌舞伎町", "03-1234-5678", "info@example.com", "https://example.com/shop/123"]
-  end.freeze
+  end).freeze
 
   module_function
 

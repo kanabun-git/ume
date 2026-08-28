@@ -72,4 +72,9 @@ class ShopProspectImportTest < ActiveSupport::TestCase
     assert_equal 1, result.created_count
     assert ShopProspect.exists?(name: "BOM付き店舗")
   end
+
+  test "TEMPLATE_CSV and export both start with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], ShopProspectImport::TEMPLATE_CSV.bytes.first(3)
+    assert_equal [0xEF, 0xBB, 0xBF], ShopProspectImport.export(ShopProspect.none).bytes.first(3)
+  end
 end

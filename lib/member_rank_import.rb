@@ -1,4 +1,5 @@
 require "csv"
+require "csv_bom"
 require "admin_csv_import"
 require "admin_csv_export"
 
@@ -12,10 +13,10 @@ module MemberRankImport
     "必要承認件数" => :min_approved_count
   }.freeze
 
-  TEMPLATE_CSV = CSV.generate do |csv|
+  TEMPLATE_CSV = CsvBom.wrap(CSV.generate do |csv|
     csv << HEADERS
     csv << ["ブロンズ会員", "1"]
-  end.freeze
+  end).freeze
 
   module_function
 

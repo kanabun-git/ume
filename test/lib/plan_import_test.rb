@@ -40,4 +40,9 @@ class PlanImportTest < ActiveSupport::TestCase
     rows = CSV.parse(csv, headers: true)
     assert_equal ["プレミアムプラン", "50000", "2", "1"], rows.first.fields
   end
+
+  test "TEMPLATE_CSV and export both start with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], PlanImport::TEMPLATE_CSV.bytes.first(3)
+    assert_equal [0xEF, 0xBB, 0xBF], PlanImport.export(Plan.none).bytes.first(3)
+  end
 end

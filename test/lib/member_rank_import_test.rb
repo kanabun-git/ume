@@ -43,4 +43,9 @@ class MemberRankImportTest < ActiveSupport::TestCase
     rows = CSV.parse(csv, headers: true)
     assert_equal ["ブロンズ会員", "1"], rows.first.fields
   end
+
+  test "TEMPLATE_CSV and export both start with a UTF-8 BOM so Excel doesn't mangle the Japanese headers" do
+    assert_equal [0xEF, 0xBB, 0xBF], MemberRankImport::TEMPLATE_CSV.bytes.first(3)
+    assert_equal [0xEF, 0xBB, 0xBF], MemberRankImport.export(MemberRank.none).bytes.first(3)
+  end
 end

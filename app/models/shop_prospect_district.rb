@@ -20,7 +20,7 @@ class ShopProspectDistrict < ApplicationRecord
   # actually in a neighboring prefecture (e.g. "船橋" is in 千葉, not 東京;
   # "太田"/"高崎"/"伊勢崎" are in 群馬 -- distinct from Tokyo's 大田区). Keyed
   # by the exact district name; values are the correct prefecture. Checked
-  # against the full set of districts registered as of 2026-08-27 -- a
+  # against the full set of districts registered as of 2026-08-28 -- a
   # newly-imported district name not in this list still defaults to 東京
   # and needs the same manual correction (地区管理) or an addition here.
   KNOWN_PREFECTURE_CORRECTIONS = {
@@ -48,7 +48,55 @@ class ShopProspectDistrict < ApplicationRecord
     "西船橋" => "千葉",
     "越谷・草加・三郷" => "埼玉",
     "那須・黒磯" => "栃木",
-    "高崎" => "群馬"
+    "高崎" => "群馬",
+    # 中部ポータル(愛知・岐阜・静岡・長野・山梨・新潟・石川・福井)向けに
+    # 登録された地区が、関東中心の初期データと同じくすべて東京にデフォルト
+    # されてしまっていたもの(2026-08-28、営業先候補管理からの報告で発覚)。
+    "一宮・稲沢" => "愛知",
+    "三島・熱海・伊豆" => "静岡",
+    "三条市" => "新潟",
+    "上田市" => "長野",
+    "上越市" => "新潟",
+    "中巨摩郡昭和町" => "山梨",
+    "今池・池下・千種区" => "愛知",
+    "佐久市" => "長野",
+    "刈谷・知立・大府" => "愛知",
+    "加賀市片山津" => "石川",
+    "半田・知多・東海市方面" => "愛知",
+    "可児・多治見・高山・中津川" => "岐阜",
+    "名古屋駅・中村・西区" => "愛知",
+    "大垣市・羽島市" => "岐阜",
+    "大曽根・北区" => "愛知",
+    "安城" => "愛知",
+    "富士・御殿場" => "静岡",
+    "岐南町・各務原市" => "岐阜",
+    "岐阜市内" => "岐阜",
+    "岡崎" => "愛知",
+    "島田・吉田" => "静岡",
+    "新栄・東新町・中区" => "愛知",
+    "新潟市" => "新潟",
+    "春日井・小牧・尾張旭" => "愛知",
+    "松本市" => "長野",
+    "柴田・南区・港区" => "愛知",
+    "栄・大須・中区" => "愛知",
+    "沼津市" => "静岡",
+    "浜松市" => "静岡",
+    "焼津・藤枝" => "静岡",
+    "瑞穂区・昭和区" => "愛知",
+    "甲府市" => "山梨",
+    "福井市" => "福井",
+    "笛吹市" => "山梨",
+    "納屋橋・中村区" => "愛知",
+    "菊川・御前崎・牧之原" => "静岡",
+    "豊橋・豊川" => "愛知",
+    "豊田" => "愛知",
+    "金山・熱田区・中川区" => "愛知",
+    "金沢市" => "石川",
+    "金津園" => "岐阜",
+    "錦・丸の内・中区" => "愛知",
+    "長岡市" => "新潟",
+    "長野市" => "長野",
+    "静岡市" => "静岡"
   }.freeze
 
   # Used by ShopProspect#sync_shop_prospect_district / .backfill_districts!

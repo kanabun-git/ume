@@ -68,4 +68,13 @@ class CastTest < ActiveSupport::TestCase
     assert(errors.any? { |m| m.include?("5枚まで") })
     assert_equal 3, cast.photos.count, "validate_new_images must not attach anything itself"
   end
+
+  test "destroying a cast also removes its recorded daily views" do
+    cast = create_cast
+    CastDailyView.record!(cast)
+
+    assert_difference "CastDailyView.count", -1 do
+      cast.destroy
+    end
+  end
 end

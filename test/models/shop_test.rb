@@ -105,4 +105,13 @@ class ShopTest < ActiveSupport::TestCase
     assert_not create_shop(design_updated_at: nil).design_change_pending?
     assert create_shop(design_updated_at: Time.current).design_change_pending?
   end
+
+  test "destroying a shop also removes its recorded daily views" do
+    shop = create_shop
+    ShopDailyView.record!(shop)
+
+    assert_difference "ShopDailyView.count", -1 do
+      shop.destroy
+    end
+  end
 end

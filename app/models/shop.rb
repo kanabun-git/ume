@@ -12,6 +12,7 @@ class Shop < ApplicationRecord
   has_many :shop_subscriptions, dependent: :destroy
   has_many :shop_page_blocks, dependent: :destroy
   has_many :cast_page_blocks, dependent: :destroy
+  has_many :shop_daily_views, dependent: :destroy
   has_many :review_reply_templates, dependent: :destroy
   has_many :present_tickets, dependent: :destroy
   has_many :coupons, dependent: :destroy

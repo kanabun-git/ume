@@ -1,0 +1,48 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer-columns">
+      <div class="site-footer-column">
+        <h3>エリアから探す</h3>
+        <ul class="site-footer-region-list">
+          <% nav_regions.each do |region| %>
+            <li>
+              <% if region[:active] %>
+                <span class="site-footer-region-name"><%= region[:name] %></span>
+                <% region[:prefectures].each do |prefecture| %>
+                  <%= link_to prefecture.name, area_path(prefecture) %>
+                <% end %>
+              <% else %>
+                <span class="site-footer-region-name muted"><%= region[:name] %> <small>(準備中)</small></span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="site-footer-column">
+        <h3>サイトを利用する</h3>
+        <ul>
+          <li><%= link_to "店舗一覧", shops_path %></li>
+          <li><%= link_to "女の子検索", casts_path %></li>
+          <li><%= link_to "ランキング", rankings_path %></li>
+          <li><%= link_to "本日の出勤情報", today_shifts_path %></li>
+          <li><%= link_to "クーポン一覧", coupons_path %></li>
+          <li><%= link_to "体験動画", videos_path %></li>
+          <li><%= link_to "新着日記", diary_entries_path %></li>
+        </ul>
+      </div>
+
+      <div class="site-footer-column">
+        <h3>会員・掲載について</h3>
+        <ul>
+          <li><%= link_to "会員登録(無料)", new_member_registration_path %></li>
+          <li><%= link_to "会員ログイン", new_member_session_path %></li>
+          <li><%= link_to "掲載のお問い合わせ", new_shop_inquiry_path %></li>
+          <li><%= link_to "関係者ログイン", new_user_session_path %></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="site-footer-copyright">&copy; <%= Date.current.year %> FuzokuZero</p>
+  </div>
+</footer>

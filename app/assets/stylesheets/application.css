@@ -45,34 +45,71 @@ a:hover { text-decoration: underline; }
 .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
 
 header.site-header {
-  background: linear-gradient(120deg, var(--brand), var(--brand-dark));
-  color: #fff;
-  padding: 14px 0;
   box-shadow: var(--shadow-md);
   position: relative;
   z-index: 10;
 }
-header.site-header .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: 8px; }
+
+/* Row 1: thin utility bar (inquiry link + account/login links). */
+header.site-header .site-header-utility {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: 4px;
+  background: #fff8f9; border-bottom: 1px solid var(--border);
+  padding: 6px 16px; font-size: .78rem;
+}
+header.site-header .site-header-utility a, header.site-header .site-header-utility button.link-button {
+  color: var(--text); margin-left: 14px; background: none; border: none; font: inherit; cursor: pointer; padding: 0;
+}
+header.site-header .site-header-utility > a:first-child { margin-left: 0; }
+header.site-header .site-header-utility-right { display: flex; flex-wrap: wrap; }
+header.site-header .site-header-utility-right > *:first-child { margin-left: 0; }
+
+/* Row 2: logo + quick search + primary nav. */
+header.site-header .site-header-main {
+  background: linear-gradient(120deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap; row-gap: 10px;
+}
 header.site-header .logo { font-size: 1.4rem; font-weight: bold; color: #fff; display: flex; align-items: baseline; gap: 8px; letter-spacing: .02em; text-shadow: 0 1px 2px rgba(0, 0, 0, .12); flex-shrink: 0; }
 header.site-header .logo .site-logo-img { display: block; height: 36px; width: auto; }
-header.site-header nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; row-gap: 6px; }
-header.site-header nav a, header.site-header nav button.link-button {
+
+header.site-header .site-header-search { display: flex; flex: 1 1 220px; max-width: 360px; }
+header.site-header .site-header-search-input {
+  flex: 1; border: none; border-radius: 20px 0 0 20px; padding: 8px 14px; font-size: .85rem;
+}
+header.site-header .site-header-search-btn {
+  border: none; border-radius: 0 20px 20px 0; background: var(--brand-dark); color: #fff;
+  padding: 8px 14px; cursor: pointer; font-size: .95rem;
+}
+
+header.site-header .site-header-nav { display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; margin-left: auto; }
+header.site-header .site-header-nav a {
   position: relative;
   color: #fff; margin-left: 16px;
   padding: 4px 0;
   font-size: .92rem;
   white-space: nowrap;
 }
-header.site-header nav a::after, header.site-header nav button.link-button::after {
+header.site-header .site-header-nav a::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px;
   background: #fff; border-radius: 2px; transform: scaleX(0); transform-origin: left;
   transition: transform .2s ease;
 }
-header.site-header nav a:hover::after, header.site-header nav button.link-button:hover::after { transform: scaleX(1); }
-header.site-header nav a:hover, header.site-header nav button.link-button:hover { text-decoration: none; }
-header.site-header nav button.link-button {
-  background: none; border: none; font: inherit; cursor: pointer; margin-left: 16px; padding: 4px 0;
+header.site-header .site-header-nav a:hover::after { transform: scaleX(1); }
+header.site-header .site-header-nav a:hover { text-decoration: none; }
+header.site-header .site-header-nav a:first-child { margin-left: 0; }
+
+/* Row 3: horizontally-scrollable prefecture quick-nav (mirrors .weekly-tabs). */
+header.site-header .site-header-prefectures { background: var(--brand-dark); }
+header.site-header .site-header-prefectures-inner {
+  display: flex; gap: 6px; overflow-x: auto; padding: 8px 16px; white-space: nowrap;
 }
+header.site-header .prefecture-tab {
+  color: #fff; background: rgba(255, 255, 255, .12); border-radius: 14px;
+  padding: 4px 12px; font-size: .8rem; flex-shrink: 0;
+}
+header.site-header .prefecture-tab:hover { background: rgba(255, 255, 255, .24); text-decoration: none; }
+header.site-header .prefecture-tab-more { background: rgba(0, 0, 0, .18); }
 
 .flash { max-width: 1100px; margin: 12px auto; padding: 0 16px; }
 .flash .notice, .flash .alert {
@@ -680,11 +717,14 @@ img, video, iframe { max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  /* Header: logo stacks above a wrapping nav instead of overflowing. */
-  header.site-header .container { flex-direction: column; align-items: flex-start; gap: 8px; }
+  /* Header: logo/search/nav stack instead of overflowing. */
+  header.site-header .site-header-main { flex-direction: column; align-items: flex-start; gap: 10px; }
   header.site-header .logo { font-size: 1.15rem; flex-wrap: wrap; gap: 4px; }
-  header.site-header nav { display: flex; flex-wrap: wrap; gap: 4px 14px; }
-  header.site-header nav a { margin-left: 0; font-size: .9rem; }
+  header.site-header .site-header-search { flex: 0 0 auto; max-width: none; width: 100%; }
+  header.site-header .site-header-nav { margin-left: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  header.site-header .site-header-nav a { margin-left: 0; font-size: .9rem; }
+  header.site-header .site-header-utility { font-size: .72rem; }
+  header.site-header .site-header-utility a, header.site-header .site-header-utility button.link-button { margin-left: 10px; }
 
   main { padding: 16px 0 40px; }
   .card { padding: 12px; }
@@ -858,7 +898,7 @@ img, video, iframe { max-width: 100%; }
 .coupon-detail-table-total td { background: #fafafa; font-weight: bold; }
 
 @media print {
-  .site-header, .coupon-detail-actions, .favorite-btn, .btn.secondary { display: none !important; }
+  .site-header, .site-footer, .coupon-detail-actions, .favorite-btn, .btn.secondary { display: none !important; }
 }
 
 /* --- Simple coupon highlights row on the region top page ------------------ */
@@ -922,3 +962,20 @@ img, video, iframe { max-width: 100%; }
 .mail-settings-table code { background: #fff; border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; }
 .mail-settings-hint { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
 .mail-password-form { max-width: 420px; }
+
+/* --- Site footer ---------------------------------------------------------- */
+.site-footer { background: #2a2226; color: #e9dfe2; margin-top: 40px; padding: 32px 0 20px; }
+.site-footer h3 { color: #fff; font-size: .95rem; margin: 0 0 10px; }
+.site-footer a { color: #e9dfe2; }
+.site-footer a:hover { color: #fff; }
+.site-footer-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.site-footer-column ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: .85rem; }
+.site-footer-region-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: .85rem; }
+.site-footer-region-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.site-footer-region-name { font-weight: bold; color: #fff; margin-right: 4px; }
+.site-footer-region-name.muted { color: #a89ba0; font-weight: normal; }
+.site-footer-copyright { text-align: center; font-size: .78rem; color: #a89ba0; margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #453a3f; }
+
+@media (max-width: 768px) {
+  .site-footer-columns { grid-template-columns: 1fr; gap: 20px; }
+}

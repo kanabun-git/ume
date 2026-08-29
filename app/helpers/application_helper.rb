@@ -21,6 +21,23 @@ module ApplicationHelper
     "platform_admin" => "運営者"
   }.freeze
 
+  # Every region in display order, each paired with its top-level
+  # prefectures (only fetched for regions the site actually covers --
+  # Area::ACTIVE_REGIONS). Used by the header's prefecture bar and the
+  # footer's region sitemap so both stay in sync with what's actually live.
+  def nav_regions
+    @nav_regions ||= begin
+      prefectures_by_region = Area.where(parent_id: nil, region: Area::ACTIVE_REGIONS).group_by(&:region)
+      Area::REGIONS.map do |region|
+        {
+          name: region,
+          active: Area::ACTIVE_REGIONS.include?(region),
+          prefectures: prefectures_by_region[region] || []
+        }
+      end
+    end
+  end
+
   def status_label(record)
     STATUS_LABELS.dig(record.class.name, record.status) || record.status
   end

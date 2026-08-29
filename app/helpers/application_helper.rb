@@ -72,6 +72,18 @@ module ApplicationHelper
     end
   end
 
+  # A present ticket's campaign card banner: the shop's own uploaded image
+  # if set, ZERO's shipped default banner if the shop opted into that
+  # instead (see PresentTicket#fallback_banner), or nothing at all --
+  # unlike nowprinting_image_tag, "no image" is itself a valid choice here.
+  def present_ticket_banner_tag(present_ticket, **html_options)
+    if present_ticket.banner_image.attached?
+      image_tag(present_ticket.banner_image, html_options)
+    elsif present_ticket.fallback_banner_default_banner?
+      image_tag(PresentTicket::DEFAULT_BANNER_IMAGE, html_options)
+    end
+  end
+
   # Returns the attached logo image for the given shape if the admin has
   # uploaded one via 運営管理画面 > サイト設定, or nil otherwise so callers
   # can fall back to their own default (text logo, static favicon, ...).

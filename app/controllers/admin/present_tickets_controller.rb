@@ -76,7 +76,22 @@ module Admin
     end
 
     def present_ticket_params
-      params.require(:present_ticket).permit(:name, :description, :capacity, :deadline_at)
+      attrs = params.require(:present_ticket).permit(:name, :description, :capacity, :deadline_at, :fallback_banner, :banner_image)
+      if attrs[:banner_image].present?
+        # A new file was chosen -- has_one_attached's setter replaces the
+        # existing attachment (if any) with this one on save.
+      elsif params.dig(:present_ticket, :remove_banner_image) == "1"
+        # No new file, but the admin explicitly asked to clear the current
+        # one -- assigning nil detaches/purges it.
+        attrs[:banner_image] = nil
+      else
+        # A blank file field submits "" for the attachment, which
+        # has_one_attached's setter treats as "remove the current file" --
+        # only pass it through when a new file was chosen or removal was
+        # requested, so leaving both alone keeps the image as-is.
+        attrs.delete(:banner_image)
+      end
+      attrs
     end
   end
 end

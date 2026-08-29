@@ -31,4 +31,30 @@ class ApplicationHelperTest < ActionView::TestCase
 
     assert_nil video_thumbnail_tag(block)
   end
+
+  test "present_ticket_banner_tag renders the shop's uploaded banner when attached" do
+    ticket = PresentTicket.create!(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    ticket.banner_image.attach(**png_upload)
+
+    html = present_ticket_banner_tag(ticket)
+
+    assert_match "<img", html
+  end
+
+  test "present_ticket_banner_tag renders ZERO's default banner when no image is attached but default_banner is chosen" do
+    ticket = PresentTicket.create!(
+      shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now,
+      fallback_banner: :default_banner
+    )
+
+    html = present_ticket_banner_tag(ticket)
+
+    assert_match PresentTicket::DEFAULT_BANNER_IMAGE, html
+  end
+
+  test "present_ticket_banner_tag renders nothing when no image is attached and fallback_banner is no_banner" do
+    ticket = PresentTicket.create!(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+
+    assert_nil present_ticket_banner_tag(ticket)
+  end
 end

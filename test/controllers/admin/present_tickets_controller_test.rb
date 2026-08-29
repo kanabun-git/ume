@@ -55,5 +55,34 @@ module Admin
 
       assert_redirected_to root_path
     end
+
+    test "a platform admin can upload a banner image and choose the fallback display" do
+      post admin_shop_present_tickets_path(@shop), params: {
+        present_ticket: {
+          name: "運営者企画", capacity: 3, deadline_at: 1.day.from_now,
+          banner_image: upload_png, fallback_banner: "default_banner"
+        }
+      }
+
+      ticket = @shop.present_tickets.find_by(name: "運営者企画")
+      assert ticket.banner_image.attached?
+      assert ticket.fallback_banner_default_banner?
+    end
+
+    test "a platform admin can remove a present ticket's banner image" do
+      ticket = @shop.present_tickets.create!(name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+      ticket.banner_image.attach(**png_upload)
+
+      patch admin_shop_present_ticket_path(@shop, ticket), params: { present_ticket: { remove_banner_image: "1" } }
+
+      assert_not ticket.reload.banner_image.attached?
+    end
+
+    private
+
+    def upload_png
+      bytes = Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
+      Rack::Test::UploadedFile.new(StringIO.new(bytes), "image/png", original_filename: "banner.png")
+    end
   end
 end

@@ -39,4 +39,33 @@ class PresentTicketTest < ActiveSupport::TestCase
 
     assert_equal [open_ticket], PresentTicket.open_for_entry.to_a
   end
+
+  test "defaults fallback_banner to no_banner" do
+    ticket = PresentTicket.create!(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+
+    assert ticket.fallback_banner_no_banner?
+  end
+
+  test "rejects a banner_image over the 5MB size limit" do
+    ticket = PresentTicket.new(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    ticket.banner_image.attach(io: StringIO.new("a" * 6.megabytes), filename: "big.png", content_type: "image/png")
+
+    assert_not ticket.valid?
+    assert_match(/5MB/, ticket.errors[:banner_image].join)
+  end
+
+  test "rejects a non-image banner_image content type" do
+    ticket = PresentTicket.new(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    ticket.banner_image.attach(io: StringIO.new("not an image"), filename: "evil.exe", content_type: "application/x-msdownload")
+
+    assert_not ticket.valid?
+    assert_match(/JPEG・PNG・WEBP/, ticket.errors[:banner_image].join)
+  end
+
+  test "accepts a valid banner_image" do
+    ticket = PresentTicket.new(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    ticket.banner_image.attach(**png_upload)
+
+    assert ticket.valid?
+  end
 end

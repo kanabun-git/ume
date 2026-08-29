@@ -5,7 +5,7 @@
 <%= link_to "ブロックを追加", new_admin_shop_shop_page_block_path(@shop), class: "btn" %>
 
 <table class="admin-table">
-  <thead><tr><th>並び順</th><th>種類</th><th>タイトル</th><th>表示</th><th>背景</th><th></th></tr></thead>
+  <thead><tr><th>並び順</th><th>種類</th><th>タイトル</th><th>表示</th><th>タイトル帯・枠</th><th>背景</th><th></th></tr></thead>
   <tbody>
     <% @blocks.each do |block| %>
       <tr>
@@ -17,6 +17,9 @@
         <td><%= block.title %></td>
         <td>
           <%= button_to (block.visible? ? "表示中" : "非表示中"), toggle_visibility_admin_shop_shop_page_block_path(@shop, block), method: :patch, class: (block.visible? ? "btn" : "btn secondary"), form: { style: "display:inline" } %>
+        </td>
+        <td>
+          <%= button_to (block.hide_header? ? "非表示中" : "表示中"), toggle_hide_header_admin_shop_shop_page_block_path(@shop, block), method: :patch, class: (block.hide_header? ? "btn secondary" : "btn"), form: { style: "display:inline" } %>
         </td>
         <td>
           <% if block.background_color.present? %>

@@ -67,6 +67,19 @@ module ShopAdmin
       assert_not block.reload.visible?
     end
 
+    test "toggle_hide_header flips the block's hide_header flag" do
+      shop = create_shop
+      shop.shop_page_blocks.destroy_all
+      user = create_user(role: :shop_admin, shop: shop)
+      block = shop.shop_page_blocks.create!(block_type: :free_text, position: 0, hide_header: false)
+      sign_in user
+
+      patch toggle_hide_header_shop_admin_shop_page_block_path(block)
+
+      assert_redirected_to shop_admin_shop_page_blocks_path
+      assert block.reload.hide_header?
+    end
+
     test "editing an image_gallery block explains that its photos come from 店舗情報編集, not this screen" do
       shop = create_shop
       user = create_user(role: :shop_admin, shop: shop)

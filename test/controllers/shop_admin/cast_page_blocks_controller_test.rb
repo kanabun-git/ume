@@ -63,5 +63,18 @@ module ShopAdmin
       assert_redirected_to shop_admin_cast_page_blocks_path
       assert_not block.reload.visible?
     end
+
+    test "toggle_hide_header flips the block's hide_header flag" do
+      shop = create_shop
+      shop.cast_page_blocks.destroy_all
+      user = create_user(role: :shop_admin, shop: shop)
+      block = shop.cast_page_blocks.create!(block_type: :profile, layout_column: :main, position: 0, hide_header: false)
+      sign_in user
+
+      patch toggle_hide_header_shop_admin_cast_page_block_path(block)
+
+      assert_redirected_to shop_admin_cast_page_blocks_path
+      assert block.reload.hide_header?
+    end
   end
 end

@@ -33,5 +33,18 @@ module Admin
       patch move_down_admin_shop_cast_page_block_path(other_shop, block)
       assert_redirected_to root_path
     end
+
+    test "toggle_hide_header flips the block's hide_header flag" do
+      shop = create_shop
+      shop.cast_page_blocks.destroy_all
+      admin = create_user(role: :platform_admin)
+      block = shop.cast_page_blocks.create!(block_type: :profile, layout_column: :main, position: 0, hide_header: false)
+      sign_in admin
+
+      patch toggle_hide_header_admin_shop_cast_page_block_path(shop, block)
+
+      assert_redirected_to admin_shop_cast_page_blocks_path(shop)
+      assert block.reload.hide_header?
+    end
   end
 end

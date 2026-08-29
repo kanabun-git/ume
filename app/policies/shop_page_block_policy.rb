@@ -31,6 +31,10 @@ class ShopPageBlockPolicy < ApplicationPolicy
     update?
   end
 
+  def toggle_hide_header?
+    update?
+  end
+
   class Scope < Scope
     def resolve
       if user&.platform_admin?

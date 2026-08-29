@@ -146,6 +146,7 @@ Rails.application.routes.draw do
         patch :move_up
         patch :move_down
         patch :toggle_visibility
+        patch :toggle_hide_header
       end
     end
     resources :cast_page_blocks do
@@ -153,6 +154,7 @@ Rails.application.routes.draw do
         patch :move_up
         patch :move_down
         patch :toggle_visibility
+        patch :toggle_hide_header
       end
     end
     resources :present_tickets do
@@ -188,6 +190,7 @@ Rails.application.routes.draw do
           patch :move_up
           patch :move_down
           patch :toggle_visibility
+          patch :toggle_hide_header
         end
       end
       resources :cast_page_blocks, except: [:show] do
@@ -195,6 +198,7 @@ Rails.application.routes.draw do
           patch :move_up
           patch :move_down
           patch :toggle_visibility
+          patch :toggle_hide_header
         end
       end
       resources :review_reply_templates

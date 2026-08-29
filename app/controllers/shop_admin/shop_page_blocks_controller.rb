@@ -1,6 +1,6 @@
 module ShopAdmin
   class ShopPageBlocksController < BaseController
-    before_action :set_block, only: [:edit, :update, :destroy, :move_up, :move_down, :toggle_visibility]
+    before_action :set_block, only: [:edit, :update, :destroy, :move_up, :move_down, :toggle_visibility, :toggle_hide_header]
 
     def index
       @blocks = policy_scope(::ShopPageBlock).where(shop: current_shop)
@@ -57,6 +57,11 @@ module ShopAdmin
 
     def toggle_visibility
       @block.update!(visible: !@block.visible)
+      redirect_to shop_admin_shop_page_blocks_path
+    end
+
+    def toggle_hide_header
+      @block.update!(hide_header: !@block.hide_header)
       redirect_to shop_admin_shop_page_blocks_path
     end
 

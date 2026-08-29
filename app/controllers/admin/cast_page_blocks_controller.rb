@@ -4,7 +4,7 @@ module Admin
   # instead of the signed-in shop admin's own shop.
   class CastPageBlocksController < BaseController
     before_action :set_shop
-    before_action :set_block, only: [:edit, :update, :destroy, :move_up, :move_down, :toggle_visibility]
+    before_action :set_block, only: [:edit, :update, :destroy, :move_up, :move_down, :toggle_visibility, :toggle_hide_header]
 
     def index
       @blocks = policy_scope(::CastPageBlock).where(shop: @shop)
@@ -55,6 +55,11 @@ module Admin
 
     def toggle_visibility
       @block.update!(visible: !@block.visible)
+      redirect_to admin_shop_cast_page_blocks_path(@shop)
+    end
+
+    def toggle_hide_header
+      @block.update!(hide_header: !@block.hide_header)
       redirect_to admin_shop_cast_page_blocks_path(@shop)
     end
 

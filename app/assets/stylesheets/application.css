@@ -539,8 +539,8 @@ form.form textarea { min-height: 120px; }
 
 /* --- Shop page blocks (Block CMS) --------------------------------------- */
 
-.block-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
-.block-photo-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #eee; }
+.block-photo-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.block-photo-grid img { max-width: 100%; height: auto; border-radius: 6px; background: #eee; }
 
 .weekly-tabs { display: flex; justify-content: center; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
 .weekly-tab {

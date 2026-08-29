@@ -132,4 +132,44 @@ class CastsControllerTest < ActionDispatch::IntegrationTest
     assert_match matching_cast.name, response.body
     assert_no_match other_cast.name, response.body
   end
+
+  test "a cast page block shows its title band and frame by default, in both columns" do
+    cast = create_cast
+    cast.shop.cast_page_blocks.destroy_all
+    main_block = cast.shop.cast_page_blocks.create!(block_type: :free_text, layout_column: :main, position: 0, settings: { "body" => "メイン本文" })
+    side_block = cast.shop.cast_page_blocks.create!(block_type: :free_text, layout_column: :side, position: 0, settings: { "body" => "サイド本文" })
+
+    get cast_path(cast)
+
+    assert_select "div.obi-header", text: main_block.label
+    assert_select "div.obi-body", text: /メイン本文/
+    assert_select "div.obi-body", text: /サイド本文/
+    assert_no_match "no-header", response.body
+  end
+
+  test "hide_header removes the title band and frame but keeps content, in both columns" do
+    cast = create_cast
+    cast.shop.cast_page_blocks.destroy_all
+    cast.shop.cast_page_blocks.create!(block_type: :free_text, layout_column: :main, position: 0, hide_header: true, settings: { "body" => "メイン本文" })
+    cast.shop.cast_page_blocks.create!(block_type: :free_text, layout_column: :side, position: 0, hide_header: true, settings: { "body" => "サイド本文" })
+
+    get cast_path(cast)
+
+    assert_select "div.obi-header", count: 0
+    assert_select "div.obi-block.no-header" do
+      assert_select "div.obi-body.no-header"
+    end
+    assert_match "メイン本文", response.body
+    assert_match "サイド本文", response.body
+  end
+
+  test "a cast page block with visible off does not render at all, content included" do
+    cast = create_cast
+    cast.shop.cast_page_blocks.destroy_all
+    cast.shop.cast_page_blocks.create!(block_type: :free_text, layout_column: :main, position: 0, visible: false, settings: { "body" => "見えないはずの本文" })
+
+    get cast_path(cast)
+
+    assert_no_match "見えないはずの本文", response.body
+  end
 end

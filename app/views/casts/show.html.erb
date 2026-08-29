@@ -24,7 +24,7 @@
       <% next if block.block_type == "selling_points" && @cast.selling_points.blank? %>
       <% next if block.block_type == "manager_comment" && @cast.manager_comment.blank? %>
       <% next if block.block_type == "free_text" && block.settings["body"].blank? %>
-      <div class="obi-block">
+      <div class="obi-block<%= " no-header" if block.hide_header? %>">
         <% unless block.hide_header? %>
           <div class="obi-header"><%= block.label %></div>
         <% end %>
@@ -37,7 +37,7 @@
 
   <div class="girl-detail-side">
     <% @shop.cast_page_blocks.visible.layout_column_side.each do |block| %>
-      <div class="obi-block">
+      <div class="obi-block<%= " no-header" if block.hide_header? %>">
         <% unless block.hide_header? %>
           <div class="obi-header"><%= block.label %></div>
         <% end %>

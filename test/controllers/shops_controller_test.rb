@@ -121,6 +121,41 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/class="shop-theme-page" style="\s*"/, response.body)
   end
 
+  test "a page block shows its title band and frame by default" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    block = shop.shop_page_blocks.create!(block_type: :free_text, position: 0, settings: { "body" => "サンプル本文" })
+
+    get shop_path(shop)
+
+    assert_select "div.obi-header", text: block.label
+    assert_select "div.obi-body", text: /サンプル本文/
+    assert_no_match "no-header", response.body
+  end
+
+  test "hide_header removes the title band and frame but keeps the block's content" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :free_text, position: 0, hide_header: true, settings: { "body" => "サンプル本文" })
+
+    get shop_path(shop)
+
+    assert_select "div.obi-header", count: 0
+    assert_select "div.obi-block.no-header" do
+      assert_select "div.obi-body.no-header", text: /サンプル本文/
+    end
+  end
+
+  test "a block with visible off does not render at all, content included" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :free_text, position: 0, visible: false, settings: { "body" => "見えないはずの本文" })
+
+    get shop_path(shop)
+
+    assert_no_match "見えないはずの本文", response.body
+  end
+
   test "shows the member's rank badge for a shop they hold a membership at" do
     shop = create_shop
     member = create_member

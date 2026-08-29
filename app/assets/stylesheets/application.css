@@ -500,7 +500,11 @@ form.form textarea { min-height: 120px; }
 .obi-block { margin-bottom: 16px; box-shadow: var(--shadow-sm); border-radius: var(--radius); }
 .obi-header { background: linear-gradient(120deg, var(--brand), var(--brand-dark)); color: #fff; font-weight: bold; padding: 9px 16px; border-radius: var(--radius) var(--radius) 0 0; font-size: .95rem; }
 .obi-body { background: #fff; color: var(--text); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 14px; font-size: .9rem; }
-.obi-body.no-header { border-top: 1px solid var(--border); border-radius: var(--radius); }
+/* 「タイトル帯・枠を非表示にする」チェック時: タイトル帯だけでなく、白い
+   枠(背景・ボーダー・影・余白)も取り払い、コンテンツをページの背景に
+   直接馴染ませる。ブロックの表示/非表示そのもの(visible)とは別の設定。 */
+.obi-block.no-header { box-shadow: none; }
+.obi-body.no-header { background: none; border: none; border-radius: 0; padding: 0; }
 
 .price-table { width: 100%; border-collapse: collapse; }
 .price-table th, .price-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: .9rem; text-align: left; }

@@ -26,10 +26,10 @@
   <label>タイトル(空欄の場合は種類ごとの標準タイトルを表示)</label>
   <%= f.text_field :title %>
 
-  <label>表示する</label>
+  <label>表示する(オフにすると、内容ごとこのブロックを店舗ページに表示しません)</label>
   <%= f.check_box :visible %>
 
-  <label>ヘッダー(タイトルの帯)を非表示にする</label>
+  <label>タイトル帯・枠を非表示にする(内容はそのまま表示され、見出しの色帯と白い枠だけが消えます)</label>
   <%= f.check_box :hide_header %>
 
   <label>背景色(空欄でデフォルト)</label>

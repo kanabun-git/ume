@@ -66,5 +66,28 @@ module ShopAdmin
       assert_redirected_to shop_admin_shop_page_blocks_path
       assert_not block.reload.visible?
     end
+
+    test "editing an image_gallery block explains that its photos come from 店舗情報編集, not this screen" do
+      shop = create_shop
+      user = create_user(role: :shop_admin, shop: shop)
+      block = shop.shop_page_blocks.find_by!(block_type: :image_gallery)
+      sign_in user
+
+      get edit_shop_admin_shop_page_block_path(block)
+
+      assert_select "a[href=?]", edit_shop_admin_shop_path, text: "店舗情報編集はこちら"
+      assert_match "この画面に写真をアップロードする欄はありません", response.body
+    end
+
+    test "editing a free_text block does not show the image_gallery content-source hint" do
+      shop = create_shop
+      user = create_user(role: :shop_admin, shop: shop)
+      block = shop.shop_page_blocks.find_or_create_by!(block_type: :free_text) { |b| b.position = 99 }
+      sign_in user
+
+      get edit_shop_admin_shop_page_block_path(block)
+
+      assert_no_match "店舗情報編集はこちら", response.body
+    end
   end
 end

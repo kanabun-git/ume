@@ -33,5 +33,16 @@ module Admin
       patch move_down_admin_shop_shop_page_block_path(other_shop, block)
       assert_redirected_to root_path
     end
+
+    test "editing an image_gallery block explains that its photos come from the shop's edit screen" do
+      shop = create_shop
+      admin = create_user(role: :platform_admin)
+      block = shop.shop_page_blocks.find_by!(block_type: :image_gallery)
+      sign_in admin
+
+      get edit_admin_shop_shop_page_block_path(shop, block)
+
+      assert_select "a[href=?]", edit_admin_shop_path(shop), text: "店舗情報編集はこちら"
+    end
   end
 end

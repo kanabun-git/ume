@@ -14,6 +14,15 @@
     <p><small>種類は追加後に変更できません。削除して作り直してください。</small></p>
   <% end %>
 
+  <% if (hint = ShopPageBlock::CONTENT_SOURCE_HINTS[block.block_type]) %>
+    <p class="region-note">
+      <%= hint %>
+      <% if block.block_type == "image_gallery" && local_assigns[:shop_edit_path] %>
+        <%= link_to "店舗情報編集はこちら", local_assigns[:shop_edit_path] %>
+      <% end %>
+    </p>
+  <% end %>
+
   <label>タイトル(空欄の場合は種類ごとの標準タイトルを表示)</label>
   <%= f.text_field :title %>
 

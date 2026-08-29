@@ -29,6 +29,21 @@ class ShopPageBlock < ApplicationRecord
     "price_table" => "料金表・オプション表"
   }.freeze
 
+  # This block's editor has no image/content fields of its own for these
+  # types -- unlike free_text/movie/price_table, the content is pulled
+  # live from elsewhere in the admin screens, so a shop admin looking for
+  # an upload field on the block's own edit screen won't find one. Shown
+  # on the block edit form so that isn't mistaken for a missing feature.
+  CONTENT_SOURCE_HINTS = {
+    "image_gallery" => "「店舗情報編集」で登録した店舗写真がそのまま表示されます。この画面に写真をアップロードする欄はありません。",
+    "new_girls" => "「在籍キャスト管理」で「体験入店」に設定したキャストが表示されます。",
+    "manager_recommended" => "「在籍キャスト管理」で「店長おすすめ」に設定したキャストが表示されます。",
+    "diaries_list" => "在籍キャストが投稿した写メ日記が新しい順に表示されます。",
+    "weekly_schedule" => "「出勤予定一括登録」で登録した直近1週間の出勤予定が表示されます。",
+    "ranking" => "口コミ件数の多いキャスト順に自動的に表示されます(手動での並び替えはできません)。",
+    "coupon" => "「クーポン管理」で登録した現在有効なクーポンが表示されます。"
+  }.freeze
+
   belongs_to :shop
   has_one_attached :video_file
 

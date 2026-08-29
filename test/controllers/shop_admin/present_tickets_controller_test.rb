@@ -62,6 +62,30 @@ module ShopAdmin
       assert ticket.reload.banner_image.attached?
     end
 
+    test "show links to edit and hints that no banner is set yet" do
+      shop = create_shop
+      ticket = PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      get shop_admin_present_ticket_path(ticket)
+
+      assert_select "a[href=?]", edit_shop_admin_present_ticket_path(ticket), text: "編集"
+      assert_match "バナー画像は設定されていません", response.body
+    end
+
+    test "show renders the banner image once one is set" do
+      shop = create_shop
+      ticket = PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now, fallback_banner: :default_banner)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      get shop_admin_present_ticket_path(ticket)
+
+      assert_select "img"
+      assert_no_match "バナー画像は設定されていません", response.body
+    end
+
     test "a shop admin cannot manage another shop's present ticket" do
       other_ticket = PresentTicket.create!(shop: create_shop, name: "他店企画", capacity: 1, deadline_at: 1.day.from_now)
       user = create_user(role: :shop_admin, shop: create_shop)

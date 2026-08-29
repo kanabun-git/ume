@@ -56,6 +56,19 @@ module Admin
       assert_redirected_to root_path
     end
 
+    test "show hints that no banner is set yet, and renders one once set" do
+      ticket = @shop.present_tickets.create!(name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+
+      get admin_shop_present_ticket_path(@shop, ticket)
+      assert_match "バナー画像は設定されていません", response.body
+
+      ticket.update!(fallback_banner: :default_banner)
+
+      get admin_shop_present_ticket_path(@shop, ticket)
+      assert_select "img"
+      assert_no_match "バナー画像は設定されていません", response.body
+    end
+
     test "a platform admin can upload a banner image and choose the fallback display" do
       post admin_shop_present_tickets_path(@shop), params: {
         present_ticket: {

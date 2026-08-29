@@ -2,8 +2,17 @@
 
 <h1><%= @present_ticket.name %></h1>
 <p><span class="badge"><%= status_label(@present_ticket) %></span></p>
+
+<% if (banner = present_ticket_banner_tag(@present_ticket, style: "max-width:400px;")) %>
+  <p><%= banner %></p>
+<% else %>
+  <p><small>バナー画像は設定されていません(「編集」から設定できます)。</small></p>
+<% end %>
+
 <p><%= simple_format @present_ticket.description.to_s %></p>
 <p>当選人数: <%= @present_ticket.capacity %>名 / 応募締切: <%= @present_ticket.deadline_at.strftime("%Y-%m-%d %H:%M") %></p>
+
+<p><%= link_to "編集", edit_shop_admin_present_ticket_path(@present_ticket), class: "btn secondary" %></p>
 
 <div class="card">
   <% if @present_ticket.accepting? %>

@@ -52,6 +52,19 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_match PresentTicket::DEFAULT_BANNER_IMAGE, html
   end
 
+  test "present_ticket_banner_tag prefers the platform admin's uploaded default banner over the shipped one" do
+    SiteSetting.instance.present_ticket_default_banner_image.attach(**png_upload)
+    ticket = PresentTicket.create!(
+      shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now,
+      fallback_banner: :default_banner
+    )
+
+    html = present_ticket_banner_tag(ticket)
+
+    assert_no_match PresentTicket::DEFAULT_BANNER_IMAGE, html
+    assert_match "<img", html
+  end
+
   test "present_ticket_banner_tag renders nothing when no image is attached and fallback_banner is no_banner" do
     ticket = PresentTicket.create!(shop: create_shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
 

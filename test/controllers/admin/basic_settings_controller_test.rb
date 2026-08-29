@@ -26,6 +26,16 @@ module Admin
       assert SiteSetting.instance.reload.membership_card_image.attached?
     end
 
+    test "a platform admin can upload the present ticket default banner image" do
+      admin = create_user(role: :platform_admin)
+      sign_in admin
+
+      file = Rack::Test::UploadedFile.new(StringIO.new(png_bytes), "image/png", original_filename: "banner.png")
+      patch admin_basic_setting_path, params: { site_setting: { present_ticket_default_banner_image: file } }
+
+      assert SiteSetting.instance.present_ticket_default_banner_image.attached?
+    end
+
     test "a shop admin cannot access basic site settings" do
       user = create_user(role: :shop_admin, shop: create_shop)
       sign_in user

@@ -125,6 +125,28 @@
 </div>
 
 <div class="card">
+  <h2>プレゼント企画のバナー画像(基本)</h2>
+  <p>
+    店舗の「プレゼント企画」にバナー画像が未設定で、かつ店舗管理者が「ZEROの標準画像を表示する」を選んだ場合に表示される、
+    サイト共通のバナー画像です。推奨サイズは<%= PresentTicket::RECOMMENDED_BANNER_SIZE %>です。
+    未設定の場合は標準のイラスト画像が使われます。店舗ごとに個別のバナー画像を設定したい場合は、
+    各店舗の「プレゼント企画管理」画面(店舗管理者、または運営管理画面の店舗詳細から)で設定できます。
+  </p>
+
+  <%= form_with model: @site_setting, url: admin_basic_setting_path, method: :patch, local: true, multipart: true, class: "form" do |f| %>
+    <label>バナー画像</label>
+    <% if @site_setting.present_ticket_default_banner_image.attached? %>
+      <div class="image-setting-preview">
+        <%= image_tag @site_setting.present_ticket_default_banner_image %>
+      </div>
+    <% end %>
+    <%= f.file_field :present_ticket_default_banner_image, accept: "image/jpeg,image/png,image/webp" %>
+
+    <%= f.submit "画像を保存する", class: "btn" %>
+  <% end %>
+</div>
+
+<div class="card">
   <h2>会員証イメージ(基本デザイン)</h2>
   <p>
     会員登録を済ませた個人会員のマイページに表示される、会員証の基本デザイン画像です。

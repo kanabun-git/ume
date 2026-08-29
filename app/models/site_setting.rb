@@ -9,8 +9,10 @@ class SiteSetting < ApplicationRecord
   # (header, OGP share image, favicon), the "removed by moderation"
   # placeholders shown when a photo/video was hidden rather than never
   # uploaded, the top gate/splash page's eyecatch + region map images, the
-  # member card design shown on a signed-up member's mypage, and the two
-  # images shown on the メンテナンスモード page (see MaintenanceModeMiddleware).
+  # member card design shown on a signed-up member's mypage, the two images
+  # shown on the メンテナンスモード page (see MaintenanceModeMiddleware), and
+  # the site-wide default banner a shop can opt into for a プレゼント企画
+  # that has no banner of its own (see PresentTicket#fallback_banner).
   IMAGE_ATTACHMENTS = %i[
     nowprinting_portrait_image
     nowprinting_landscape_image
@@ -24,6 +26,7 @@ class SiteSetting < ApplicationRecord
     membership_card_image
     maintenance_image
     maintenance_banner_image
+    present_ticket_default_banner_image
   ].freeze
 
   IMAGE_ATTACHMENTS.each { |name| has_one_attached name }

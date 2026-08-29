@@ -73,14 +73,22 @@ module ApplicationHelper
   end
 
   # A present ticket's campaign card banner: the shop's own uploaded image
-  # if set, ZERO's shipped default banner if the shop opted into that
-  # instead (see PresentTicket#fallback_banner), or nothing at all --
-  # unlike nowprinting_image_tag, "no image" is itself a valid choice here.
+  # if set, otherwise ZERO's site-wide default banner if the shop opted
+  # into that instead (see PresentTicket#fallback_banner) -- the platform
+  # admin's own upload (運営管理画面 > サイト基本設定) if there is one,
+  # falling back to the checked-in default graphic otherwise, mirroring
+  # nowprinting_image_tag. Renders nothing when neither applies -- unlike
+  # nowprinting_image_tag, "no image" is itself a valid choice here.
   def present_ticket_banner_tag(present_ticket, **html_options)
     if present_ticket.banner_image.attached?
       image_tag(present_ticket.banner_image, html_options)
     elsif present_ticket.fallback_banner_default_banner?
-      image_tag(PresentTicket::DEFAULT_BANNER_IMAGE, html_options)
+      attachment = site_setting_singleton.present_ticket_default_banner_image
+      if attachment.attached?
+        image_tag(attachment, html_options)
+      else
+        image_tag(PresentTicket::DEFAULT_BANNER_IMAGE, html_options)
+      end
     end
   end
 

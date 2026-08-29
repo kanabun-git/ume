@@ -1,0 +1,5 @@
+<p>
+  <% if shop.recruiting_cast? %><span class="tag-badge recruit">コンパニオン募集</span><% end %>
+  <% if shop.recruiting_staff? %><span class="tag-badge recruit">スタッフ募集</span><% end %>
+</p>
+<p><%= simple_format shop.recruiting_message.to_s %></p>

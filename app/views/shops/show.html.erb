@@ -33,18 +33,6 @@
   </div>
 <% end %>
 
-<div class="card">
-  <h2>店舗情報</h2>
-  <p><%= simple_format @shop.description.to_s %></p>
-  <p>住所: <%= @shop.address %></p>
-  <p>電話番号: <%= @shop.phone %></p>
-  <p>営業時間: <%= @shop.business_hours %></p>
-  <% if @shop.price_note.present? %><p>料金: <%= @shop.price_note %></p><% end %>
-  <% if @shop.transportation_fee_note.present? %><p>交通費: <%= @shop.transportation_fee_note %></p><% end %>
-  <% if @shop.coverage_area_note.present? %><p>対応エリア: <%= @shop.coverage_area_note %></p><% end %>
-  <p>平均評価: <%= @shop.average_rating || "-" %> / 5</p>
-</div>
-
 <% if @shop.editor_review.present? %>
   <div class="card editor-review-card">
     <h2>編集部のレビュー</h2>
@@ -52,20 +40,10 @@
   </div>
 <% end %>
 
-<% if @shop.recruiting_cast? || @shop.recruiting_staff? %>
-  <div class="card">
-    <h2>求人情報</h2>
-    <p>
-      <% if @shop.recruiting_cast? %><span class="tag-badge recruit">コンパニオン募集</span><% end %>
-      <% if @shop.recruiting_staff? %><span class="tag-badge recruit">スタッフ募集</span><% end %>
-    </p>
-    <p><%= simple_format @shop.recruiting_message.to_s %></p>
-  </div>
-<% end %>
-
 <%# Blocks below are freely composed/ordered/hidden by the shop admin from
     /shop_admin/shop_page_blocks — see ShopPageBlock. %>
 <% @shop.shop_page_blocks.visible.each do |block| %>
+  <% next if block.block_type == "recruiting" && !(@shop.recruiting_cast? || @shop.recruiting_staff?) %>
   <div class="obi-block<%= " no-header" if block.hide_header? %>">
     <% unless block.hide_header? %>
       <div class="obi-header"><%= block.label %></div>
@@ -103,7 +81,14 @@
 <% @reviews.each do |review| %>
   <div class="card">
     <p class="stars">評価: <%= review.rating %> / 5</p>
-    <p><%= review.body %></p>
+    <% if review.body.to_s.length > 100 %>
+      <details class="review-body">
+        <summary><%= truncate(review.body, length: 100) %></summary>
+        <p><%= review.body %></p>
+      </details>
+    <% else %>
+      <p><%= review.body %></p>
+    <% end %>
     <p><small>
       <%= review.reviewer_name %>
       <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>

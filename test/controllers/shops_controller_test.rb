@@ -121,6 +121,59 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/class="shop-theme-page" style="\s*"/, response.body)
   end
 
+  test "the shop_info block shows the shop's address, phone, and hours" do
+    shop = create_shop(address: "テスト住所1-2-3", phone: "0312345678", business_hours: "12:00-24:00")
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :shop_info, position: 0)
+
+    get shop_path(shop)
+
+    assert_match "テスト住所1-2-3", response.body
+    assert_match "0312345678", response.body
+    assert_match "12:00-24:00", response.body
+  end
+
+  test "the shop_info block can be repositioned and hidden like any other block" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :shop_info, position: 0, visible: false)
+
+    get shop_path(shop)
+
+    assert_no_match shop.address, response.body
+  end
+
+  test "the recruiting block shows recruiting info when the shop is recruiting" do
+    shop = create_shop(recruiting_cast: true, recruiting_message: "急募中です")
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :recruiting, position: 0)
+
+    get shop_path(shop)
+
+    assert_match "コンパニオン募集", response.body
+    assert_match "急募中です", response.body
+  end
+
+  test "the recruiting block does not render when the shop is not recruiting" do
+    shop = create_shop(recruiting_cast: false, recruiting_staff: false)
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :recruiting, position: 0)
+
+    get shop_path(shop)
+
+    assert_no_match "求人情報", response.body
+  end
+
+  test "the recruiting block can still be hidden manually even while the shop is recruiting" do
+    shop = create_shop(recruiting_cast: true, recruiting_message: "急募中です")
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :recruiting, position: 0, visible: false)
+
+    get shop_path(shop)
+
+    assert_no_match "急募中です", response.body
+  end
+
   test "a page block shows its title band and frame by default" do
     shop = create_shop
     shop.shop_page_blocks.destroy_all
@@ -211,5 +264,25 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_match "btn disabled", response.body
     assert_match "応募する", response.body
+  end
+
+  test "a long review body is folded into a collapsible details element" do
+    shop = create_shop
+    long_body = "とても良かったです。" * 20
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: long_body, rating: 5, status: :approved)
+
+    get shop_path(shop)
+
+    assert_select "details.review-body p", text: long_body
+  end
+
+  test "a short review body is shown plainly without folding" do
+    shop = create_shop
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+
+    get shop_path(shop)
+
+    assert_select "details.review-body", count: 0
+    assert_match "良かったです。", response.body
   end
 end

@@ -1,0 +1,8 @@
+<p><%= simple_format shop.description.to_s %></p>
+<p>住所: <%= shop.address %></p>
+<p>電話番号: <%= shop.phone %></p>
+<p>営業時間: <%= shop.business_hours %></p>
+<% if shop.price_note.present? %><p>料金: <%= shop.price_note %></p><% end %>
+<% if shop.transportation_fee_note.present? %><p>交通費: <%= shop.transportation_fee_note %></p><% end %>
+<% if shop.coverage_area_note.present? %><p>対応エリア: <%= shop.coverage_area_note %></p><% end %>
+<p>平均評価: <%= shop.average_rating || "-" %> / 5</p>

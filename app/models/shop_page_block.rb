@@ -13,7 +13,9 @@ class ShopPageBlock < ApplicationRecord
     free_text: 6,
     movie: 7,
     coupon: 8,
-    price_table: 9
+    price_table: 9,
+    shop_info: 10,
+    recruiting: 11
   }.freeze
 
   LABELS = {
@@ -26,7 +28,9 @@ class ShopPageBlock < ApplicationRecord
     "free_text" => "フリーテキスト",
     "movie" => "動画",
     "coupon" => "クーポン",
-    "price_table" => "料金表・オプション表"
+    "price_table" => "料金表・オプション表",
+    "shop_info" => "店舗情報",
+    "recruiting" => "求人情報"
   }.freeze
 
   # This block's editor has no image/content fields of its own for these
@@ -41,7 +45,9 @@ class ShopPageBlock < ApplicationRecord
     "diaries_list" => "在籍キャストが投稿した写メ日記が新しい順に表示されます。",
     "weekly_schedule" => "「出勤予定一括登録」で登録した直近1週間の出勤予定が表示されます。",
     "ranking" => "口コミ件数の多いキャスト順に自動的に表示されます(手動での並び替えはできません)。",
-    "coupon" => "「クーポン管理」で登録した現在有効なクーポンが表示されます。"
+    "coupon" => "「クーポン管理」で登録した現在有効なクーポンが表示されます。",
+    "shop_info" => "「店舗情報編集」で登録した住所・電話番号・営業時間・料金・交通費・対応エリアがそのまま表示されます。",
+    "recruiting" => "「店舗情報編集」の求人情報(コンパニオン募集・スタッフ募集・募集メッセージ)がそのまま表示されます。募集していない場合、このブロックは自動的に表示されません。"
   }.freeze
 
   belongs_to :shop

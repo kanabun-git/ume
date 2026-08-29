@@ -104,6 +104,11 @@ main { padding: 24px 0 60px; }
 .shop-reply { background: #faf6f7; border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
 .shop-reply-label { font-weight: bold; color: var(--brand); font-size: .85rem; margin-bottom: 4px; }
 
+.review-body summary { cursor: pointer; list-style: none; }
+.review-body summary::-webkit-details-marker { display: none; }
+.review-body summary::after { content: " ▼続きを読む"; color: var(--brand); font-size: .85em; white-space: nowrap; }
+.review-body[open] summary { display: none; }
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 
 .photo-with-status { position: relative; display: inline-block; }

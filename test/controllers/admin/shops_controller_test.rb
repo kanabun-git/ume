@@ -87,6 +87,16 @@ module Admin
       assert shop.reload.design_change_pending?
     end
 
+    test "show links to a preview of the shop's page, even when unpublished" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop(published: false)
+      sign_in admin
+
+      get admin_shop_path(shop)
+
+      assert_select "a[href=?][target=_blank]", shop_path(shop), text: "店舗ページのプレビューを見る"
+    end
+
     test "index shows a design change notice with a confirm button for a shop that just published" do
       admin = create_user(role: :platform_admin)
       shop = create_shop(design_updated_at: Time.current)

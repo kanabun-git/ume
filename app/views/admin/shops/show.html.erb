@@ -9,6 +9,7 @@
     <%= button_to "確認", confirm_design_admin_shop_path(@shop), method: :patch %>
   <% end %>
 </p>
+<p><%= link_to "店舗ページのプレビューを見る", shop_path(@shop), class: "btn secondary", target: "_blank" %></p>
 <p>閲覧数: <%= @shop.view_count %></p>
 <p><%= simple_format @shop.description.to_s %></p>
 

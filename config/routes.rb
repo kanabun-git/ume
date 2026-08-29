@@ -123,6 +123,7 @@ Rails.application.routes.draw do
       member do
         patch :publish
         patch :unpublish
+        delete :destroy_photo
       end
     end
     resources :casts
@@ -180,6 +181,7 @@ Rails.application.routes.draw do
         patch :approve
         patch :suspend
         patch :confirm_design
+        delete :destroy_photo
       end
       resources :shop_page_blocks, except: [:show] do
         member do

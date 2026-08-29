@@ -10,6 +10,25 @@
   </div>
 <% end %>
 
+<%# Deliberately kept outside the edit form below: each photo's 削除 button
+    is itself a button_to, which renders its own <form>. Nesting a <form>
+    inside another is invalid HTML -- browsers silently drop the inner
+    <form> tag but keep its hidden _method=delete input, which then gets
+    submitted as part of the edit form and corrupts it (submits a DELETE to
+    the edit form's own action instead of updating). %>
+<% if @shop.photos.attached? %>
+  <h2>登録済みの店舗写真</h2>
+  <div class="grid">
+    <% @shop.photos.select(&:persisted?).each do |photo| %>
+      <div>
+        <%= image_tag photo, style: "max-width:120px;" %>
+        <%= button_to "削除", destroy_photo_shop_admin_shop_path(photo_id: photo.id), method: :delete,
+            class: "btn danger", form: { data: { turbo_confirm: "この写真を削除してよろしいですか?" } } %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
 <%= form_with model: @shop, url: shop_admin_shop_path, method: :patch, local: true, class: "form" do |f| %>
   <p>店舗名・エリア・ジャンル・プランの変更は運営者にお問い合わせください。</p>
 
@@ -62,17 +81,6 @@
 
   <label>店舗写真を追加(既存の写真は残ったまま追加されます。最大5枚まで)</label>
   <%= f.file_field :photos, multiple: true %>
-
-  <% if @shop.photos.attached? %>
-    <div class="grid">
-      <%# Skip not-yet-persisted attachments: if a previous submit failed
-          validation, newly-selected files are staged in memory only and
-          have no signed_id yet — rendering them would raise. %>
-      <% @shop.photos.select(&:persisted?).each do |photo| %>
-        <%= image_tag photo, style: "max-width:120px;" %>
-      <% end %>
-    </div>
-  <% end %>
 
   <h2>店舗詳細ページのデザイン</h2>
   <p><small>店舗詳細ページ(会員・一般ユーザーが見る画面)の背景色・文字色・基調色(ボタンやバッジの色)・背景画像を、サイト標準のデザインから変更できます。空欄のままにすると標準デザインのままになります。</small></p>

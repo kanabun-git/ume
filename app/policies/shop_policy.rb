@@ -28,6 +28,10 @@ class ShopPolicy < ApplicationPolicy
     user.platform_admin?
   end
 
+  def destroy_photo?
+    update?
+  end
+
   def destroy?
     user.platform_admin?
   end

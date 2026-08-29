@@ -66,6 +66,34 @@ module ShopAdmin
       assert shop.reload.page_background_image.attached?
     end
 
+    test "a shop admin can delete one of the shop's uploaded photos" do
+      shop = create_shop
+      shop.photos.attach(**png_upload(filename: "a.png"))
+      shop.photos.attach(**png_upload(filename: "b.png"))
+      photo_to_delete = shop.photos.first
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      delete destroy_photo_shop_admin_shop_path(photo_id: photo_to_delete.id)
+
+      assert_redirected_to edit_shop_admin_shop_path
+      assert_equal 1, shop.reload.photos.count
+      assert_equal "b.png", shop.photos.first.filename.to_s
+    end
+
+    test "a shop admin cannot delete another shop's photo" do
+      other_shop = create_shop
+      other_shop.photos.attach(**png_upload)
+      photo = other_shop.photos.first
+      user = create_user(role: :shop_admin, shop: create_shop)
+      sign_in user
+
+      delete destroy_photo_shop_admin_shop_path(photo_id: photo.id)
+
+      assert_response :not_found
+      assert other_shop.reload.photos.attached?
+    end
+
     test "a shop admin can publish their own shop, which stamps a design change notice" do
       shop = create_shop(published: false)
       user = create_user(role: :shop_admin, shop: shop)

@@ -6,6 +6,25 @@
   </div>
 <% end %>
 
+<%# Deliberately kept outside the edit form below: each photo's 削除 button
+    is itself a button_to, which renders its own <form>. Nesting a <form>
+    inside another is invalid HTML -- browsers silently drop the inner
+    <form> tag but keep its hidden _method=delete input, which then gets
+    submitted as part of the edit form and corrupts it (submits a DELETE to
+    the edit form's own action instead of saving). %>
+<% if shop.persisted? && shop.photos.attached? %>
+  <h2>登録済みの店舗写真</h2>
+  <div class="grid">
+    <% shop.photos.select(&:persisted?).each do |photo| %>
+      <div>
+        <%= image_tag photo, style: "max-width:120px;" %>
+        <%= button_to "削除", destroy_photo_admin_shop_path(shop, photo_id: photo.id), method: :delete,
+            class: "btn danger", form: { data: { turbo_confirm: "この写真を削除してよろしいですか?" } } %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
 <%= form_with model: shop, url: url, local: true, class: "form" do |f| %>
   <label>店舗名</label>
   <%= f.text_field :name %>
@@ -62,7 +81,7 @@
   <label><%= f.check_box :recruiting_cast %> コンパニオン募集</label>
   <label><%= f.check_box :recruiting_staff %> スタッフ募集</label>
 
-  <label>店舗写真(新規登録時は初期設定、編集時は既存の写真に追加されます。最大5枚まで)</label>
+  <label>店舗写真を追加(新規登録時は初期設定、編集時は既存の写真に追加されます。最大5枚まで)</label>
   <%= f.file_field :photos, multiple: true %>
 
   <%= f.submit "保存する", class: "btn" %>

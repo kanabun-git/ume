@@ -1,6 +1,6 @@
 module Admin
   class ShopsController < BaseController
-    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend, :confirm_design]
+    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend, :confirm_design, :destroy_photo]
 
     def index
       @shops = policy_scope(::Shop)
@@ -64,6 +64,11 @@ module Admin
     def confirm_design
       @shop.confirm_design_reviewed!
       redirect_to admin_shops_path, notice: "#{@shop.name} のデザイン変更を確認済みにしました。"
+    end
+
+    def destroy_photo
+      @shop.photos.find(params[:photo_id]).purge
+      redirect_to edit_admin_shop_path(@shop), notice: "写真を削除しました。"
     end
 
     private

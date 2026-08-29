@@ -97,6 +97,33 @@ module Admin
       assert_select "a[href=?][target=_blank]", shop_path(shop), text: "店舗ページのプレビューを見る"
     end
 
+    test "a platform admin can delete one of a shop's uploaded photos" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop
+      shop.photos.attach(**png_upload(filename: "a.png"))
+      shop.photos.attach(**png_upload(filename: "b.png"))
+      photo_to_delete = shop.photos.first
+      sign_in admin
+
+      delete destroy_photo_admin_shop_path(shop, photo_id: photo_to_delete.id)
+
+      assert_redirected_to edit_admin_shop_path(shop)
+      assert_equal 1, shop.reload.photos.count
+    end
+
+    test "a shop admin cannot delete a shop's photo from the admin namespace" do
+      shop = create_shop
+      shop.photos.attach(**png_upload(filename: "a.png"))
+      photo = shop.photos.first
+      shop_admin = create_user(role: :shop_admin, shop: shop)
+      sign_in shop_admin
+
+      delete destroy_photo_admin_shop_path(shop, photo_id: photo.id)
+
+      assert_redirected_to root_path
+      assert shop.reload.photos.attached?
+    end
+
     test "index shows a design change notice with a confirm button for a shop that just published" do
       admin = create_user(role: :platform_admin)
       shop = create_shop(design_updated_at: Time.current)

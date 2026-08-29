@@ -29,6 +29,12 @@ module ShopAdmin
       redirect_to shop_admin_root_path, notice: "店舗ページを非公開(下書き)にしました。公開ページからは見えなくなります。"
     end
 
+    def destroy_photo
+      authorize @shop, :destroy_photo?
+      @shop.photos.find(params[:photo_id]).purge
+      redirect_to edit_shop_admin_shop_path, notice: "写真を削除しました。"
+    end
+
     private
 
     def set_shop

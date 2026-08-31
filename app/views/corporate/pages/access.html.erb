@@ -4,7 +4,7 @@
   <h1>アクセス</h1>
 
   <table class="corporate-table">
-    <tr><th>所在地</th><td>〒<%= @company::POSTAL_CODE %> <%= @company::ADDRESS %><br><%= @company::BUILDING %></td></tr>
+    <tr><th>所在地</th><td><%= corporate_address %></td></tr>
     <tr><th>電話番号</th><td><%= @company::PHONE %></td></tr>
   </table>
 

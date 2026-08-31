@@ -2,16 +2,23 @@
 # behaving like its own separate site rather than a second door into the
 # portal -- same idea as MailAdminHostMiddleware for www.kanabun.tech.
 #
-# config/routes.rb already makes /corporate resolve *only* on that host;
-# this is the other half: on that host, nothing but /corporate (plus static
-# assets) resolves at all, so the portal's public pages and its /admin,
-# /shop_admin, /cast, /users (Devise) back offices are simply not there.
+# config/routes.rb already makes the corporate pages resolve *only* on that
+# host, mounted at the root path (no "/corporate" prefix) there so
+# https://www.puremint.jp/ itself is the corporate top page; this is the
+# other half: on that host, nothing but those pages (plus static assets)
+# resolves at all, so the portal's public pages and its /admin, /shop_admin,
+# /cast, /users (Devise) back offices are simply not there.
 #
 # Does nothing when PUREMINT_HOST is unset (development, test, and any
-# deployment that hasn't set up the separate domain yet).
+# deployment that hasn't set up the separate domain yet) -- there the
+# corporate pages stay under "/corporate" alongside the portal.
 class PuremintHostMiddleware
+  ALLOWED_PATHS = %w[/].freeze
   ALLOWED_PATH_PREFIXES = %w[
-    /corporate
+    /company
+    /business
+    /access
+    /inquiries
     /assets
     /rails
     /up
@@ -36,7 +43,8 @@ class PuremintHostMiddleware
   end
 
   def allowed_path?(path)
-    ALLOWED_PATH_PREFIXES.any? { |prefix| path == prefix || path.start_with?("#{prefix}/") }
+    ALLOWED_PATHS.include?(path) ||
+      ALLOWED_PATH_PREFIXES.any? { |prefix| path == prefix || path.start_with?("#{prefix}/") }
   end
 
   def not_found

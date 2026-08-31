@@ -1,11 +1,14 @@
 require "test_helper"
 
-# The corporate site is meant to be its own site (www.puremint.jp/corporate),
+# The corporate site is meant to be its own site (https://www.puremint.jp/),
 # not a second door into the portal. Two mechanisms make that true, and this
 # covers both:
 #
-#   * config/routes.rb -- /corporate only resolves on PUREMINT_HOST
-#   * PuremintHostMiddleware -- on that host, nothing *but* /corporate (plus
+#   * config/routes.rb -- the corporate pages only resolve on PUREMINT_HOST,
+#     mounted there at the root path (no "/corporate" prefix) so the domain's
+#     own "/" is the corporate top page; elsewhere they stay under
+#     "/corporate" alongside the portal.
+#   * PuremintHostMiddleware -- on that host, nothing *but* those pages (plus
 #     static assets) resolves at all
 #
 # Reloads routes around the ENV change and restores both in an `ensure`, the
@@ -22,15 +25,27 @@ class PuremintHostTest < ActionDispatch::IntegrationTest
     Rails.application.reload_routes!
   end
 
-  test "the corporate site only resolves on the configured host" do
+  test "the corporate top page is served at the bare root on the configured host" do
     with_puremint_host("puremint.example.test") do
       host! "www.example.com"
-      get "/corporate"
-      assert_response :not_found
+      get "/"
+      assert_match "FuzokuZero", response.body # the portal's own gate page, not the corporate site
 
       host! "puremint.example.test"
-      get "/corporate"
+      get "/"
       assert_response :success
+      assert_match Corporate::Company::NAME, response.body
+    end
+  end
+
+  test "the corporate site's other pages resolve without a /corporate prefix on the configured host" do
+    with_puremint_host("puremint.example.test") do
+      host! "puremint.example.test"
+
+      ["/company", "/business", "/access", "/inquiries/new"].each do |path|
+        get path
+        assert_response :success, "#{path} should resolve on the puremint host"
+      end
     end
   end
 
@@ -38,7 +53,7 @@ class PuremintHostTest < ActionDispatch::IntegrationTest
     with_puremint_host("puremint.example.test") do
       host! "puremint.example.test"
 
-      ["/", "/shops", "/admin", "/shop_admin", "/cast", "/users/sign_in"].each do |path|
+      ["/shops", "/admin", "/shop_admin", "/cast", "/users/sign_in", "/corporate"].each do |path|
         get path
         assert_response :not_found, "#{path} must not be reachable on the puremint host"
       end
@@ -49,7 +64,7 @@ class PuremintHostTest < ActionDispatch::IntegrationTest
     with_puremint_host("puremint.example.test") do
       host! "puremint.example.test"
 
-      get "/corporate"
+      get "/"
 
       assert_response :success
       assert_match Corporate::Company::NAME, response.body

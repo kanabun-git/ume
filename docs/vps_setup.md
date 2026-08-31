@@ -374,7 +374,7 @@ systemctl list-timers | grep certbot
 
 ## 7-3. 運営会社コーポレートサイトの別ドメイン設定(www.puremint.jp)
 
-運営会社(有限会社ピュアミント)の紹介サイト(会社概要・事業内容・アクセス・お問い合わせ)は、ポータルサイトとは切り離した独立したサイトとして **https://www.puremint.jp/corporate** で提供します。
+運営会社(有限会社ピュアミント)の紹介サイト(会社概要・事業内容・アクセス・お問い合わせ)は、ポータルサイトとは切り離した独立したサイトとして **https://www.puremint.jp/** (トップページそのもの)で提供します。
 
 7-1/7-2と同じ仕組みで、同じアプリ・同じデータベースをそのまま使います。設定は以下だけです。
 
@@ -387,8 +387,8 @@ systemctl list-timers | grep certbot
 
    設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。`PUREMINT_HOST`を設定すると、
 
-   - `/corporate`は**このドメインでしか開けなくなる**(`fuzoku-zero.com/corporate`は404)
-   - 逆にこのドメインでは、`/corporate`(と静的アセット)**以外は何も配信されない**(ポータルサイトのトップページや`/admin`、Deviseの`/users`ログインルートにアクセスしても404)
+   - コーポレートサイトの各ページは**このドメインでしか開けなくなり**、かつURLの接頭辞なし(`/`が会社紹介トップ、`/company`が会社概要 …)で提供されます(`fuzoku-zero.com`側では引き続き`/corporate`配下でしか開けません)
+   - 逆にこのドメインでは、コーポレートサイトの各ページ(と静的アセット)**以外は何も配信されない**(ポータルサイトのトップページや`/admin`、Deviseの`/users`ログインルートにアクセスしても404)
 
    という双方向の切り離しが有効になります。
 

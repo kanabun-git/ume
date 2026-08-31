@@ -4,18 +4,15 @@ module Corporate
   # about as often as the company's own registration does, so a deploy is
   # an acceptable way to update it.
   #
-  # NOTE: POSTAL_CODE / BUILDING / PHONE are still placeholders pending the
-  # real company register info -- swap them in before this site goes live.
   class Company
     NAME = "有限会社ピュアミント"
     NAME_EN = "PureMint Co., Ltd."
-    POSTAL_CODE = "000-0000(ご記入ください)"
+    POSTAL_CODE = "188-0011"
     ADDRESS = "東京都西東京市田無町2-20-3"
     BUILDING = nil
     REPRESENTATIVE = "福島 保彦"
     ESTABLISHED_ON = "2005年6月1日"
     CAPITAL = "300万円"
-    PHONE = "00-0000-0000(ご記入ください)"
     EMAIL = "info@puremint.jp"
 
     BUSINESS_LINES = [

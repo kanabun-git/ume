@@ -28,11 +28,10 @@ class Corporate::PagesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "access page shows the address and phone number" do
+  test "access page shows the address" do
     get corporate_access_path
 
     assert_response :success
     assert_match Corporate::Company::ADDRESS, response.body
-    assert_match Corporate::Company::PHONE, response.body
   end
 end

@@ -1,0 +1,14 @@
+<% content_for :title, "事業内容 | #{Corporate::Company::NAME}" %>
+
+<section class="corporate-section container">
+  <h1>事業内容</h1>
+
+  <div class="corporate-cards corporate-cards-wide">
+    <% @company::BUSINESS_LINES.each do |line| %>
+      <div class="corporate-card">
+        <h2><%= line[:title] %></h2>
+        <p><%= line[:body] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <% page_title = content_for(:title) || Corporate::Company::NAME %>
+    <title><%= page_title %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for(:meta_description) || "#{Corporate::Company::NAME}の企業サイトです。会社概要・事業内容・お問い合わせはこちらから。" %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="<%= image_path("corporate/logo.png") %>" type="image/png">
+    <link rel="apple-touch-icon" href="<%= image_path("corporate/logo.png") %>">
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="corporate-site">
+    <header class="corporate-header">
+      <div class="container corporate-header-inner">
+        <%= link_to corporate_root_path, class: "corporate-logo" do %>
+          <%= image_tag "corporate/logo.png", alt: Corporate::Company::NAME, class: "corporate-logo-img" %>
+        <% end %>
+        <nav class="corporate-nav">
+          <%= link_to "会社概要", corporate_company_path %>
+          <%= link_to "事業内容", corporate_business_path %>
+          <%= link_to "アクセス", corporate_access_path %>
+          <%= link_to "お問い合わせ", new_corporate_inquiry_path, class: "corporate-nav-cta" %>
+        </nav>
+      </div>
+    </header>
+
+    <div class="flash">
+      <% if notice %><div class="notice"><%= notice %></div><% end %>
+      <% if alert %><div class="alert"><%= alert %></div><% end %>
+    </div>
+
+    <main class="corporate-main">
+      <%= yield %>
+    </main>
+
+    <footer class="corporate-footer">
+      <div class="container corporate-footer-inner">
+        <%= image_tag "corporate/logo.png", alt: Corporate::Company::NAME, class: "corporate-footer-logo" %>
+        <p class="corporate-footer-copyright">&copy; <%= Date.current.year %> <%= Corporate::Company::NAME_EN %></p>
+      </div>
+    </footer>
+  </body>
+</html>

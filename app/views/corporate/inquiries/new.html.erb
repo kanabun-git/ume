@@ -1,0 +1,39 @@
+<% content_for :title, "お問い合わせ | #{Corporate::Company::NAME}" %>
+
+<section class="corporate-section container corporate-section-narrow">
+  <h1>お問い合わせ</h1>
+  <p>サービスに関するご質問・お取引に関するご相談は、以下のフォームよりお問い合わせください。</p>
+
+  <% if @inquiry.errors.any? %>
+    <div class="errors">
+      <ul>
+        <% @inquiry.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @inquiry, url: corporate_inquiries_path, scope: :corporate_inquiry, local: true, class: "form" do |f| %>
+    <%# Honeypot: same pattern as ShopInquiry's form (see shop_inquiries/new.html.erb). %>
+    <div class="honeypot-field" aria-hidden="true">
+      <label for="corporate_inquiry_website">ウェブサイト</label>
+      <%= f.text_field :website, tabindex: -1, autocomplete: "off" %>
+    </div>
+
+    <label>お名前<span class="required">必須</span></label>
+    <%= f.text_field :name %>
+
+    <label>会社名(任意)</label>
+    <%= f.text_field :company_name %>
+
+    <label>メールアドレス<span class="required">必須</span></label>
+    <%= f.email_field :email %>
+
+    <label>電話番号(任意)</label>
+    <%= f.text_field :phone %>
+
+    <label>お問い合わせ内容<span class="required">必須</span></label>
+    <%= f.text_area :message %>
+
+    <%= f.submit "送信する", class: "btn" %>
+  <% end %>
+</section>

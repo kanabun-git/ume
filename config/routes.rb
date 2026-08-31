@@ -81,6 +81,28 @@ Rails.application.routes.draw do
     cast_portal_routes.call
   end
 
+  # --- 有限会社ピュアミント コーポレートサイト (puremint.jp) ---
+  # 風俗ポータル本体(FuzokuZero)とは無関係な、運営会社そのものの紹介サイト。
+  # PUREMINT_HOST を設定すると(本番ではwww.puremint.jpを想定)、そのドメイン
+  # でしか開けなくなる -- 他の2サイトと同じ仕組み(CAST_PORTAL_HOST/
+  # MAIL_ADMIN_HOSTのconstraints参照)。開発・テストではホスト名を用意
+  # しなくても触れるよう制約を外す。
+  corporate_routes = lambda do
+    namespace :corporate do
+      root to: "pages#index"
+      get "company", to: "pages#company", as: :company
+      get "business", to: "pages#business", as: :business
+      get "access", to: "pages#access", as: :access
+      resources :inquiries, only: [:new, :create]
+    end
+  end
+
+  if ENV["PUREMINT_HOST"].present?
+    constraints(host: ENV["PUREMINT_HOST"], &corporate_routes)
+  else
+    corporate_routes.call
+  end
+
   # --- メールアドレス管理画面 (/mailadmin) ---
   # 運営しているサイト(fuzoku-zero.com / kanabun.tech / puremint.jp)の
   # メールアドレスを追加・削除するための、ポータルサイトとは切り離した管理画面。

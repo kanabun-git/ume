@@ -1,0 +1,16 @@
+<% content_for :title, "会社概要 | #{Corporate::Company::NAME}" %>
+
+<section class="corporate-section container">
+  <h1>会社概要</h1>
+
+  <table class="corporate-table">
+    <tr><th>会社名</th><td><%= @company::NAME %>(<%= @company::NAME_EN %>)</td></tr>
+    <tr><th>所在地</th><td>〒<%= @company::POSTAL_CODE %> <%= @company::ADDRESS %><br><%= @company::BUILDING %></td></tr>
+    <tr><th>代表者</th><td><%= @company::REPRESENTATIVE %></td></tr>
+    <tr><th>設立</th><td><%= @company::ESTABLISHED_ON %></td></tr>
+    <tr><th>資本金</th><td><%= @company::CAPITAL %></td></tr>
+    <tr><th>電話番号</th><td><%= @company::PHONE %></td></tr>
+    <tr><th>メールアドレス</th><td><%= @company::EMAIL %></td></tr>
+    <tr><th>事業内容</th><td><%= link_to "事業内容ページを参照", corporate_business_path %></td></tr>
+  </table>
+</section>

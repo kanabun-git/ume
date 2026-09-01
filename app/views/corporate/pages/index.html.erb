@@ -10,12 +10,7 @@
 <section class="corporate-section container">
   <h2>事業内容</h2>
   <div class="corporate-cards">
-    <% @company::BUSINESS_LINES.each do |line| %>
-      <div class="corporate-card">
-        <h3><%= line[:title] %></h3>
-        <p><%= line[:body] %></p>
-      </div>
-    <% end %>
+    <%= render partial: "business_line", collection: @company::BUSINESS_LINES, as: :line, locals: { heading_tag: :h3 } %>
   </div>
   <p><%= link_to "事業内容の詳細を見る →", corporate_business_path, class: "corporate-link" %></p>
 </section>

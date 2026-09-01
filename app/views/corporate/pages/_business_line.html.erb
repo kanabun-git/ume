@@ -1,0 +1,8 @@
+<%# locals: (line:, heading_tag: :h3) %>
+<div class="corporate-card">
+  <%= content_tag heading_tag, line[:title] %>
+  <p><%= line[:body] %></p>
+  <% if line[:url].present? %>
+    <p><%= link_to "#{line[:link_label] || line[:title]} →", line[:url], class: "corporate-link", target: "_blank", rel: "noopener" %></p>
+  <% end %>
+</div>

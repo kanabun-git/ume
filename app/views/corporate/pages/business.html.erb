@@ -4,11 +4,6 @@
   <h1>事業内容</h1>
 
   <div class="corporate-cards corporate-cards-wide">
-    <% @company::BUSINESS_LINES.each do |line| %>
-      <div class="corporate-card">
-        <h2><%= line[:title] %></h2>
-        <p><%= line[:body] %></p>
-      </div>
-    <% end %>
+    <%= render partial: "business_line", collection: @company::BUSINESS_LINES, as: :line, locals: { heading_tag: :h2 } %>
   </div>
 </section>

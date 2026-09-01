@@ -57,7 +57,11 @@ body.corporate-site {
   background: #fbfcfd;
 }
 .corporate-card h3, .corporate-card h2 { margin-top: 0; color: var(--corp-primary); font-size: 1.05rem; }
-.corporate-card p { color: var(--corp-muted); margin-bottom: 0; }
+.corporate-card p { color: var(--corp-muted); margin: 0 0 10px; }
+.corporate-card p:last-child { margin-bottom: 0; }
+.corporate-card-features { margin: 0 0 10px; padding-left: 1.2em; color: var(--corp-muted); font-size: .92rem; }
+.corporate-card-features li { margin-bottom: 4px; }
+.corporate-card-features:last-child { margin-bottom: 0; }
 
 .corporate-link { color: var(--corp-primary); font-weight: bold; }
 

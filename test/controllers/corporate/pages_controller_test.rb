@@ -35,6 +35,16 @@ class Corporate::PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_corporate_inquiry_path(subject: "やどかりペンションお問い合わせ")
   end
 
+  test "the やどかりペンションHP business line lists its features" do
+    get corporate_business_path
+
+    assert_response :success
+    yadokari = Corporate::Company::BUSINESS_LINES.find { |line| line[:title] == "やどかりペンションHP" }
+    yadokari[:features].each do |feature|
+      assert_match feature, response.body
+    end
+  end
+
   test "access page shows the address" do
     get corporate_access_path
 

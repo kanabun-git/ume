@@ -5,4 +5,7 @@
   <% if line[:url].present? %>
     <p><%= link_to "#{line[:link_label] || line[:title]} →", line[:url], class: "corporate-link", target: "_blank", rel: "noopener" %></p>
   <% end %>
+  <% if line[:inquiry_subject].present? %>
+    <p><%= link_to "#{line[:inquiry_link_label]} →", new_corporate_inquiry_path(subject: line[:inquiry_subject]), class: "corporate-link" %></p>
+  <% end %>
 </div>

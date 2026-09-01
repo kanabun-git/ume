@@ -37,7 +37,9 @@ module Corporate
           "お知らせなどをご自身で簡単にカスタマイズできるホームページサービス" \
           "「やどかりペンションHP」を提供しています。",
         url: "https://www.kanabun.tech/pension_basic/",
-        link_label: "やどかりペンションHPを見る"
+        link_label: "やどかりペンションHPを見る",
+        inquiry_subject: "やどかりペンションお問い合わせ",
+        inquiry_link_label: "やどかりペンションの導入お問い合わせはこちら"
       }
     ].freeze
   end

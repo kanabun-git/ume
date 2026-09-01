@@ -1,5 +1,6 @@
 コーポレートサイトからお問い合わせが届きました。
 
+件名: <%= @inquiry.subject %>
 お名前: <%= @inquiry.name %>
 会社名: <%= @inquiry.company_name.presence || "(未記入)" %>
 メールアドレス: <%= @inquiry.email %>

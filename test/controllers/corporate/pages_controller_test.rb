@@ -28,6 +28,13 @@ class Corporate::PagesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the やどかりペンションHP business line links to the inquiry form with its subject preselected" do
+    get corporate_business_path
+
+    assert_response :success
+    assert_select "a[href=?]", new_corporate_inquiry_path(subject: "やどかりペンションお問い合わせ")
+  end
+
   test "access page shows the address" do
     get corporate_access_path
 

@@ -19,6 +19,9 @@
       <%= f.text_field :website, tabindex: -1, autocomplete: "off" %>
     </div>
 
+    <label>件名<span class="required">必須</span></label>
+    <%= f.select :subject, Corporate::Inquiry::SUBJECTS, { include_blank: "選択してください" } %>
+
     <label>お名前<span class="required">必須</span></label>
     <%= f.text_field :name %>
 

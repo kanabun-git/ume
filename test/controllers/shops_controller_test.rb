@@ -223,7 +223,7 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     member = create_member
     membership = ShopMembership.create!(shop: shop, member: member)
     ShopMemberRank.create!(shop: shop, name: "レギュラー会員", min_visit_count: 1)
-    membership.record_visit!(visited_on: Date.current)
+    membership.record_visit!(visited_at: Date.current)
     sign_in member
 
     get shop_path(shop)

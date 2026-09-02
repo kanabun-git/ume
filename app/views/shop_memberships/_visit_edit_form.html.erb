@@ -1,0 +1,28 @@
+<h1>利用履歴の編集</h1>
+
+<%= form_with url: update_path, method: :patch, local: true, class: "form" do %>
+  <label>来店日</label>
+  <%= date_field_tag "shop_visit[visited_on_date]", shop_visit.visited_at.to_date %>
+
+  <label>来店時刻</label>
+  <%= time_field_tag "shop_visit[visited_on_time]", shop_visit.visited_at.strftime("%H:%M") %>
+
+  <label>担当キャスト(女の子)</label>
+  <%= select_tag "shop_visit[cast_id]", options_for_select([["未設定", nil]] + casts.map { |c| [c.name, c.id] }, shop_visit.cast_id) %>
+
+  <label>指名区分</label>
+  <%= select_tag "shop_visit[designation]", options_for_select(ShopVisit::DESIGNATION_LABELS.map { |value, label| [label, value] }, shop_visit.designation) %>
+
+  <label>時間(分)</label>
+  <%= number_field_tag "shop_visit[duration_minutes]", shop_visit.duration_minutes %>
+
+  <label>獲得ポイント</label>
+  <%= number_field_tag "shop_visit[points_earned]", shop_visit.points_earned %>
+
+  <label>メモ(会員にも表示されます)</label>
+  <%= text_field_tag "shop_visit[memo]", shop_visit.memo %>
+
+  <%= submit_tag "更新する", class: "btn" %>
+<% end %>
+
+<%= link_to "会員詳細に戻る", back_path %>

@@ -1,0 +1,26 @@
+<% content_for :title, "来店チェックイン | FuzokuZero" %>
+
+<div class="card cast-check-in-card">
+  <h1><%= @cast.shop.name %></h1>
+  <p>担当: <strong><%= @cast.alias_name.presence || @cast.name %></strong></p>
+
+  <% if @already_checked_in_today %>
+    <p class="tag-badge warning">本日はすでにチェックイン済みです</p>
+    <p>1日1回まで記録されます。次回のご来店時にまたQRコードを読み込んでください。</p>
+  <% else %>
+    <p class="tag-badge">来店を記録しました</p>
+  <% end %>
+
+  <div class="card">
+    <p>
+      現在のランク: <strong><%= @membership.current_rank&.name || "未認定" %></strong>
+      <% if @membership.next_rank %>
+        (次のランク「<%= @membership.next_rank.name %>」まであと<%= @membership.next_rank.min_visit_count - @membership.visit_count %>回)
+      <% end %>
+    </p>
+    <p>来店回数: <%= @membership.visit_count %>回 / ポイント残高: <%= @membership.points %>pt</p>
+  </div>
+
+  <%= link_to "会員証を見る", member_shop_membership_path(@membership), class: "btn" %>
+  <%= link_to "#{@cast.shop.name}のページを見る", shop_path(@cast.shop), class: "btn secondary" %>
+</div>

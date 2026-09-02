@@ -2,6 +2,11 @@
 
 <h1><%= @shop.name %> - 店舗会員証</h1>
 
+<p>
+  <%= link_to "在籍キャストの来店チェックインQRカードを一括ダウンロード(印刷用PDF)", check_in_cards_admin_shop_shop_memberships_path(@shop), class: "btn", target: "_blank" %>
+  <br><small>名刺サイズ(91×55mm・A4に10面)のQRコードカードです。エーワン マルチカードなど、市販の名刺用紙(A4・10面・91×55mm)に印刷できます。</small>
+</p>
+
 <table class="admin-table">
   <thead><tr><th>会員名</th><th>ランク</th><th>来店回数</th><th>ポイント残高</th><th></th></tr></thead>
   <tbody>

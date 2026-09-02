@@ -85,6 +85,12 @@ Rails.application.routes.draw do
   resources :shop_inquiries, only: [:new, :create]
   get "outreach/:token", to: "shop_prospect_outreach#click", as: :shop_prospect_outreach
 
+  # A cast's personal check-in QR code (printed on a business card, or
+  # shown on her own phone from the cast portal) points here -- scanning it
+  # (as a signed-in member) records one shop visit. Short/no-namespace path
+  # since it's what actually gets encoded into the printed QR image.
+  get "c/:token", to: "cast_check_ins#show", as: :cast_check_in
+
   # --- Cast (女の子) dashboard: manage own profile, diary, shifts ---
   # `module: "cast_portal"` avoids clashing with the top-level Cast model
   # (a bare `namespace :cast` would try to reopen the Cast class as a module).
@@ -100,6 +106,9 @@ Rails.application.routes.draw do
     namespace :cast, module: "cast_portal" do
       root to: "dashboard#show"
       resource :profile, only: [:edit, :update]
+      resource :check_in_qr, only: [:show], controller: "check_in_qr" do
+        get :pdf
+      end
       resources :diary_entries do
         collection do
           post :generate_draft
@@ -201,7 +210,8 @@ Rails.application.routes.draw do
       resources :shop_member_benefits, only: [:new, :create, :edit, :update, :destroy]
     end
     resources :shop_memberships, only: [:index, :show, :update] do
-      resources :shop_visits, only: [:create]
+      collection { get :check_in_cards }
+      resources :shop_visits, only: [:create, :edit, :update]
       resources :shop_point_redemptions, only: [:create]
       resources :shop_member_benefit_grants, only: [] do
         member { patch :mark_used }
@@ -259,7 +269,8 @@ Rails.application.routes.draw do
         resources :shop_member_benefits, only: [:new, :create, :edit, :update, :destroy]
       end
       resources :shop_memberships, only: [:index, :show, :update] do
-        resources :shop_visits, only: [:create]
+        collection { get :check_in_cards }
+        resources :shop_visits, only: [:create, :edit, :update]
         resources :shop_point_redemptions, only: [:create]
         resources :shop_member_benefit_grants, only: [] do
           member { patch :mark_used }
@@ -316,7 +327,10 @@ Rails.application.routes.draw do
       end
     end
     resources :users do
-      member { post :issue_account_setup_link }
+      member do
+        post :issue_account_setup_link
+        post :send_account_setup_email
+      end
     end
 
     # Content moderation screens: review submitted cast/diary photos and

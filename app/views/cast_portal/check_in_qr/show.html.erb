@@ -1,0 +1,13 @@
+<% content_for :title, "来店チェックインQRコード | スタッフポータル" %>
+
+<h1>来店チェックインQRコード</h1>
+
+<div class="card">
+  <p>お客様にこのQRコードを読み込んでもらうと、来店ポイント・ランクアップの対象になります。読み込むとご案内した女の子(あなた)の名前が自動で記録されます。</p>
+
+  <p><%= image_tag @qr_data_url, alt: "来店チェックインQRコード", style: "width: 240px; height: 240px;" %></p>
+
+  <p>この画面をそのままお客様に見せて読み込んでもらうか、下のボタンから名刺サイズのPDFをダウンロードして印刷し、店頭に置いてお使いください。</p>
+
+  <%= link_to "名刺PDFをダウンロード", pdf_cast_check_in_qr_path, class: "btn", target: "_blank" %>
+</div>

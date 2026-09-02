@@ -100,7 +100,7 @@ module Admin
       assert_equal "運営者記録の事故歴", membership.reload.incident_notes
 
       post admin_shop_shop_membership_shop_visits_path(@shop, membership), params: {
-        shop_visit: { visited_on: Date.current, points_earned: 100 }
+        shop_visit: { visited_on_date: Date.current.to_s, points_earned: 100 }
       }
       assert_equal 1, membership.reload.visit_count
       assert_equal 100, membership.points
@@ -116,6 +116,15 @@ module Admin
 
       patch mark_used_admin_shop_shop_membership_shop_member_benefit_grant_path(@shop, membership, grant)
       assert grant.reload.used?
+    end
+
+    test "a platform admin can bulk-download check-in QR cards for a shop's casts" do
+      create_cast(shop: @shop)
+
+      get check_in_cards_admin_shop_shop_memberships_path(@shop)
+
+      assert_response :success
+      assert_equal "application/pdf", response.media_type
     end
 
     test "a shop admin cannot access these full-management screens under the admin namespace" do

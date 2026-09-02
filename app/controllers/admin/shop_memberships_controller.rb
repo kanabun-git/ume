@@ -7,6 +7,12 @@ module Admin
       @shop_memberships = @shop.shop_memberships.includes(:member)
     end
 
+    # See ShopAdmin::ShopMembershipsController#check_in_cards.
+    def check_in_cards
+      pdf = CastBusinessCardPdf.for_casts(@shop.casts.visible, base_url: request.base_url)
+      send_data pdf, filename: "check_in_cards_#{@shop.id}.pdf", type: "application/pdf", disposition: "inline"
+    end
+
     def show
       @shop_visits = @shop_membership.shop_visits
       @shop_point_transactions = @shop_membership.shop_point_transactions

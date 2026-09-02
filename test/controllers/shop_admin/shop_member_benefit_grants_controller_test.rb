@@ -7,7 +7,7 @@ module ShopAdmin
       membership = ShopMembership.create!(shop: shop, member: create_member)
       rank = ShopMemberRank.create!(shop: shop, name: "レギュラー", min_visit_count: 1)
       ShopMemberBenefit.create!(shop_member_rank: rank, name: "500円割引券")
-      membership.record_visit!(visited_on: Date.current)
+      membership.record_visit!(visited_at: Date.current)
       grant = membership.shop_member_benefit_grants.first
       user = create_user(role: :shop_admin, shop: shop)
       sign_in user

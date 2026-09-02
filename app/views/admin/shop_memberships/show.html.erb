@@ -36,34 +36,11 @@
   <% end %>
 </div>
 
-<div class="card">
-  <h2>利用履歴</h2>
-  <%= form_with url: admin_shop_shop_membership_shop_visits_path(@shop, @shop_membership), method: :post, local: true, class: "form" do %>
-    <label>来店日</label>
-    <%= date_field_tag "shop_visit[visited_on]", Date.current %>
-
-    <label>獲得ポイント</label>
-    <%= number_field_tag "shop_visit[points_earned]", 0 %>
-
-    <label>メモ(会員にも表示されます)</label>
-    <%= text_field_tag "shop_visit[memo]" %>
-
-    <%= submit_tag "利用履歴を記録する", class: "btn" %>
-  <% end %>
-
-  <table class="admin-table">
-    <thead><tr><th>来店日</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
-    <tbody>
-      <% @shop_visits.each do |visit| %>
-        <tr>
-          <td><%= visit.visited_on.strftime("%Y-%m-%d") %></td>
-          <td><%= visit.points_earned %>pt</td>
-          <td><%= visit.memo %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= render "shop_memberships/visit_history",
+      shop_visits: @shop_visits,
+      casts: @shop.casts,
+      create_path: admin_shop_shop_membership_shop_visits_path(@shop, @shop_membership),
+      edit_path: ->(visit) { edit_admin_shop_shop_membership_shop_visit_path(@shop, @shop_membership, visit) } %>
 
 <div class="card">
   <h2>ポイント利用</h2>

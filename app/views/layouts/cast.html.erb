@@ -18,6 +18,7 @@
         <div class="brand">スタッフポータル</div>
         <%= link_to "ダッシュボード", cast_root_path %>
         <%= link_to "プロフィール編集", edit_cast_profile_path %>
+        <%= link_to "来店チェックインQR", cast_check_in_qr_path %>
         <%= link_to "日記", cast_diary_entries_path %>
         <%= link_to "出勤予定", cast_shifts_path %>
         <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>

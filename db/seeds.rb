@@ -316,7 +316,7 @@ end
 # each time.
 def ensure_shop_visits(membership, target_count)
   (target_count - membership.visit_count).times do
-    membership.record_visit!(visited_on: Date.current, points_earned: 100, memo: "来店")
+    membership.record_visit!(visited_at: Time.current, points_earned: 100, memo: "来店")
   end
 end
 

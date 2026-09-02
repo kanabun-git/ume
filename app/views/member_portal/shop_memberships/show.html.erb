@@ -101,11 +101,13 @@
 <h2>利用履歴</h2>
 <% if @shop_visits.any? %>
   <table class="admin-table">
-    <thead><tr><th>来店日</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
+    <thead><tr><th>来店日時</th><th>担当</th><th>指名区分</th><th>獲得ポイント</th><th>メモ</th></tr></thead>
     <tbody>
       <% @shop_visits.each do |visit| %>
         <tr>
-          <td><%= visit.visited_on.strftime("%Y-%m-%d") %></td>
+          <td><%= visit.visited_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= visit.cast&.name || "-" %></td>
+          <td><%= visit.designation_label %></td>
           <td><%= visit.points_earned %>pt</td>
           <td><%= visit.memo %></td>
         </tr>

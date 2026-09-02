@@ -1,0 +1,7 @@
+<% content_for :title, "利用履歴の編集" %>
+
+<%= render "shop_memberships/visit_edit_form",
+      shop_visit: @shop_visit,
+      casts: current_shop.casts,
+      update_path: shop_admin_shop_membership_shop_visit_path(@shop_membership, @shop_visit),
+      back_path: shop_admin_shop_membership_path(@shop_membership) %>

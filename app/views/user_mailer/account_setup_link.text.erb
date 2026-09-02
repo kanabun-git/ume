@@ -1,0 +1,10 @@
+<%= @user.shop ? "#{@user.shop.name} 様" : "#{@user.name} 様" %>
+
+FuzokuZeroへのご登録ありがとうございます。
+以下のリンクからパスワードを設定し、管理画面にログインしてください。
+
+ログイン用メールアドレス: <%= @user.email %>
+パスワード設定リンク: <%= @account_setup_url %>
+(このリンクは発行から3日間有効です)
+
+ログイン後の管理画面URL: <%= @user.shop_admin? ? shop_admin_root_url : root_url %>

@@ -4,7 +4,7 @@ class ShopMembershipTest < ActiveSupport::TestCase
   test "record_visit! logs a visit, awards points, and increases visit_count" do
     membership = ShopMembership.create!(shop: create_shop, member: create_member)
 
-    membership.record_visit!(visited_on: Date.current, points_earned: 100, memo: "60分コース")
+    membership.record_visit!(visited_at: Date.current, points_earned: 100, memo: "60分コース")
 
     assert_equal 1, membership.visit_count
     assert_equal 100, membership.points
@@ -17,14 +17,14 @@ class ShopMembershipTest < ActiveSupport::TestCase
     rank = ShopMemberRank.create!(shop: shop, name: "レギュラー", min_visit_count: 1)
     benefit = ShopMemberBenefit.create!(shop_member_rank: rank, name: "500円割引券")
 
-    membership.record_visit!(visited_on: Date.current)
+    membership.record_visit!(visited_at: Date.current)
 
     assert_equal 1, membership.shop_member_benefit_grants.count
     assert_equal benefit, membership.shop_member_benefit_grants.first.shop_member_benefit
     assert membership.shop_member_benefit_grants.first.unused?
 
     # A second visit doesn't re-reach the same rank, so no duplicate grant.
-    membership.record_visit!(visited_on: Date.current)
+    membership.record_visit!(visited_at: Date.current)
     assert_equal 1, membership.shop_member_benefit_grants.count
   end
 
@@ -37,18 +37,18 @@ class ShopMembershipTest < ActiveSupport::TestCase
     assert_nil membership.current_rank
     assert_equal bronze, membership.next_rank
 
-    membership.record_visit!(visited_on: Date.current)
+    membership.record_visit!(visited_at: Date.current)
     assert_equal bronze, membership.current_rank
     assert_equal silver, membership.next_rank
 
-    2.times { membership.record_visit!(visited_on: Date.current) }
+    2.times { membership.record_visit!(visited_at: Date.current) }
     assert_equal silver, membership.current_rank
     assert_nil membership.next_rank
   end
 
   test "redeem_points! deducts a valid amount and rejects an amount over the balance" do
     membership = ShopMembership.create!(shop: create_shop, member: create_member)
-    membership.record_visit!(visited_on: Date.current, points_earned: 300)
+    membership.record_visit!(visited_at: Date.current, points_earned: 300)
 
     assert membership.redeem_points!(200, reason: "ポイント利用: 200円引き")
     assert_equal 100, membership.points

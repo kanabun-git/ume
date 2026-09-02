@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :edit, :update, :destroy, :issue_account_setup_link]
+    before_action :set_user, only: [:show, :edit, :update, :destroy, :issue_account_setup_link, :send_account_setup_email]
 
     def index
       @users = policy_scope(::User).includes(:shop)
@@ -56,14 +56,23 @@ module Admin
       @account_setup_url = edit_user_password_url(reset_password_token: raw_token, host: request.base_url)
     end
 
+    # Issues a fresh token (same as above) and emails the link directly to
+    # the user, for when the admin would rather not relay it manually.
+    def send_account_setup_email
+      raw_token = @user.generate_account_setup_token
+      UserMailer.account_setup_link(@user, raw_token).deliver_now
+      redirect_to admin_user_path(@user), notice: "#{@user.email} 宛にアカウント設定メールを送信しました。"
+    end
+
     private
 
     def set_user
       @user = ::User.find(params[:id])
-      # issue_account_setup_link authorizes explicitly against :update?,
-      # since UserPolicy has no issue_account_setup_link? method for Pundit
-      # to infer from the action name.
-      if action_name == "issue_account_setup_link"
+      # issue_account_setup_link/send_account_setup_email authorize
+      # explicitly against :update?, since UserPolicy has no
+      # issue_account_setup_link?/send_account_setup_email? method for
+      # Pundit to infer from the action name.
+      if %w[issue_account_setup_link send_account_setup_email].include?(action_name)
         authorize @user, :update?
       else
         authorize @user

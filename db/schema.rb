@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_035000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_161729) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,6 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_035000) do
     t.string "blood_type"
     t.integer "bust"
     t.string "catch_copy"
+    t.string "checkin_token"
     t.datetime "created_at", null: false
     t.string "cup"
     t.text "description"
@@ -109,6 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_035000) do
     t.integer "view_count", default: 0, null: false
     t.integer "waist"
     t.string "zodiac_sign"
+    t.index ["checkin_token"], name: "index_casts_on_checkin_token", unique: true
     t.index ["shop_id"], name: "index_casts_on_shop_id"
     t.index ["user_id"], name: "index_casts_on_user_id", unique: true
   end
@@ -486,12 +488,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_035000) do
   end
 
   create_table "shop_visits", force: :cascade do |t|
+    t.bigint "cast_id"
+    t.boolean "checked_in_by_qr", default: false, null: false
     t.datetime "created_at", null: false
+    t.integer "designation"
+    t.integer "duration_minutes"
     t.text "memo"
     t.integer "points_earned", default: 0, null: false
     t.bigint "shop_membership_id", null: false
     t.datetime "updated_at", null: false
-    t.date "visited_on", null: false
+    t.datetime "visited_at", null: false
+    t.index ["cast_id"], name: "index_shop_visits_on_cast_id"
     t.index ["shop_membership_id"], name: "index_shop_visits_on_shop_membership_id"
   end
 
@@ -599,6 +606,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_035000) do
   add_foreign_key "shop_prospects", "shop_prospect_districts"
   add_foreign_key "shop_subscriptions", "plans"
   add_foreign_key "shop_subscriptions", "shops"
+  add_foreign_key "shop_visits", "casts"
   add_foreign_key "shop_visits", "shop_memberships"
   add_foreign_key "shops", "areas"
   add_foreign_key "shops", "genres"

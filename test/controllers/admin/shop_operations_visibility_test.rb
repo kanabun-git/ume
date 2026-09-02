@@ -88,7 +88,7 @@ module Admin
     test "views a shop's memberships including visit/point history and benefit grants" do
       member = create_member
       membership = @shop.shop_memberships.create!(member: member, incident_notes: "非常に丁寧な会員")
-      membership.shop_visits.create!(visited_on: Date.current, points_earned: 10)
+      membership.shop_visits.create!(visited_at: Time.current, points_earned: 10)
       membership.shop_point_transactions.create!(amount: 10, reason: "来店ポイント")
       rank = @shop.shop_member_ranks.create!(name: "常連", min_visit_count: 1)
       benefit = rank.shop_member_benefits.create!(name: "無料券B", benefit_type: :free_ticket)

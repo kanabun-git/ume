@@ -13,11 +13,19 @@ class Cast < ApplicationRecord
   has_many :reviews, dependent: :nullify
   has_many :favorites, dependent: :destroy
   has_many :cast_daily_views, dependent: :destroy
+  has_many :shop_visits, dependent: :nullify
   has_many_attached :photos
 
   accepts_nested_attributes_for :user
 
   enum :status, { active: 0, inactive: 1 }, default: :active
+
+  # Backs the personal check-in QR code shown on the cast portal and
+  # printed on business cards (see CastCheckInsController) -- scanning it
+  # records a shop visit with this cast auto-filled as the designation.
+  # A random opaque token rather than the numeric id, so a card can't be
+  # forged/guessed and stays valid even if regenerated for other casts.
+  has_secure_token :checkin_token
 
   validates :name, presence: true
   validates_attached_images :photos

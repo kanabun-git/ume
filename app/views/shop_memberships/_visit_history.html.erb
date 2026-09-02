@@ -1,0 +1,47 @@
+<div class="card">
+  <h2>利用履歴</h2>
+  <%= form_with url: create_path, method: :post, local: true, class: "form" do %>
+    <label>来店日</label>
+    <%= date_field_tag "shop_visit[visited_on_date]", Date.current %>
+
+    <label>来店時刻</label>
+    <%= time_field_tag "shop_visit[visited_on_time]", Time.current.strftime("%H:%M") %>
+
+    <label>担当キャスト(女の子)</label>
+    <%= select_tag "shop_visit[cast_id]", options_for_select([["未設定", nil]] + casts.map { |c| [c.name, c.id] }) %>
+
+    <label>指名区分</label>
+    <%= select_tag "shop_visit[designation]", options_for_select(ShopVisit::DESIGNATION_LABELS.map { |value, label| [label, value] }) %>
+
+    <label>時間(分)</label>
+    <%= number_field_tag "shop_visit[duration_minutes]" %>
+
+    <label>獲得ポイント</label>
+    <%= number_field_tag "shop_visit[points_earned]", 0 %>
+
+    <label>メモ(会員にも表示されます)</label>
+    <%= text_field_tag "shop_visit[memo]" %>
+
+    <%= submit_tag "利用履歴を記録する", class: "btn" %>
+  <% end %>
+
+  <table class="admin-table">
+    <thead><tr><th>来店日時</th><th>担当</th><th>指名区分</th><th>時間</th><th>獲得ポイント</th><th>メモ</th><th></th></tr></thead>
+    <tbody>
+      <% shop_visits.each do |visit| %>
+        <tr>
+          <td>
+            <%= visit.visited_at.strftime("%Y-%m-%d %H:%M") %>
+            <% if visit.checked_in_by_qr? %><span class="tag-badge">QRチェックイン</span><% end %>
+          </td>
+          <td><%= visit.cast&.name || "-" %></td>
+          <td><%= visit.designation_label %></td>
+          <td><%= visit.duration_minutes ? "#{visit.duration_minutes}分" : "-" %></td>
+          <td><%= visit.points_earned %>pt</td>
+          <td><%= visit.memo %></td>
+          <td><%= link_to "編集", edit_path.call(visit) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

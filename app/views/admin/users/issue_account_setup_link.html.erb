@@ -27,6 +27,10 @@
   </div>
 </div>
 
+<p>
+  <%= button_to "#{@user.email} 宛にメールで送信する", send_account_setup_email_admin_user_path(@user), method: :post, class: "btn" %>
+</p>
+
 <%= link_to "#{@user.name} の詳細に戻る", admin_user_path(@user), class: "btn secondary" %>
 
 <script>

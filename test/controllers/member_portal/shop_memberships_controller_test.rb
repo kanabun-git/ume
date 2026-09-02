@@ -6,7 +6,7 @@ module MemberPortal
       shop = create_shop
       member = create_member(phone_verified_at: Time.current)
       membership = ShopMembership.create!(shop: shop, member: member)
-      membership.record_visit!(visited_on: Date.current, points_earned: 100, memo: "60分コース")
+      membership.record_visit!(visited_at: Date.current, points_earned: 100, memo: "60分コース")
       sign_in member
 
       get member_shop_membership_path(membership)

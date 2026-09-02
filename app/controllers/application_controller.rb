@@ -36,7 +36,8 @@ class ApplicationController < ActionController::Base
     when User
       resource.platform_admin? ? admin_root_path : resource.shop_admin? ? shop_admin_root_path : cast_root_path
     when Member
-      member_root_path
+      pending_token = session.delete(:pending_cast_check_in_token)
+      pending_token.present? ? cast_check_in_path(pending_token) : member_root_path
     else
       super
     end

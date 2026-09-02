@@ -59,6 +59,19 @@ module ShopAdmin
       assert_match membership.created_at.strftime("%Y/%m/%d"), response.body
     end
 
+    test "a shop admin can bulk-download check-in QR cards for their own casts" do
+      shop = create_shop
+      create_cast(shop: shop)
+      create_cast(shop: shop)
+      user = create_user(role: :shop_admin, shop: shop)
+      sign_in user
+
+      get check_in_cards_shop_admin_shop_memberships_path
+
+      assert_response :success
+      assert_equal "application/pdf", response.media_type
+    end
+
     test "a shop admin cannot view or edit another shop's membership" do
       other_membership = ShopMembership.create!(shop: create_shop, member: create_member)
       user = create_user(role: :shop_admin, shop: create_shop)

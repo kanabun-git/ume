@@ -6,6 +6,14 @@ module ShopAdmin
       @shop_memberships = current_shop.shop_memberships.includes(:member)
     end
 
+    # Bulk-prints every active cast's check-in QR business card at once, so
+    # a shop can hand a stack of A-One card stock to a printer instead of
+    # downloading each cast's card one at a time (see CastPortal::CheckInQrController#pdf).
+    def check_in_cards
+      pdf = CastBusinessCardPdf.for_casts(current_shop.casts.visible, base_url: request.base_url)
+      send_data pdf, filename: "check_in_cards_#{current_shop.id}.pdf", type: "application/pdf", disposition: "inline"
+    end
+
     def show
       @shop_visits = @shop_membership.shop_visits
       @shop_point_transactions = @shop_membership.shop_point_transactions

@@ -37,11 +37,18 @@ class ShopMembership < ApplicationRecord
   end
 
   # Logs a visit, awards its points (if any), and issues any benefits tied
-  # to a rank this visit newly reaches.
-  def record_visit!(visited_on:, points_earned: 0, memo: nil)
+  # to a rank this visit newly reaches. `cast`/`designation`/`duration_minutes`
+  # are all optional -- a QR check-in (see CastCheckInsController) only ever
+  # knows `cast`, leaving designation/duration for a shop admin to fill in
+  # later via ShopVisitsController#update.
+  def record_visit!(visited_at:, points_earned: 0, memo: nil, cast: nil, designation: nil, duration_minutes: nil, checked_in_by_qr: false)
     visit = nil
     transaction do
-      visit = shop_visits.create!(visited_on: visited_on, points_earned: points_earned, memo: memo)
+      visit = shop_visits.create!(
+        visited_at: visited_at, points_earned: points_earned, memo: memo,
+        cast: cast, designation: designation, duration_minutes: duration_minutes,
+        checked_in_by_qr: checked_in_by_qr
+      )
       shop_point_transactions.create!(amount: points_earned, reason: "来店ポイント") if points_earned.positive?
       grant_benefits_for_newly_reached_rank!
     end

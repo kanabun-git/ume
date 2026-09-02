@@ -15,7 +15,8 @@ class ShopPageBlock < ApplicationRecord
     coupon: 8,
     price_table: 9,
     shop_info: 10,
-    recruiting: 11
+    recruiting: 11,
+    quick_nav: 12
   }.freeze
 
   LABELS = {
@@ -30,7 +31,8 @@ class ShopPageBlock < ApplicationRecord
     "coupon" => "クーポン",
     "price_table" => "料金表・オプション表",
     "shop_info" => "店舗情報",
-    "recruiting" => "求人情報"
+    "recruiting" => "求人情報",
+    "quick_nav" => "クイックメニュー"
   }.freeze
 
   # This block's editor has no image/content fields of its own for these
@@ -47,7 +49,8 @@ class ShopPageBlock < ApplicationRecord
     "ranking" => "口コミ件数の多いキャスト順に自動的に表示されます(手動での並び替えはできません)。",
     "coupon" => "「クーポン管理」で登録した現在有効なクーポンが表示されます。",
     "shop_info" => "「店舗情報編集」で登録した住所・電話番号・営業時間・料金・交通費・対応エリアがそのまま表示されます。",
-    "recruiting" => "「店舗情報編集」の求人情報(コンパニオン募集・スタッフ募集・募集メッセージ)がそのまま表示されます。募集していない場合、このブロックは自動的に表示されません。"
+    "recruiting" => "「店舗情報編集」の求人情報(コンパニオン募集・スタッフ募集・募集メッセージ)がそのまま表示されます。募集していない場合、このブロックは自動的に表示されません。",
+    "quick_nav" => "在籍キャスト・写メ日記・週間出勤・動画・クーポン・口コミ・求人情報など、実際にこのページに表示されている項目へのジャンプメニューが自動的に作られます(存在しない項目は表示されません)。見出しの色帯を消して細いメニューバーとして使いたい場合は「タイトル帯・枠を非表示にする」をオンにしてください。"
   }.freeze
 
   belongs_to :shop

@@ -1,0 +1,20 @@
+<%
+  quick_nav_items = [{ label: "トップ", anchor: "top" }]
+  quick_nav_items << { label: "写メ日記", anchor: "block-diaries_list" } if shop.shop_page_blocks.visible.exists?(block_type: :diaries_list)
+  quick_nav_items << { label: "出勤情報", anchor: "block-weekly_schedule" } if shop.shop_page_blocks.visible.exists?(block_type: :weekly_schedule)
+  quick_nav_items << { label: "女の子", anchor: "casts", badge: (shop.casts.visible.trial.any? ? "新人入店" : nil) }
+  quick_nav_items << { label: "動画", anchor: "block-movie" } if shop.shop_page_blocks.visible.exists?(block_type: :movie)
+  quick_nav_items << { label: "クーポン", anchor: "coupons" } if shop.coupons.active.any?
+  quick_nav_items << { label: "口コミ", anchor: "reviews" }
+  if shop.shop_page_blocks.visible.exists?(block_type: :recruiting) && (shop.recruiting_cast? || shop.recruiting_staff?)
+    quick_nav_items << { label: "求人情報", anchor: "block-recruiting" }
+  end
+%>
+<nav class="quick-nav-bar">
+  <% quick_nav_items.each do |item| %>
+    <%= link_to shop_path(shop, anchor: item[:anchor]), class: "quick-nav-item" do %>
+      <%= item[:label] %>
+      <% if item[:badge] %><span class="quick-nav-badge"><%= item[:badge] %></span><% end %>
+    <% end %>
+  <% end %>
+</nav>

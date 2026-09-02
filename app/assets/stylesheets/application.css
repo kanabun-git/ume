@@ -989,3 +989,18 @@ img, video, iframe { max-width: 100%; }
 @media (max-width: 768px) {
   .site-footer-columns { grid-template-columns: 1fr; gap: 20px; }
 }
+
+/* --- Shop page quick-jump nav block (mirrors CityHeaven-style anchor bar) - */
+.quick-nav-bar {
+  display: flex; flex-wrap: wrap; gap: 4px 8px; overflow-x: auto;
+  background: #2a2226; border-radius: var(--radius); padding: 10px 14px;
+}
+.quick-nav-item {
+  color: #fff; font-size: .85rem; font-weight: bold; white-space: nowrap;
+  padding: 4px 10px; border-radius: 4px; display: flex; align-items: center; gap: 4px;
+}
+.quick-nav-item:hover { background: rgba(255, 255, 255, .12); text-decoration: none; }
+.quick-nav-badge {
+  background: var(--brand); color: #fff; font-size: .65rem; font-weight: bold;
+  padding: 1px 5px; border-radius: 8px; white-space: nowrap;
+}

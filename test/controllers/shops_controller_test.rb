@@ -300,4 +300,48 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_select "div.obi-block > div.obi-header", text: "クーポン"
     assert_select "div.obi-block > div.obi-header", text: "口コミ"
   end
+
+  test "the quick_nav block only links to sections that actually exist on the page" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
+    shop.shop_page_blocks.create!(block_type: :diaries_list, position: 1)
+
+    get shop_path(shop)
+
+    assert_select "nav.quick-nav-bar" do
+      assert_select "a[href=?]", "#{shop_path(shop)}#top", text: "トップ"
+      assert_select "a[href=?]", "#{shop_path(shop)}#block-diaries_list", text: "写メ日記"
+      assert_select "a[href=?]", "#{shop_path(shop)}#casts", text: "女の子"
+      assert_select "a[href=?]", "#{shop_path(shop)}#reviews", text: "口コミ"
+      assert_select "a", text: "出勤情報", count: 0
+      assert_select "a", text: "動画", count: 0
+      assert_select "a", text: "クーポン", count: 0
+      assert_select "a", text: "求人情報", count: 0
+    end
+  end
+
+  test "the quick_nav block shows a new-arrival badge next to 女の子 when the shop has a trial cast" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
+    create_cast(shop: shop, is_trial: true)
+
+    get shop_path(shop)
+
+    assert_select "nav.quick-nav-bar a", text: /女の子.*新人入店/m
+  end
+
+  test "the quick_nav block links to coupons and recruiting when they're present" do
+    shop = create_shop(recruiting_cast: true)
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
+    shop.shop_page_blocks.create!(block_type: :recruiting, position: 1)
+    Coupon.create!(shop: shop, title: "テストクーポン", course_name: "60分コース", regular_price: 12_000, discounted_price: 10_000, valid_from: Date.current)
+
+    get shop_path(shop)
+
+    assert_select "nav.quick-nav-bar a[href=?]", "#{shop_path(shop)}#coupons", text: "クーポン"
+    assert_select "nav.quick-nav-bar a[href=?]", "#{shop_path(shop)}#block-recruiting", text: "求人情報"
+  end
 end

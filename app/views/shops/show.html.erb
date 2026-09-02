@@ -4,7 +4,7 @@
   <% content_for :og_image, rails_blob_url(@shop.photos.first, host: request.base_url) %>
 <% end %>
 
-<div class="shop-theme-page" style="<%= shop_page_theme_style(@shop) %>">
+<div class="shop-theme-page" style="<%= shop_page_theme_style(@shop) %>" id="top">
 
 <% if member_signed_in? && (membership = current_member.shop_memberships.find_by(shop: @shop)) %>
   <div class="shop-member-rank-badge">
@@ -41,10 +41,16 @@
 <% end %>
 
 <%# Blocks below are freely composed/ordered/hidden by the shop admin from
-    /shop_admin/shop_page_blocks — see ShopPageBlock. %>
+    /shop_admin/shop_page_blocks — see ShopPageBlock. The quick_nav block
+    links by #block-<type> anchor, so the FIRST block of each type gets
+    that id (a shop can have several blocks of the same type, e.g. two
+    price_table blocks, so later ones are left unanchored to avoid
+    duplicate ids). %>
+<% anchored_block_types = Set.new %>
 <% @shop.shop_page_blocks.visible.each do |block| %>
   <% next if block.block_type == "recruiting" && !(@shop.recruiting_cast? || @shop.recruiting_staff?) %>
-  <div class="obi-block<%= " no-header" if block.hide_header? %>">
+  <% anchor_id = "block-#{block.block_type}" if anchored_block_types.add?(block.block_type) %>
+  <div class="obi-block<%= " no-header" if block.hide_header? %>" <%= "id=\"#{anchor_id}\"".html_safe if anchor_id %>>
     <% unless block.hide_header? %>
       <div class="obi-header"><%= block.label %></div>
     <% end %>
@@ -54,7 +60,7 @@
   </div>
 <% end %>
 
-<div class="obi-block">
+<div class="obi-block" id="casts">
   <div class="obi-header">在籍キャスト</div>
   <div class="obi-body">
     <div class="cast-grid">

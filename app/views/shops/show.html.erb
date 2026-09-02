@@ -54,54 +54,66 @@
   </div>
 <% end %>
 
-<h2>在籍キャスト</h2>
-<div class="cast-grid">
-  <% @casts.each do |cast| %>
-    <%= render "casts/cast_card", cast: cast %>
-  <% end %>
+<div class="obi-block">
+  <div class="obi-header">在籍キャスト</div>
+  <div class="obi-body">
+    <div class="cast-grid">
+      <% @casts.each do |cast| %>
+        <%= render "casts/cast_card", cast: cast %>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 <%= render "present_tickets", shop: @shop %>
 
 <% if @coupons.any? %>
-  <h2 id="coupons">クーポン</h2>
-  <div class="coupon-detail-actions">
-    <button type="button" class="btn coupon-print-btn" onclick="window.print()">🖨️ このページを印刷する</button>
-    <%= mail_to "", "✉️ このページのURLを送る", subject: "#{@shop.name}のクーポン", body: request.original_url, class: "btn secondary" %>
-  </div>
-  <p class="coupon-detail-warning">※各クーポンの利用条件を必ずご確認ください。</p>
+  <div class="obi-block">
+    <div class="obi-header" id="coupons">クーポン</div>
+    <div class="obi-body">
+      <div class="coupon-detail-actions">
+        <button type="button" class="btn coupon-print-btn" onclick="window.print()">🖨️ このページを印刷する</button>
+        <%= mail_to "", "✉️ このページのURLを送る", subject: "#{@shop.name}のクーポン", body: request.original_url, class: "btn secondary" %>
+      </div>
+      <p class="coupon-detail-warning">※各クーポンの利用条件を必ずご確認ください。</p>
 
-  <% @coupons.each do |coupon| %>
-    <%= render "coupons/coupon_detail", coupon: coupon, cheapest: @cheapest_coupon_ids.include?(coupon.id), show_shop: true %>
-  <% end %>
+      <% @coupons.each do |coupon| %>
+        <%= render "coupons/coupon_detail", coupon: coupon, cheapest: @cheapest_coupon_ids.include?(coupon.id), show_shop: true %>
+      <% end %>
+    </div>
+  </div>
 <% end %>
 
-<h2 id="reviews">口コミ</h2>
-<%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
-<% @reviews.each do |review| %>
-  <div class="card">
-    <p class="stars">評価: <%= review.rating %> / 5</p>
-    <% if review.body.to_s.length > 100 %>
-      <details class="review-body">
-        <summary><%= truncate(review.body, length: 100) %></summary>
-        <p><%= review.body %></p>
-      </details>
-    <% else %>
-      <p><%= review.body %></p>
-    <% end %>
-    <p><small>
-      <%= review.reviewer_name %>
-      <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>
-      - <%= review.created_at.strftime("%Y-%m-%d") %>
-    </small></p>
-    <% if review.shop_reply.present? %>
-      <div class="shop-reply">
-        <p class="shop-reply-label">店舗からの返信</p>
-        <p><%= review.shop_reply %></p>
+<div class="obi-block">
+  <div class="obi-header" id="reviews">口コミ</div>
+  <div class="obi-body">
+    <%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
+    <% @reviews.each do |review| %>
+      <div class="shop-review-item">
+        <p class="stars">評価: <%= review.rating %> / 5</p>
+        <% if review.body.to_s.length > 100 %>
+          <details class="review-body">
+            <summary><%= truncate(review.body, length: 100) %></summary>
+            <p><%= review.body %></p>
+          </details>
+        <% else %>
+          <p><%= review.body %></p>
+        <% end %>
+        <p><small>
+          <%= review.reviewer_name %>
+          <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>
+          - <%= review.created_at.strftime("%Y-%m-%d") %>
+        </small></p>
+        <% if review.shop_reply.present? %>
+          <div class="shop-reply">
+            <p class="shop-reply-label">店舗からの返信</p>
+            <p><%= review.shop_reply %></p>
+          </div>
+        <% end %>
+        <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
       </div>
     <% end %>
-    <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
   </div>
-<% end %>
+</div>
 
 </div>

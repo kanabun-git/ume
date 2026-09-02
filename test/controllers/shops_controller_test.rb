@@ -193,7 +193,7 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
 
     get shop_path(shop)
 
-    assert_select "div.obi-header", count: 0
+    assert_select "div.obi-header", text: "フリーテキスト", count: 0
     assert_select "div.obi-block.no-header" do
       assert_select "div.obi-body.no-header", text: /サンプル本文/
     end
@@ -284,5 +284,20 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "details.review-body", count: 0
     assert_match "良かったです。", response.body
+  end
+
+  test "the cast roster, present tickets, coupons, and reviews sections all share the block title-band style" do
+    shop = create_shop
+    create_cast(shop: shop)
+    PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    Coupon.create!(shop: shop, title: "テストクーポン", course_name: "60分コース", regular_price: 12_000, discounted_price: 10_000, valid_from: Date.current)
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+
+    get shop_path(shop)
+
+    assert_select "div.obi-block > div.obi-header", text: "在籍キャスト"
+    assert_select "div.obi-block > div.obi-header", text: "プレゼント企画"
+    assert_select "div.obi-block > div.obi-header", text: "クーポン"
+    assert_select "div.obi-block > div.obi-header", text: "口コミ"
   end
 end

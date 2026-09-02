@@ -130,13 +130,23 @@ main { padding: 24px 0 60px; }
   box-shadow: var(--shadow-sm);
 }
 
+.present-ticket-item { padding: 14px 0; border-top: 1px solid var(--border); }
+.present-ticket-item:first-child { border-top: none; padding-top: 0; }
 .present-ticket-banner {
   display: block;
-  width: calc(100% + 36px);
+  width: 100%;
   height: auto;
-  margin: -18px -18px 14px -18px;
+  margin: 0 0 14px 0;
+  border-radius: var(--radius);
+}
+.present-ticket-item:first-child .present-ticket-banner {
+  width: calc(100% + 28px);
+  margin: -14px -14px 14px -14px;
   border-radius: var(--radius) var(--radius) 0 0;
 }
+
+.shop-review-item { padding: 14px 0; border-top: 1px solid var(--border); }
+.shop-review-item:first-child { border-top: none; padding-top: 0; }
 
 .shop-reply { background: #faf6f7; border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
 .shop-reply-label { font-weight: bold; color: var(--brand); font-size: .85rem; margin-bottom: 4px; }

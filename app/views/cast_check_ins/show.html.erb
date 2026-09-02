@@ -4,9 +4,9 @@
   <h1><%= @cast.shop.name %></h1>
   <p>担当: <strong><%= @cast.alias_name.presence || @cast.name %></strong></p>
 
-  <% if @already_checked_in_today %>
-    <p class="tag-badge warning">本日はすでにチェックイン済みです</p>
-    <p>1日1回まで記録されます。次回のご来店時にまたQRコードを読み込んでください。</p>
+  <% if @in_cooldown %>
+    <p class="tag-badge warning">前回のチェックインから間もないため記録されませんでした</p>
+    <p>2重にポイントが付与されるのを防ぐため、前回の記録から<%= CastCheckInsController::COOLDOWN_MINUTES %>分以内は記録できません。<%= l @cooldown_ends_at, format: :short %>以降に再度QRコードを読み込んでください。</p>
   <% else %>
     <p class="tag-badge">来店を記録しました</p>
   <% end %>

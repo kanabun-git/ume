@@ -25,4 +25,21 @@ class CastBusinessCardPdfTest < ActiveSupport::TestCase
 
     assert pdf.start_with?("%PDF")
   end
+
+  test "individual cast cards print the cast's name" do
+    cast = create_cast(name: "個別カード確認")
+
+    renderer = CastBusinessCardPdf.new(base_url: "https://fuzoku-zero.com", layout: :a_one_10up, show_name: true)
+
+    assert_equal "個別カード確認", renderer.card_display_name(cast)
+  end
+
+  test "the bulk shop roster print omits each cast's name" do
+    cast = create_cast(name: "一括カード確認")
+
+    renderer = CastBusinessCardPdf.new(base_url: "https://fuzoku-zero.com", layout: :a_one_10up, show_name: false)
+
+    assert_nil renderer.card_display_name(cast)
+  end
+
 end

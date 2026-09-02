@@ -33,17 +33,32 @@ class CastBusinessCardPdf
   FONT_PATH = Rails.root.join("vendor/fonts/ipa_gothic/ipag.ttf")
   LOGO_PATH = Rails.root.join("app/assets/images/site_logo_square.jpg")
 
+  # The cast's own card (downloaded from her cast portal) shows her name;
+  # the shop's bulk roster print does not -- a stack of cards handed out at
+  # the shop is meant to be interchangeable, not personally identifying.
   def self.for_cast(cast, base_url:, layout: :a_one_10up)
-    new(base_url: base_url, layout: layout).render([cast])
+    new(base_url: base_url, layout: layout, show_name: true).render([cast])
   end
 
   def self.for_casts(casts, base_url:, layout: :a_one_10up)
-    new(base_url: base_url, layout: layout).render(casts)
+    new(base_url: base_url, layout: layout, show_name: false).render(casts)
   end
 
-  def initialize(base_url:, layout:)
+  def initialize(base_url:, layout:, show_name: true)
     @base_url = base_url
     @layout = LAYOUTS.fetch(layout)
+    @show_name = show_name
+  end
+
+  # The cast's display name if this instance prints it on the card, nil
+  # otherwise -- exposed as its own method (rather than only inline inside
+  # draw_card) so the show/hide decision can be asserted directly, without
+  # having to parse rendered PDF glyph content (Prawn embeds Japanese text
+  # as CID-indexed glyphs, not literal searchable UTF-8 bytes).
+  def card_display_name(cast)
+    return nil unless @show_name
+
+    cast.alias_name.presence || cast.name
   end
 
   def render(casts)
@@ -110,10 +125,16 @@ class CastBusinessCardPdf
       text_width = width - qr_size - padding * 3
       document.image LOGO_PATH.to_s, at: [padding, height - padding], width: 12
 
+      display_name = card_display_name(cast)
+
       document.text_box "FuzokuZero", at: [padding, height - padding - 15], width: text_width, height: 8, size: 6, color: "888888", overflow: :shrink_to_fit
       document.text_box "来店ポイントカード", at: [padding, height - padding - 22], width: text_width, height: 8, size: 6, color: "888888", overflow: :shrink_to_fit
-      document.text_box cast.shop.name, at: [padding, height - padding - 32], width: text_width, height: 10, size: 7, style: :bold, overflow: :shrink_to_fit
-      document.text_box (cast.alias_name.presence || cast.name).to_s, at: [padding, height - padding - 42], width: text_width, height: 16, size: 11, style: :bold, overflow: :shrink_to_fit
+      if display_name
+        document.text_box cast.shop.name, at: [padding, height - padding - 32], width: text_width, height: 10, size: 7, style: :bold, overflow: :shrink_to_fit
+        document.text_box display_name.to_s, at: [padding, height - padding - 42], width: text_width, height: 16, size: 11, style: :bold, overflow: :shrink_to_fit
+      else
+        document.text_box cast.shop.name, at: [padding, height - padding - 34], width: text_width, height: 24, size: 10, style: :bold, overflow: :shrink_to_fit
+      end
       document.text_box "QRを読み込んで\n来店ポイントGET", at: [padding, padding + 14], width: text_width, height: 14, size: 6, color: "555555", overflow: :shrink_to_fit
     end
   end

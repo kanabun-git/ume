@@ -5,13 +5,23 @@
 # sign-in/sign-up, then redirected back here by
 # ApplicationController#after_sign_in_path_for.
 class CastCheckInsController < ApplicationController
+  # Blocks a second QR scan too soon after the last one, regardless of
+  # which cast's QR either scan was -- guards against the same visit
+  # earning points/rank progress twice (an accidental double tap, a phone
+  # camera app scanning the same code repeatedly, re-opening the link from
+  # browser history, etc), while still allowing a genuinely separate visit
+  # later the same day.
+  COOLDOWN_MINUTES = 60
+
   before_action :set_cast
 
   def show
     if member_signed_in?
       @membership = find_or_create_membership
-      @already_checked_in_today = @membership.shop_visits.where(visited_at: Time.zone.now.all_day).exists?
-      @visit = record_check_in! unless @already_checked_in_today
+      last_visit = @membership.shop_visits.first
+      @cooldown_ends_at = last_visit && last_visit.visited_at + COOLDOWN_MINUTES.minutes
+      @in_cooldown = @cooldown_ends_at.present? && Time.current < @cooldown_ends_at
+      @visit = record_check_in! unless @in_cooldown
     else
       session[:pending_cast_check_in_token] = params[:token]
       redirect_to new_member_session_path, notice: "来店ポイントを記録するには会員ログイン(初めての方は会員登録)が必要です。"

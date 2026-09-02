@@ -41,31 +41,12 @@
       create_path: shop_admin_shop_membership_shop_visits_path(@shop_membership),
       edit_path: ->(visit) { edit_shop_admin_shop_membership_shop_visit_path(@shop_membership, visit) } %>
 
-<div class="card">
-  <h2>ポイント利用</h2>
-  <%= form_with url: shop_admin_shop_membership_shop_point_redemptions_path(@shop_membership), method: :post, local: true, class: "form" do %>
-    <label>利用ポイント数</label>
-    <%= number_field_tag "shop_point_redemption[amount]", nil %>
-
-    <label>利用内容</label>
-    <%= text_field_tag "shop_point_redemption[reason]" %>
-
-    <%= submit_tag "ポイントを利用する", class: "btn" %>
-  <% end %>
-
-  <table class="admin-table">
-    <thead><tr><th>日時</th><th>ポイント増減</th><th>内容</th></tr></thead>
-    <tbody>
-      <% @shop_point_transactions.each do |transaction| %>
-        <tr>
-          <td><%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %></td>
-          <td><%= transaction.amount.positive? ? "+" : "" %><%= transaction.amount %>pt</td>
-          <td><%= transaction.reason %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= render "shop_memberships/point_transactions",
+      transactions: @shop_point_transactions,
+      redeem_path: shop_admin_shop_membership_shop_point_redemptions_path(@shop_membership),
+      transactions_path: shop_admin_shop_membership_shop_point_transactions_path(@shop_membership),
+      edit_transaction_path: ->(t) { edit_shop_admin_shop_membership_shop_point_transaction_path(@shop_membership, t) },
+      destroy_transaction_path: ->(t) { shop_admin_shop_membership_shop_point_transaction_path(@shop_membership, t) } %>
 
 <div class="card">
   <h2>ランクアップ特典</h2>

@@ -213,6 +213,7 @@ Rails.application.routes.draw do
       collection { get :check_in_cards }
       resources :shop_visits, only: [:create, :edit, :update]
       resources :shop_point_redemptions, only: [:create]
+      resources :shop_point_transactions, only: [:create, :edit, :update, :destroy]
       resources :shop_member_benefit_grants, only: [] do
         member { patch :mark_used }
       end
@@ -272,6 +273,7 @@ Rails.application.routes.draw do
         collection { get :check_in_cards }
         resources :shop_visits, only: [:create, :edit, :update]
         resources :shop_point_redemptions, only: [:create]
+        resources :shop_point_transactions, only: [:create, :edit, :update, :destroy]
         resources :shop_member_benefit_grants, only: [] do
           member { patch :mark_used }
         end

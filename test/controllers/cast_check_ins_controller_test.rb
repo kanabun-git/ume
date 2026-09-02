@@ -18,7 +18,7 @@ class CastCheckInsControllerTest < ActionDispatch::IntegrationTest
     assert visit.checked_in_by_qr?
   end
 
-  test "scanning the same cast's QR twice in one day only records one visit" do
+  test "scanning again within 60 minutes does not record a second visit" do
     shop = create_shop
     cast = create_cast(shop: shop)
     member = create_member
@@ -28,9 +28,38 @@ class CastCheckInsControllerTest < ActionDispatch::IntegrationTest
     get cast_check_in_path(cast.checkin_token)
 
     assert_response :success
-    assert_match "本日はすでにチェックイン済みです", response.body
+    assert_match "記録されませんでした", response.body
     membership = shop.shop_memberships.find_by(member: member)
     assert_equal 1, membership.visit_count
+  end
+
+  test "scanning a different cast's QR within 60 minutes still does not record a second visit" do
+    shop = create_shop
+    cast_a = create_cast(shop: shop)
+    cast_b = create_cast(shop: shop)
+    member = create_member
+    sign_in member
+
+    get cast_check_in_path(cast_a.checkin_token)
+    get cast_check_in_path(cast_b.checkin_token)
+
+    membership = shop.shop_memberships.find_by(member: member)
+    assert_equal 1, membership.visit_count
+  end
+
+  test "scanning again after 60 minutes have passed records a new visit" do
+    shop = create_shop
+    cast = create_cast(shop: shop)
+    member = create_member
+    membership = shop.shop_memberships.create!(member: member)
+    membership.record_visit!(visited_at: 61.minutes.ago, cast: cast, checked_in_by_qr: true)
+    sign_in member
+
+    get cast_check_in_path(cast.checkin_token)
+
+    assert_response :success
+    assert_match "来店を記録しました", response.body
+    assert_equal 2, membership.reload.visit_count
   end
 
   test "a signed-out visitor is redirected to sign in and returned to the check-in after logging in" do

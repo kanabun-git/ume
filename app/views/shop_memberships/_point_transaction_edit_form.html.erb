@@ -1,0 +1,13 @@
+<h1>ポイント履歴の編集</h1>
+
+<%= form_with url: update_path, method: :patch, local: true, class: "form" do %>
+  <label>増減ポイント数(マイナス可)</label>
+  <%= number_field_tag "shop_point_transaction[amount]", shop_point_transaction.amount %>
+
+  <label>内容</label>
+  <%= text_field_tag "shop_point_transaction[reason]", shop_point_transaction.reason %>
+
+  <%= submit_tag "更新する", class: "btn" %>
+<% end %>
+
+<%= link_to "会員詳細に戻る", back_path %>

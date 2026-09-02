@@ -1,0 +1,43 @@
+<div class="card">
+  <h2>ポイント管理</h2>
+
+  <h3>ポイント利用(会員が実際に使った分を記録)</h3>
+  <%= form_with url: redeem_path, method: :post, local: true, class: "form" do %>
+    <label>利用ポイント数</label>
+    <%= number_field_tag "shop_point_redemption[amount]", nil %>
+
+    <label>利用内容</label>
+    <%= text_field_tag "shop_point_redemption[reason]" %>
+
+    <%= submit_tag "ポイントを利用する", class: "btn" %>
+  <% end %>
+
+  <h3>ポイントを手動で付与・修正する</h3>
+  <p><small>付与はプラスの数値、取り消し・修正はマイナスの数値を入力してください。残高に関わらず記録できます。</small></p>
+  <%= form_with url: transactions_path, method: :post, local: true, class: "form" do %>
+    <label>増減ポイント数(マイナス可)</label>
+    <%= number_field_tag "shop_point_transaction[amount]", nil %>
+
+    <label>内容</label>
+    <%= text_field_tag "shop_point_transaction[reason]" %>
+
+    <%= submit_tag "記録する", class: "btn secondary" %>
+  <% end %>
+
+  <table class="admin-table">
+    <thead><tr><th>日時</th><th>ポイント増減</th><th>内容</th><th></th></tr></thead>
+    <tbody>
+      <% transactions.each do |transaction| %>
+        <tr>
+          <td><%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= transaction.amount.positive? ? "+" : "" %><%= transaction.amount %>pt</td>
+          <td><%= transaction.reason %></td>
+          <td>
+            <%= link_to "編集", edit_transaction_path.call(transaction) %>
+            <%= button_to "削除", destroy_transaction_path.call(transaction), method: :delete, class: "btn secondary", form: { data: { turbo_confirm: "削除してよろしいですか?" } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

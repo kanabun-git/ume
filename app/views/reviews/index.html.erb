@@ -1,0 +1,44 @@
+<% content_for :title, "#{@shop.name}の口コミ | FuzokuZero" %>
+<% content_for :meta_description, "#{@shop.name}に寄せられた口コミ一覧です。" %>
+
+<p><%= link_to "← #{@shop.name}のページに戻る", shop_path(@shop) %></p>
+
+<h1><%= @shop.name %> の口コミ</h1>
+<p>平均評価: <%= @shop.average_rating || "-" %> / 5(<%= @reviews.total_count %>件)</p>
+<%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
+
+<div class="obi-block">
+  <div class="obi-body">
+    <% if @reviews.any? %>
+      <% @reviews.each do |review| %>
+        <div class="shop-review-item">
+          <p class="stars">評価: <%= review.rating %> / 5</p>
+          <% if review.body.to_s.length > 100 %>
+            <details class="review-body">
+              <summary><%= truncate(review.body, length: 100) %></summary>
+              <p><%= review.body %></p>
+            </details>
+          <% else %>
+            <p><%= review.body %></p>
+          <% end %>
+          <p><small>
+            <%= review.reviewer_name %>
+            <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>
+            - <%= review.created_at.strftime("%Y-%m-%d") %>
+          </small></p>
+          <% if review.shop_reply.present? %>
+            <div class="shop-reply">
+              <p class="shop-reply-label">店舗からの返信</p>
+              <p><%= review.shop_reply %></p>
+            </div>
+          <% end %>
+          <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>まだ口コミの投稿がありません。</p>
+    <% end %>
+  </div>
+</div>
+
+<%= paginate @reviews %>

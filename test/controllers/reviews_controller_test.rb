@@ -1,6 +1,38 @@
 require "test_helper"
 
 class ReviewsControllerTest < ActionDispatch::IntegrationTest
+  test "the index page lists a shop's approved reviews" do
+    shop = create_shop
+    shop.reviews.create!(reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+    shop.reviews.create!(reviewer_name: "テスト花子", body: "微妙でした。", rating: 2, status: :pending)
+
+    get shop_reviews_path(shop)
+
+    assert_response :success
+    assert_match "良かったです。", response.body
+    assert_no_match "微妙でした。", response.body
+  end
+
+  test "a long review body is folded into a collapsible details element on the index page" do
+    shop = create_shop
+    long_body = "とても良かったです。" * 20
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: long_body, rating: 5, status: :approved)
+
+    get shop_reviews_path(shop)
+
+    assert_select "details.review-body p", text: long_body
+  end
+
+  test "a short review body is shown plainly without folding on the index page" do
+    shop = create_shop
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+
+    get shop_reviews_path(shop)
+
+    assert_select "details.review-body", count: 0
+    assert_match "良かったです。", response.body
+  end
+
   test "a normal review submission is saved" do
     shop = create_shop
 

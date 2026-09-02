@@ -26,7 +26,6 @@ class ShopsController < ApplicationController
       ShopDailyView.record!(@shop)
     end
     @casts = @shop.casts.visible
-    @reviews = @shop.approved_reviews.limit(10)
     @coupons = @shop.coupons.active
     @cheapest_coupon_ids = Coupon.cheapest_ids_by_course
   end

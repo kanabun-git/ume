@@ -77,7 +77,7 @@ Rails.application.routes.draw do
   resources :genres, only: [:show], param: :slug
   resources :casts, only: [:index, :show]
   resources :shops, only: [:index, :show] do
-    resources :reviews, only: [:new, :create] do
+    resources :reviews, only: [:index, :new, :create] do
       member { post :helpful }
     end
     resource :shop_membership, only: [:create]

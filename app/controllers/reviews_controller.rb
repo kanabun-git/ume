@@ -1,6 +1,10 @@
 class ReviewsController < ApplicationController
   before_action :set_shop
 
+  def index
+    @reviews = @shop.approved_reviews.page(params[:page])
+  end
+
   def new
     @review = @shop.reviews.build
     authorize @review

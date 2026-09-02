@@ -50,7 +50,7 @@
 <% @shop.shop_page_blocks.visible.each do |block| %>
   <% next if block.block_type == "recruiting" && !(@shop.recruiting_cast? || @shop.recruiting_staff?) %>
   <% anchor_id = "block-#{block.block_type}" if anchored_block_types.add?(block.block_type) %>
-  <div class="obi-block<%= " no-header" if block.hide_header? %>" <%= "id=\"#{anchor_id}\"".html_safe if anchor_id %>>
+  <div class="obi-block obi-block-<%= block.block_type %><%= " no-header" if block.hide_header? %>" <%= "id=\"#{anchor_id}\"".html_safe if anchor_id %>>
     <% unless block.hide_header? %>
       <div class="obi-header"><%= block.label %></div>
     <% end %>
@@ -89,37 +89,5 @@
     </div>
   </div>
 <% end %>
-
-<div class="obi-block">
-  <div class="obi-header" id="reviews">口コミ</div>
-  <div class="obi-body">
-    <%= link_to "口コミを投稿する", new_shop_review_path(@shop), class: "btn" %>
-    <% @reviews.each do |review| %>
-      <div class="shop-review-item">
-        <p class="stars">評価: <%= review.rating %> / 5</p>
-        <% if review.body.to_s.length > 100 %>
-          <details class="review-body">
-            <summary><%= truncate(review.body, length: 100) %></summary>
-            <p><%= review.body %></p>
-          </details>
-        <% else %>
-          <p><%= review.body %></p>
-        <% end %>
-        <p><small>
-          <%= review.reviewer_name %>
-          <% if review.member&.rank %><span class="tag-badge"><%= review.member.rank.name %></span><% end %>
-          - <%= review.created_at.strftime("%Y-%m-%d") %>
-        </small></p>
-        <% if review.shop_reply.present? %>
-          <div class="shop-reply">
-            <p class="shop-reply-label">店舗からの返信</p>
-            <p><%= review.shop_reply %></p>
-          </div>
-        <% end %>
-        <%= button_to "👍 役に立った (#{review.review_helpful_votes.count})", helpful_shop_review_path(@shop, review), method: :post, class: "btn secondary" %>
-      </div>
-    <% end %>
-  </div>
-</div>
 
 </div>

@@ -61,7 +61,7 @@
         <% end %>
       </dl>
 
-      <%= link_to "口コミ:#{shop.approved_reviews.count}件", shop_path(shop, anchor: "reviews"), class: "shop-listing-review-link" %>
+      <%= link_to "口コミ:#{shop.approved_reviews.count}件", shop_reviews_path(shop), class: "shop-listing-review-link" %>
 
       <p class="shop-listing-catch"><%= truncate(shop.catch_copy.to_s, length: 60) %></p>
 

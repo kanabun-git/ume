@@ -991,6 +991,7 @@ img, video, iframe { max-width: 100%; }
 }
 
 /* --- Shop page quick-jump nav block (mirrors CityHeaven-style anchor bar) - */
+.obi-block-quick_nav { margin-bottom: 0; }
 .quick-nav-bar {
   display: flex; flex-wrap: wrap; gap: 4px 8px; overflow-x: auto;
   background: #2a2226; border-radius: var(--radius); padding: 10px 14px;

@@ -12,6 +12,15 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes @response.body, "池袋サンプル店"
   end
 
+  test "the shop card's review count links to the shop's dedicated reviews page" do
+    shop = create_shop
+    shop.reviews.create!(reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+
+    get shops_path
+
+    assert_select "a.shop-listing-review-link[href=?]", shop_reviews_path(shop), text: "口コミ:1件"
+  end
+
   test "max_price filters out shops priced above the ceiling" do
     cheap = create_shop(min_price: 10_000)
     create_shop(min_price: 30_000)
@@ -266,39 +275,26 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_match "応募する", response.body
   end
 
-  test "a long review body is folded into a collapsible details element" do
-    shop = create_shop
-    long_body = "とても良かったです。" * 20
-    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: long_body, rating: 5, status: :approved)
-
-    get shop_path(shop)
-
-    assert_select "details.review-body p", text: long_body
-  end
-
-  test "a short review body is shown plainly without folding" do
-    shop = create_shop
-    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
-
-    get shop_path(shop)
-
-    assert_select "details.review-body", count: 0
-    assert_match "良かったです。", response.body
-  end
-
-  test "the cast roster, present tickets, coupons, and reviews sections all share the block title-band style" do
+  test "the cast roster, present tickets, and coupons sections all share the block title-band style" do
     shop = create_shop
     create_cast(shop: shop)
     PresentTicket.create!(shop: shop, name: "テスト企画", capacity: 1, deadline_at: 1.day.from_now)
     Coupon.create!(shop: shop, title: "テストクーポン", course_name: "60分コース", regular_price: 12_000, discounted_price: 10_000, valid_from: Date.current)
-    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
 
     get shop_path(shop)
 
     assert_select "div.obi-block > div.obi-header", text: "在籍キャスト"
     assert_select "div.obi-block > div.obi-header", text: "プレゼント企画"
     assert_select "div.obi-block > div.obi-header", text: "クーポン"
-    assert_select "div.obi-block > div.obi-header", text: "口コミ"
+  end
+
+  test "reviews are not rendered inline on the shop page -- they live on their own page" do
+    shop = create_shop
+    Review.create!(shop: shop, reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+
+    get shop_path(shop)
+
+    assert_no_match "良かったです。", response.body
   end
 
   test "the quick_nav block only links to sections that actually exist on the page" do
@@ -313,7 +309,7 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?]", "#{shop_path(shop)}#top", text: "トップ"
       assert_select "a[href=?]", "#{shop_path(shop)}#block-diaries_list", text: "写メ日記"
       assert_select "a[href=?]", "#{shop_path(shop)}#casts", text: "女の子"
-      assert_select "a[href=?]", "#{shop_path(shop)}#reviews", text: "口コミ"
+      assert_select "a[href=?]", shop_reviews_path(shop), text: "口コミ"
       assert_select "a", text: "出勤情報", count: 0
       assert_select "a", text: "動画", count: 0
       assert_select "a", text: "クーポン", count: 0

@@ -372,6 +372,61 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 7-3. 運営会社コーポレートサイトの別ドメイン設定(www.puremint.jp)
+
+運営会社(有限会社ピュアミント)の紹介サイト(会社概要・事業内容・アクセス・お問い合わせ)は、ポータルサイトとは切り離した独立したサイトとして **https://www.puremint.jp/** (トップページそのもの)で提供します。
+
+7-1/7-2と同じ仕組みで、同じアプリ・同じデータベースをそのまま使います。設定は以下だけです。
+
+1. DNS側で`puremint.jp`と`www.puremint.jp`のAレコードをこのVPSのIPに向ける(手順7と同様)。
+2. `/etc/systemd/system/ume-puma.service`に環境変数を追加します。
+
+   ```ini
+   Environment=PUREMINT_HOST=www.puremint.jp
+   ```
+
+   設定後、`sudo systemctl daemon-reload && sudo systemctl restart ume-puma`。`PUREMINT_HOST`を設定すると、
+
+   - コーポレートサイトの各ページは**このドメインでしか開けなくなり**、かつURLの接頭辞なし(`/`が会社紹介トップ、`/company`が会社概要 …)で提供されます(`fuzoku-zero.com`側では引き続き`/corporate`配下でしか開けません)
+   - 逆にこのドメインでは、コーポレートサイトの各ページ(と静的アセット)**以外は何も配信されない**(ポータルサイトのトップページや`/admin`、Deviseの`/users`ログインルートにアクセスしても404)
+
+   という双方向の切り離しが有効になります。
+
+3. nginxに、このドメイン用のserver blockを追加します(`server_name`だけが違う、手順7と同じ内容のブロック)。
+
+   ```nginx
+   server {
+       listen 80;
+       server_name puremint.jp www.puremint.jp;
+
+       location /assets/ {
+           root /home/deploy/ume/public;
+           expires max;
+           add_header Cache-Control public;
+       }
+
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+   ```
+
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   sudo certbot --nginx -d puremint.jp -d www.puremint.jp
+   ```
+
+4. 会社概要ページの住所・代表者名・資本金などは`app/models/corporate/company.rb`にプレースホルダーとして定義されています。公開前に実際の登記情報へ差し替えてリポジトリにコミットし、`bin/deploy`で反映してください。
+
+この設定を行わない場合(環境変数を設定しない場合)は、`/corporate`はどのドメインからでも開けます(開発環境と同じ挙動)。
+
+---
+
 ## 8. メール送信(Postfix)の設定
 
 **Vシリーズはリレーサーバー不要・直接送信可能**です。追加の設定なしで動くはずですが、以下だけ確認してください。

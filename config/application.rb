@@ -1,6 +1,7 @@
 require_relative "boot"
 require_relative "../app/middleware/maintenance_mode_middleware"
 require_relative "../app/middleware/mail_admin_host_middleware"
+require_relative "../app/middleware/puremint_host_middleware"
 
 require "rails/all"
 
@@ -44,6 +45,10 @@ module Ume
     # On the mail address management domain (MAIL_ADMIN_HOST), serve only that
     # screen -- the portal and its other back offices don't exist there.
     config.middleware.use MailAdminHostMiddleware
+
+    # On the corporate site domain (PUREMINT_HOST), serve only /corporate --
+    # the portal and its back offices don't exist there either.
+    config.middleware.use PuremintHostMiddleware
 
     # メールアドレス管理画面では、メールソフトの設定に必要なため、メールボックスの
     # パスワードを後から確認できるようにしている(app/models/mail_account.rb)。

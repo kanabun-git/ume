@@ -24,6 +24,40 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
+  # --- 有限会社ピュアミント コーポレートサイト (puremint.jp) ---
+  # 風俗ポータル本体(FuzokuZero)とは無関係な、運営会社そのものの紹介サイト。
+  # PUREMINT_HOST を設定すると(本番ではwww.puremint.jpを想定)、そのドメイン
+  # でしか開けなくなる -- 他の2サイトと同じ仕組み(CAST_PORTAL_HOST/
+  # MAIL_ADMIN_HOSTのconstraints参照)。開発・テストではホスト名を用意
+  # しなくても触れるよう制約を外す。
+  #
+  # URLパスの接頭辞(path:)だけ、PUREMINT_HOSTの有無で切り替える--
+  # 本番でそのドメイン専用になる場合は https://www.puremint.jp/ をそのまま
+  # トップページにしたいので接頭辞なし(空文字)、ポータル本体と同居する
+  # 開発・テストでは既存の "/" (top#index) と衝突しないよう "/corporate"
+  # の下に置く。コントローラのnamespace(module:)とURLヘルパー名(as:)は
+  # どちらの場合も "corporate" のまま変わらないので、ビュー側は変更不要。
+  #
+  # 下の`root "top#index"`より前に置く必要がある -- ルーティングは定義順に
+  # マッチが試されるため、後ろに置くとホストを問わず`root "top#index"`が
+  # 先にマッチしてしまい、www.puremint.jp の "/" がポータルのゲートページ
+  # になってしまう。
+  corporate_routes = lambda do |path_prefix|
+    namespace :corporate, path: path_prefix do
+      root to: "pages#index"
+      get "company", to: "pages#company", as: :company
+      get "business", to: "pages#business", as: :business
+      get "access", to: "pages#access", as: :access
+      resources :inquiries, only: [:new, :create]
+    end
+  end
+
+  if ENV["PUREMINT_HOST"].present?
+    constraints(host: ENV["PUREMINT_HOST"]) { corporate_routes.call("") }
+  else
+    corporate_routes.call("corporate")
+  end
+
   # Age-gate / region-picker splash page shown before the region-scoped
   # TOP page (see HomeController#index below).
   root "top#index"

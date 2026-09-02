@@ -1,0 +1,27 @@
+<% content_for :title, "#{Corporate::Company::NAME} | コーポレートサイト" %>
+
+<section class="corporate-hero">
+  <div class="container">
+    <%= image_tag "corporate/logo.png", alt: @company::NAME, class: "corporate-hero-logo" %>
+    <p class="corporate-hero-lead">インターネットを通じて、人と情報をつなぐ事業を展開しています。</p>
+  </div>
+</section>
+
+<section class="corporate-section container">
+  <h2>事業内容</h2>
+  <div class="corporate-cards">
+    <%= render partial: "business_line", collection: @company::BUSINESS_LINES, as: :line, locals: { heading_tag: :h3 } %>
+  </div>
+  <p><%= link_to "事業内容の詳細を見る →", corporate_business_path, class: "corporate-link" %></p>
+</section>
+
+<section class="corporate-section container">
+  <h2>会社概要</h2>
+  <p><%= link_to "会社概要を見る →", corporate_company_path, class: "corporate-link" %></p>
+</section>
+
+<section class="corporate-section corporate-cta container">
+  <h2>お問い合わせ</h2>
+  <p>サービスに関するご質問・お取引に関するご相談は、お気軽にお問い合わせください。</p>
+  <%= link_to "お問い合わせフォームへ", new_corporate_inquiry_path, class: "btn" %>
+</section>

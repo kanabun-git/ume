@@ -15,6 +15,11 @@
         <td><span class="badge <%= "muted" unless shop.approved? %>"><%= status_label(shop) %></span></td>
         <td>
           <span class="badge <%= "muted" unless shop.published? %>"><%= shop.published? ? "公開中" : "非公開(下書き)" %></span>
+          <% if shop.published? %>
+            <%= button_to "非公開にする", unpublish_admin_shop_path(shop), method: :patch %>
+          <% else %>
+            <%= button_to "公開する", publish_admin_shop_path(shop), method: :patch %>
+          <% end %>
           <% if shop.design_change_pending? %>
             <br>
             <span class="badge warning">デザイン変更あり(<%= l shop.design_updated_at, format: :short %>)</span>

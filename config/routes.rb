@@ -217,6 +217,8 @@ Rails.application.routes.draw do
         patch :approve
         patch :suspend
         patch :confirm_design
+        patch :publish
+        patch :unpublish
         delete :destroy_photo
       end
       resources :shop_page_blocks, except: [:show] do

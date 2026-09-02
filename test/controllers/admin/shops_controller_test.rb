@@ -124,6 +124,38 @@ module Admin
       assert shop.reload.photos.attached?
     end
 
+    test "platform admin can publish a shop's page" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop(published: false)
+      sign_in admin
+
+      patch publish_admin_shop_path(shop)
+
+      assert_redirected_to admin_shops_path
+      assert shop.reload.published?
+    end
+
+    test "platform admin can unpublish a shop's page" do
+      admin = create_user(role: :platform_admin)
+      shop = create_shop(published: true)
+      sign_in admin
+
+      patch unpublish_admin_shop_path(shop)
+
+      assert_redirected_to admin_shops_path
+      assert_not shop.reload.published?
+    end
+
+    test "a shop admin cannot publish a shop from the admin namespace" do
+      shop = create_shop(published: false)
+      shop_admin = create_user(role: :shop_admin, shop: shop)
+      sign_in shop_admin
+
+      patch publish_admin_shop_path(shop)
+
+      assert_not shop.reload.published?
+    end
+
     test "index shows a design change notice with a confirm button for a shop that just published" do
       admin = create_user(role: :platform_admin)
       shop = create_shop(design_updated_at: Time.current)

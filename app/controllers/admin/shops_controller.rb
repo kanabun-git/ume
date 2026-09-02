@@ -1,6 +1,6 @@
 module Admin
   class ShopsController < BaseController
-    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend, :confirm_design, :destroy_photo]
+    before_action :set_shop, only: [:show, :edit, :update, :destroy, :approve, :suspend, :confirm_design, :publish, :unpublish, :destroy_photo]
 
     def index
       @shops = policy_scope(::Shop)
@@ -66,6 +66,18 @@ module Admin
       redirect_to admin_shops_path, notice: "#{@shop.name} のデザイン変更を確認済みにしました。"
     end
 
+    def publish
+      authorize @shop, :update?
+      @shop.publish!
+      redirect_to admin_shops_path, notice: "#{@shop.name} の店舗ページを公開しました。"
+    end
+
+    def unpublish
+      authorize @shop, :update?
+      @shop.unpublish!
+      redirect_to admin_shops_path, notice: "#{@shop.name} の店舗ページを非公開(下書き)にしました。"
+    end
+
     def destroy_photo
       @shop.photos.find(params[:photo_id]).purge
       redirect_to edit_admin_shop_path(@shop), notice: "写真を削除しました。"
@@ -75,9 +87,10 @@ module Admin
 
     def set_shop
       @shop = ::Shop.find(params[:id])
-      # approve/suspend authorize explicitly against :manage_status? below,
-      # since ShopPolicy has no approve?/suspend? methods for Pundit to infer.
-      authorize @shop unless %w[approve suspend].include?(action_name)
+      # approve/suspend/publish/unpublish authorize explicitly below, since
+      # ShopPolicy has no approve?/suspend?/publish?/unpublish? methods for
+      # Pundit to infer from the action name.
+      authorize @shop unless %w[approve suspend publish unpublish].include?(action_name)
     end
 
     def shop_params

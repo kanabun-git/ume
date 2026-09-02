@@ -39,8 +39,14 @@ class ReviewsController < ApplicationController
 
   private
 
+  # Mirrors ShopsController#show's preview bypass -- a shop's own admin (or
+  # a platform admin) can preview its unapproved/unpublished shop page, and
+  # that same page links here (the quick-nav block, the shop card's review
+  # count), so this needs to allow the same visitors through or previewing
+  # an unpublished shop would 404 the moment they click into its reviews.
   def set_shop
-    @shop = Shop.visible.find(params[:shop_id])
+    @shop = Shop.find(params[:shop_id])
+    raise ActiveRecord::RecordNotFound unless @shop.visible? || can_preview_shop?(@shop)
   end
 
   def review_params

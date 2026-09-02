@@ -13,6 +13,47 @@ class ReviewsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "微妙でした。", response.body
   end
 
+  test "the reviews page of an unpublished shop is not publicly reachable" do
+    shop = create_shop(published: false)
+
+    get shop_reviews_path(shop)
+
+    assert_response :not_found
+  end
+
+  test "the shop's own admin can preview the reviews page of an unpublished shop" do
+    shop = create_shop(published: false)
+    shop.reviews.create!(reviewer_name: "テスト太郎", body: "良かったです。", rating: 5, status: :approved)
+    user = create_user(role: :shop_admin, shop: shop)
+    sign_in user
+
+    get shop_reviews_path(shop)
+
+    assert_response :success
+    assert_match "良かったです。", response.body
+  end
+
+  test "a platform admin can preview the reviews page of an unpublished shop" do
+    shop = create_shop(published: false)
+    admin = create_user(role: :platform_admin)
+    sign_in admin
+
+    get shop_reviews_path(shop)
+
+    assert_response :success
+  end
+
+  test "another shop's admin cannot preview an unpublished shop's reviews page" do
+    shop = create_shop(published: false)
+    other_shop = create_shop
+    user = create_user(role: :shop_admin, shop: other_shop)
+    sign_in user
+
+    get shop_reviews_path(shop)
+
+    assert_response :not_found
+  end
+
   test "a long review body is folded into a collapsible details element on the index page" do
     shop = create_shop
     long_body = "とても良かったです。" * 20

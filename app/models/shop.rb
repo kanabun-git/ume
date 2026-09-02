@@ -141,7 +141,7 @@ class Shop < ApplicationRecord
   # The default page composition for a newly created shop. Shop admins can
   # freely add/remove/reorder/hide blocks afterwards from their dashboard —
   # this just avoids a blank page on day one.
-  DEFAULT_BLOCK_TYPES = %w[shop_info recruiting image_gallery new_girls diaries_list weekly_schedule coupon free_text].freeze
+  DEFAULT_BLOCK_TYPES = %w[shop_info recruiting image_gallery new_girls diaries_list weekly_schedule coupon free_text casts present_tickets coupons].freeze
 
   def seed_default_page_blocks
     return if shop_page_blocks.any?

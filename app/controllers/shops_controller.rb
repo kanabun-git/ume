@@ -25,8 +25,5 @@ class ShopsController < ApplicationController
       @shop.increment!(:view_count)
       ShopDailyView.record!(@shop)
     end
-    @casts = @shop.casts.visible
-    @coupons = @shop.coupons.active
-    @cheapest_coupon_ids = Coupon.cheapest_ids_by_course
   end
 end

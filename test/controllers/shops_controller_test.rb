@@ -285,7 +285,24 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "div.obi-block > div.obi-header", text: "在籍キャスト"
     assert_select "div.obi-block > div.obi-header", text: "プレゼント企画"
-    assert_select "div.obi-block > div.obi-header", text: "クーポン"
+    assert_select "div.obi-block > div.obi-header", text: "クーポン一覧"
+  end
+
+  test "the cast roster, present tickets, and coupons blocks can be repositioned and hidden like any other block" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    create_cast(shop: shop, name: "非表示テストキャスト")
+    PresentTicket.create!(shop: shop, name: "非表示テスト企画", capacity: 1, deadline_at: 1.day.from_now)
+    Coupon.create!(shop: shop, title: "非表示テストクーポン", course_name: "60分コース", regular_price: 12_000, discounted_price: 10_000, valid_from: Date.current)
+    shop.shop_page_blocks.create!(block_type: :casts, position: 0, visible: false)
+    shop.shop_page_blocks.create!(block_type: :present_tickets, position: 1, visible: false)
+    shop.shop_page_blocks.create!(block_type: :coupons, position: 2, visible: false)
+
+    get shop_path(shop)
+
+    assert_no_match "非表示テストキャスト", response.body
+    assert_no_match "非表示テスト企画", response.body
+    assert_no_match "非表示テストクーポン", response.body
   end
 
   test "reviews are not rendered inline on the shop page -- they live on their own page" do
@@ -302,13 +319,14 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     shop.shop_page_blocks.destroy_all
     shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
     shop.shop_page_blocks.create!(block_type: :diaries_list, position: 1)
+    shop.shop_page_blocks.create!(block_type: :casts, position: 2)
 
     get shop_path(shop)
 
     assert_select "nav.quick-nav-bar" do
       assert_select "a[href=?]", "#{shop_path(shop)}#top", text: "トップ"
       assert_select "a[href=?]", "#{shop_path(shop)}#block-diaries_list", text: "写メ日記"
-      assert_select "a[href=?]", "#{shop_path(shop)}#casts", text: "女の子"
+      assert_select "a[href=?]", "#{shop_path(shop)}#block-casts", text: "女の子"
       assert_select "a[href=?]", shop_reviews_path(shop), text: "口コミ"
       assert_select "a", text: "出勤情報", count: 0
       assert_select "a", text: "動画", count: 0
@@ -321,6 +339,7 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     shop = create_shop
     shop.shop_page_blocks.destroy_all
     shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
+    shop.shop_page_blocks.create!(block_type: :casts, position: 1)
     create_cast(shop: shop, is_trial: true)
 
     get shop_path(shop)
@@ -333,11 +352,12 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     shop.shop_page_blocks.destroy_all
     shop.shop_page_blocks.create!(block_type: :quick_nav, position: 0)
     shop.shop_page_blocks.create!(block_type: :recruiting, position: 1)
+    shop.shop_page_blocks.create!(block_type: :coupons, position: 2)
     Coupon.create!(shop: shop, title: "テストクーポン", course_name: "60分コース", regular_price: 12_000, discounted_price: 10_000, valid_from: Date.current)
 
     get shop_path(shop)
 
-    assert_select "nav.quick-nav-bar a[href=?]", "#{shop_path(shop)}#coupons", text: "クーポン"
+    assert_select "nav.quick-nav-bar a[href=?]", "#{shop_path(shop)}#block-coupons", text: "クーポン"
     assert_select "nav.quick-nav-bar a[href=?]", "#{shop_path(shop)}#block-recruiting", text: "求人情報"
   end
 end

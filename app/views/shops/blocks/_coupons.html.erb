@@ -1,0 +1,11 @@
+<% coupons = shop.coupons.active %>
+<% cheapest_coupon_ids = Coupon.cheapest_ids_by_course %>
+<div class="coupon-detail-actions">
+  <button type="button" class="btn coupon-print-btn" onclick="window.print()">🖨️ このページを印刷する</button>
+  <%= mail_to "", "✉️ このページのURLを送る", subject: "#{shop.name}のクーポン", body: request.original_url, class: "btn secondary" %>
+</div>
+<p class="coupon-detail-warning">※各クーポンの利用条件を必ずご確認ください。</p>
+
+<% coupons.each do |coupon| %>
+  <%= render "coupons/coupon_detail", coupon: coupon, cheapest: cheapest_coupon_ids.include?(coupon.id), show_shop: true %>
+<% end %>

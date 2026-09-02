@@ -71,6 +71,6 @@ group :development do
 end
 
 gem "rqrcode", "~> 3.2"
-gem "prawn", "~> 2.4"
+gem "prawn", "~> 2.5"
 
 gem "matrix", "~> 0.4.3"

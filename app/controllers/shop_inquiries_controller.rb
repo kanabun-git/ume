@@ -6,6 +6,7 @@ class ShopInquiriesController < ApplicationController
 
   def create
     @shop_inquiry = ShopInquiry.new(shop_inquiry_params)
+    @shop_inquiry.ip_address = request.remote_ip
 
     # Honeypot: a field real visitors never see or fill in (see reviews'
     # same pattern in ReviewsController#create). If it's filled, silently

@@ -56,6 +56,7 @@ class ShopInquiriesControllerTest < ActionDispatch::IntegrationTest
       shop_name: "1件目", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222"
     } }
 
+    travel 2.minutes # past ShopInquiry::GLOBAL_COOLDOWN, so this counts as a separate submission
     post shop_inquiries_path, params: { shop_inquiry: {
       shop_name: "2件目(無関係)", contact_name: "担当次郎", email: "other@example.com", phone: "03-3333-4444"
     } }
@@ -81,5 +82,34 @@ class ShopInquiriesControllerTest < ActionDispatch::IntegrationTest
     } }
 
     assert_nil ShopInquiry.last.shop_prospect
+  end
+
+  test "a second submission from the same IP within the cooldown is rejected without emailing" do
+    post shop_inquiries_path, params: { shop_inquiry: {
+      shop_name: "1件目", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222"
+    } }
+
+    assert_no_emails do
+      post shop_inquiries_path, params: { shop_inquiry: {
+        shop_name: "2件目", contact_name: "担当次郎", email: "other@example.com", phone: "03-3333-4444"
+      } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal 1, ShopInquiry.count
+  end
+
+  test "a submission after the cooldown has passed succeeds" do
+    post shop_inquiries_path, params: { shop_inquiry: {
+      shop_name: "1件目", contact_name: "担当太郎", email: "owner@example.com", phone: "03-1111-2222"
+    } }
+
+    travel ShopInquiry::GLOBAL_COOLDOWN + 1.second
+    post shop_inquiries_path, params: { shop_inquiry: {
+      shop_name: "2件目", contact_name: "担当次郎", email: "other@example.com", phone: "03-3333-4444"
+    } }
+
+    assert_response :success
+    assert_equal 2, ShopInquiry.count
   end
 end

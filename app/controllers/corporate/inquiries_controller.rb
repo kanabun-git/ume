@@ -10,6 +10,7 @@ module Corporate
 
     def create
       @inquiry = Corporate::Inquiry.new(inquiry_params)
+      @inquiry.ip_address = request.remote_ip
 
       # Honeypot: a field real visitors never see or fill in (see
       # ShopInquiriesController's same pattern). If it's filled, silently
@@ -20,6 +21,7 @@ module Corporate
 
       if @inquiry.valid?
         CorporateInquiryMailer.notify_admin(@inquiry).deliver_now
+        @inquiry.record_submission!
         render :create
       else
         render :new, status: :unprocessable_entity

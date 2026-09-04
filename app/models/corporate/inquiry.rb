@@ -15,6 +15,12 @@ module Corporate
     # プルダウンの初期選択に渡される)。
     SUBJECTS = ["やどかりペンションお問い合わせ", "その他"].freeze
 
+    # Same lightweight anti-spam cooldown as ShopInquiry/Review, but this
+    # form has no database table of its own to check past submissions
+    # against (see the class comment above) -- a short-lived Rails.cache
+    # entry stands in for what would otherwise be a DB row.
+    GLOBAL_COOLDOWN = 1.minute
+
     attribute :subject, :string
     attribute :name, :string
     attribute :company_name, :string
@@ -25,10 +31,33 @@ module Corporate
     # ShopInquiry's same pattern). Not validated against -- a filled-in
     # value is handled by the controller silently discarding the inquiry.
     attribute :website, :string
+    attr_accessor :ip_address
 
     validates :subject, presence: true, inclusion: { in: SUBJECTS }
     validates :name, presence: true
     validates :email, presence: true
     validates :message, presence: true
+    validate :rate_limit
+
+    def self.rate_limit_cache_key(ip_address)
+      "corporate_inquiry_rate_limit/#{ip_address}"
+    end
+
+    # Called by the controller once the inquiry has actually been accepted
+    # and mailed, so the next submission from this IP is blocked until the
+    # cooldown expires.
+    def record_submission!
+      Rails.cache.write(self.class.rate_limit_cache_key(ip_address), true, expires_in: GLOBAL_COOLDOWN)
+    end
+
+    private
+
+    def rate_limit
+      return if ip_address.blank?
+
+      if Rails.cache.exist?(self.class.rate_limit_cache_key(ip_address))
+        errors.add(:base, "送信間隔が短すぎます。しばらくしてから再度お試しください。")
+      end
+    end
   end
 end

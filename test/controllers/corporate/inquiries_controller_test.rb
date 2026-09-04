@@ -51,4 +51,50 @@ class Corporate::InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "option[selected]", false
   end
+
+  # The test environment runs with `config.cache_store = :null_store` (see
+  # config/environments/test.rb), which makes every Rails.cache call a
+  # no-op -- exactly what the rate limit relies on to work at all. Swap in
+  # a real in-memory store just for these two tests so the cooldown is
+  # actually exercised, restoring :null_store afterward.
+  def with_real_cache
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    yield
+  ensure
+    Rails.cache = original_cache
+  end
+
+  test "a second submission from the same IP within the cooldown is rejected without emailing" do
+    with_real_cache do
+      post corporate_inquiries_path, params: { corporate_inquiry: {
+        subject: "その他", name: "問合太郎", email: "taro@example.com", message: "1件目"
+      } }
+
+      assert_no_emails do
+        post corporate_inquiries_path, params: { corporate_inquiry: {
+          subject: "その他", name: "問合次郎", email: "jiro@example.com", message: "2件目"
+        } }
+      end
+
+      assert_response :unprocessable_entity
+    end
+  end
+
+  test "a submission after the cooldown has passed succeeds" do
+    with_real_cache do
+      post corporate_inquiries_path, params: { corporate_inquiry: {
+        subject: "その他", name: "問合太郎", email: "taro@example.com", message: "1件目"
+      } }
+
+      travel Corporate::Inquiry::GLOBAL_COOLDOWN + 1.second
+      assert_emails 1 do
+        post corporate_inquiries_path, params: { corporate_inquiry: {
+          subject: "その他", name: "問合次郎", email: "jiro@example.com", message: "2件目"
+        } }
+      end
+
+      assert_response :success
+    end
+  end
 end

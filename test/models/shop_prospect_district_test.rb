@@ -57,4 +57,14 @@ class ShopProspectDistrictTest < ActiveSupport::TestCase
     assert_equal "長野", nagano.reload.prefecture
     assert_equal "岐阜", kanazuen.reload.prefecture
   end
+
+  test "fix_known_prefectures! corrects 神奈川 districts mis-defaulted to 東京" do
+    yokohama = ShopProspectDistrict.create!(name: "横浜駅周辺")
+    machida_sagamihara = ShopProspectDistrict.create!(name: "町田・相模原")
+
+    ShopProspectDistrict.fix_known_prefectures!
+
+    assert_equal "神奈川", yokohama.reload.prefecture
+    assert_equal "神奈川", machida_sagamihara.reload.prefecture
+  end
 end

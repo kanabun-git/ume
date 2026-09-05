@@ -50,6 +50,44 @@ sudo ufw status verbose
 | 25 | SMTP(メール送信・受信) |
 | 993 | IMAPS(メール受信、Dovecot経由でメールクライアントから閲覧する場合) |
 
+### 1-3. SSHセッションのタイムアウト対策
+
+何も操作しない時間が続くとSSH接続が切断されてしまう場合、原因はサーバー側(sshd)・手元のPC側・間にあるルーターやISPのいずれかのアイドルタイムアウトです。まとめて対策しておきます。
+
+**サーバー側(VPS)**: `/etc/ssh/sshd_config`に以下を追加し、sshdを再起動します。
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+```
+ClientAliveInterval 60
+ClientAliveCountMax 120
+```
+
+```bash
+sudo systemctl restart sshd
+```
+
+60秒ごとに生存確認を送り、応答がなくても120回(=2時間)は切断しないようにする設定です。
+
+**手元のPC側**: `~/.ssh/config`に以下を追加します(ルーター・ISP側のアイドルタイムアウトで切られるのを防ぎます)。
+
+```
+Host (接続に使っているホスト名やエイリアス)
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+```
+
+**`bin/deploy`など長時間かかる作業は`tmux`の中で実行する(最も確実)**: 上記の設定をしても、Wi-Fiの瞬断やPCのスリープなどで結局SSHが切れることはあります。`tmux`のセッション内で作業していれば、SSHが切れても処理自体は止まらず、再接続後に続きを確認できます。
+
+```bash
+tmux new -s deploy   # 新しいセッションを開始してこの中で作業する
+
+# 切断されてしまったら、再度SSHログインしてから
+tmux attach -t deploy   # 元のセッションに復帰(処理は継続している)
+```
+
 ---
 
 ## 2. 必要パッケージのインストール

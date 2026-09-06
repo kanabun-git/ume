@@ -33,12 +33,23 @@ class MaintenanceModeMiddleware
   # down.
   PREVIEWABLE_PATH_PATTERN = %r{\A/(shops|casts)/(\d+)(?:/|\z)}
 
+  # PUREMINT_HOST(コーポレートサイト)と MAIL_ADMIN_HOST(メールアドレス管理
+  # 画面)は、たまたま同じアプリに同居しているだけの別サイト
+  # (PuremintHostMiddleware / MailAdminHostMiddleware を参照)。ポータルを
+  # メンテナンスにしたことは、この2サイトについては何も意味しないので、
+  # そのまま動かし続ける -- 運営管理画面でチェックを入れた人は、
+  # fuzoku-zero.com を止めるつもりであって、会社のコーポレートサイトまで
+  # 落とすつもりではない。
+  SEPARATE_SITE_HOST_ENV_KEYS = %w[PUREMINT_HOST MAIL_ADMIN_HOST].freeze
+
   def initialize(app)
     @app = app
   end
 
   def call(env)
     request = ActionDispatch::Request.new(env)
+
+    return @app.call(env) if separate_site_host?(request)
 
     if maintenance_mode? && !allowed_path?(request.path) && !previewable_by_current_user?(env, request.path)
       return render_maintenance_page
@@ -48,6 +59,13 @@ class MaintenanceModeMiddleware
   end
 
   private
+
+  def separate_site_host?(request)
+    SEPARATE_SITE_HOST_ENV_KEYS.any? do |key|
+      host = ENV[key]
+      host.present? && request.host == host
+    end
+  end
 
   def allowed_path?(path)
     ALLOWED_PATH_PREFIXES.any? { |prefix| path == prefix || path.start_with?("#{prefix}/") }

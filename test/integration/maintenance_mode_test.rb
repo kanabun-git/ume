@@ -125,6 +125,36 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # The corporate site and the mail address management screen are separate
+  # sites that merely share this app, so the portal's maintenance mode must
+  # not take them down with it -- an admin ticking that box means
+  # fuzoku-zero.com, not 有限会社ピュアミント's public website.
+  test "the corporate site stays up while the portal is in maintenance" do
+    with_puremint_host("puremint.example.test") do
+      with_maintenance_mode_on do
+        host! "puremint.example.test"
+
+        get "/"
+        assert_response :success
+        assert_match Corporate::Company::NAME, response.body
+
+        get corporate_business_path
+        assert_response :success
+      end
+    end
+  end
+
+  test "the portal still goes into maintenance while a corporate host is configured" do
+    with_puremint_host("puremint.example.test") do
+      with_maintenance_mode_on do
+        host! "www.example.com"
+
+        get root_path
+        assert_response :service_unavailable
+      end
+    end
+  end
+
   private
 
   def with_maintenance_mode_on
@@ -132,5 +162,18 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     yield
   ensure
     SiteSetting.instance.update!(maintenance_mode: false)
+  end
+
+  # Reloads routes around the ENV change and restores both in an `ensure`,
+  # the same way puremint_host_test.rb does, so nothing leaks into other
+  # tests in the same parallel worker.
+  def with_puremint_host(host)
+    original = ENV["PUREMINT_HOST"]
+    ENV["PUREMINT_HOST"] = host
+    Rails.application.reload_routes!
+    yield
+  ensure
+    ENV["PUREMINT_HOST"] = original
+    Rails.application.reload_routes!
   end
 end

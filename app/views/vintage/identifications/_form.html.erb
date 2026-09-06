@@ -13,6 +13,7 @@
     文字がはっきり読める明るさで撮影してください。下着・インナーの場合は、サイズ表記(B70・C75など)と
     品質表示タグが読めるように撮ってください。
     <strong>着用した状態ではなく、商品単体を平置きで撮影してください</strong>(写真は判定のため外部のAIへ送信されます)。
+    アップロード時に自動で縮小するので、スマートフォンの写真をそのまま選んで構いません。
   </p>
   <%= f.file_field :images, multiple: true, accept: Vintage::Identification::PERMITTED_IMAGE_TYPES.join(",") %>
 
@@ -40,3 +41,70 @@
   <%= f.submit "判定する", class: "btn", data: { turbo_submits_with: "判定中..." } %>
   <p class="vintage-field-hint">判定には20〜30秒ほどかかります。ボタンは一度だけ押して、そのままお待ちください。</p>
 <% end %>
+
+<script>
+  // スマートフォンの写真は1枚3〜5MBあり、上限枚数まで選ぶと送信サイズが
+  // AI側の上限(20MB)を超える。タグの文字が読めれば判定はできるので、
+  // 送信前にブラウザ側で長辺1600pxまで縮める。
+  // 失敗した場合は元のファイルのまま送る(サーバー側にも合計サイズの検証がある)。
+  (function() {
+    var MAX_EDGE = 1600;
+    var QUALITY = 0.82;
+
+    var form = document.querySelector("form.vintage-form");
+    if (!form || !window.DataTransfer || !window.FileReader) return;
+
+    var input = form.querySelector("input[type=file]");
+    if (!input) return;
+
+    var resized = false;
+
+    function shrink(file) {
+      return new Promise(function(resolve) {
+        // 縮小しても小さくならないものはそのまま返す。
+        if (!file.type.startsWith("image/") || file.type === "image/gif" || file.size < 400 * 1024) {
+          resolve(file);
+          return;
+        }
+
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+
+        img.onload = function() {
+          URL.revokeObjectURL(url);
+          var scale = Math.min(1, MAX_EDGE / Math.max(img.width, img.height));
+          if (scale === 1) { resolve(file); return; }
+
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(function(blob) {
+            if (!blob || blob.size >= file.size) { resolve(file); return; }
+            resolve(new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" }));
+          }, "image/jpeg", QUALITY);
+        };
+
+        img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+        img.src = url;
+      });
+    }
+
+    form.addEventListener("submit", function(event) {
+      if (resized || input.files.length === 0) return;
+
+      event.preventDefault();
+      Promise.all(Array.prototype.map.call(input.files, shrink)).then(function(files) {
+        var box = new DataTransfer();
+        files.forEach(function(file) { box.items.add(file); });
+        input.files = box.files;
+        resized = true;
+        form.requestSubmit ? form.requestSubmit() : form.submit();
+      }).catch(function() {
+        resized = true;
+        form.requestSubmit ? form.requestSubmit() : form.submit();
+      });
+    });
+  })();
+</script>

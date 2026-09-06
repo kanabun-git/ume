@@ -26,6 +26,7 @@ module Vintage
       clues: ["赤タブが大文字のE"],
       authenticity_notes: ["ボタン裏の刻印を確認"],
       next_checks: ["内側の紙パッチ"],
+      target_gender: "メンズ",
       target_age: "20代〜40代",
       target_age_reason: "定番のワークウェアで、年齢層を問わず穿かれているため",
       original_price: { low: 12_000, high: 15_000, note: "当時の定価" },
@@ -78,6 +79,7 @@ module Vintage
         assert_response :success
       end
 
+      assert_select ".vintage-result-label", text: "対象"
       assert_select ".vintage-result-label", text: "想定年齢層"
       assert_select ".vintage-price-secondary .vintage-price-range", "12,000円 〜 15,000円"
       # 想定年齢層が着用者の年齢と取り違えられないよう、画面で断っておく。

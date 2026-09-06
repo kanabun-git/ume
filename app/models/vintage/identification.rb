@@ -9,8 +9,13 @@ module Vintage
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    MAX_IMAGES = 4
+    MAX_IMAGES = 8
     MAX_IMAGE_SIZE = 5.megabytes
+    # AIへは画像をbase64で送るため、送信サイズは元の約1.33倍に膨らむ。
+    # Geminiのリクエスト上限が20MBなので、プロンプト分の余裕も見て
+    # 元データの合計をここで止める(超えた分はAPIが400で弾く前に、
+    # 利用者に分かる言葉で返したい)。
+    MAX_TOTAL_IMAGE_SIZE = 12.megabytes
     PERMITTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"].freeze
     MAX_NOTES_LENGTH = 1_000
 
@@ -114,6 +119,10 @@ module Vintage
 
       if images.any? { |image| image.size > MAX_IMAGE_SIZE }
         errors.add(:images, "は1枚あたり#{MAX_IMAGE_SIZE / 1.megabyte}MBまでです。")
+      end
+
+      if images.sum(&:size) > MAX_TOTAL_IMAGE_SIZE
+        errors.add(:images, "の合計サイズが大きすぎます(合計#{MAX_TOTAL_IMAGE_SIZE / 1.megabyte}MBまで)。枚数を減らすか、小さいサイズで撮影してください。")
       end
     end
 

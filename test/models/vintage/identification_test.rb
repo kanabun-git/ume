@@ -33,6 +33,22 @@ module Vintage
       assert_includes identification.errors.full_messages.join, "JPEG"
     end
 
+    test "rejects photos whose total size would blow past the AI's request limit" do
+      # base64で1.33倍に膨らむので、合計はAPIの上限より低いところで止める。
+      oversized = Array.new(4) { uploaded_png(bytes: "x" * 4.megabytes) }
+
+      identification = Vintage::Identification.new(images: oversized)
+
+      assert_not identification.valid?
+      assert_includes identification.errors.full_messages.join, "合計サイズが大きすぎます"
+    end
+
+    test "accepts the full number of photos when they fit" do
+      images = Array.new(Vintage::Identification::MAX_IMAGES) { uploaded_png(bytes: "x" * 100.kilobytes) }
+
+      assert Vintage::Identification.new(images: images).valid?
+    end
+
     test "rejects an image over the size limit" do
       oversized = uploaded_png(bytes: "x" * (Vintage::Identification::MAX_IMAGE_SIZE + 1))
 

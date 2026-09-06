@@ -51,7 +51,7 @@ module Vintage
 
     attr_reader :item_type, :brand_candidates, :era, :era_reason, :origin,
                 :clues, :authenticity_notes, :next_checks, :summary,
-                :market_price, :original_price, :target_age, :target_age_reason
+                :market_price, :original_price, :target_gender, :target_age, :target_age_reason
 
     def self.from_text(text)
       raise ParseError, "回答が空でした。" if text.blank?
@@ -78,6 +78,7 @@ module Vintage
       @era_reason = presence_of(payload["era_reason"])
       @origin = presence_of(payload["origin"])
       @summary = presence_of(payload["summary"])
+      @target_gender = presence_of(payload["target_gender"])
       @target_age = presence_of(payload["target_age"])
       @target_age_reason = presence_of(payload["target_age_reason"])
       @clues = string_list(payload["clues"])

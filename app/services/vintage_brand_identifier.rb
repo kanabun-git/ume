@@ -7,7 +7,13 @@ class VintageBrandIdentifier
   class IdentificationError < StandardError; end
 
   MODEL = "claude-opus-5"
-  MAX_TOKENS = 2_000
+  # Opus 5は`thinking`を省略しても適応的思考が有効で、その思考トークンも
+  # max_tokensの枠を使う。2,000だと回答のJSONが途中で切れて解釈に失敗する
+  # ことがあるため、余裕を持たせたうえでeffortを下げて費用を抑えている
+  # (判定は「タグの手がかりを根拠に推定する」作業で、深い推論より
+  # 参考情報の読み取りが効くため)。
+  MAX_TOKENS = 8_000
+  EFFORT = :low
 
   SYSTEM_PROMPT = <<~PROMPT.freeze
     あなたは古着(ヴィンテージ古着)の買い付け・査定を長年行ってきた鑑定者です。
@@ -80,9 +86,15 @@ class VintageBrandIdentifier
     message = client.messages.create(
       model: MODEL,
       max_tokens: MAX_TOKENS,
+      output_config: { effort: EFFORT },
       system_: SYSTEM_PROMPT,
       messages: [{ role: "user", content: content_blocks }]
     )
+
+    if message.stop_reason == :max_tokens
+      Rails.logger.error("VintageBrandIdentifier hit max_tokens (#{MAX_TOKENS})")
+      raise IdentificationError, "判定結果が長すぎて最後まで受け取れませんでした。もう一度お試しください。"
+    end
 
     Vintage::Result.from_text(response_text(message))
   rescue Vintage::Result::ParseError => e

@@ -6,13 +6,14 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
   # 記録しつつ、決め打ちの回答テキストを返す。
   class FakeClient
     Block = Struct.new(:type, :text)
-    Message = Struct.new(:content)
+    Message = Struct.new(:content, :stop_reason)
 
     attr_reader :last_params
 
-    def initialize(text: nil, error: nil)
+    def initialize(text: nil, error: nil, stop_reason: :end_turn)
       @text = text
       @error = error
+      @stop_reason = stop_reason
     end
 
     def messages = self
@@ -21,7 +22,7 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
       @last_params = params
       raise @error if @error
 
-      Message.new([Block.new(:type, "無視されるブロック"), Block.new(:text, @text)])
+      Message.new([Block.new(:type, "無視されるブロック"), Block.new(:text, @text)], @stop_reason)
     end
   end
 
@@ -110,6 +111,32 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
     prompt = client.last_params[:messages].first[:content].last[:text]
     assert_includes prompt, "ユニオンチケット"
     assert_includes prompt, "Levi's(リーバイス)"
+  end
+
+  test "keeps the token budget above what adaptive thinking needs, at a cost-conscious effort" do
+    client = FakeClient.new(text: RESPONSE)
+
+    VintageBrandIdentifier.new(
+      identification: Vintage::Identification.new(notes: "タグ"), client: client
+    ).call
+
+    # Opus 5は思考トークンもmax_tokensを食うので、回答が切れない余裕が要る。
+    assert_operator client.last_params[:max_tokens], :>=, 8_000
+    assert_equal :low, client.last_params[:output_config][:effort]
+  end
+
+  test "an answer cut off by the token limit is reported instead of half-parsed" do
+    # 途中で切れたJSONは Result 側でも解釈に失敗するが、利用者には
+    # 「長すぎて受け取れなかった」と伝えたいので stop_reason で先に判定する。
+    client = FakeClient.new(text: RESPONSE[0..40], stop_reason: :max_tokens)
+
+    error = assert_raises(VintageBrandIdentifier::IdentificationError) do
+      VintageBrandIdentifier.new(
+        identification: Vintage::Identification.new(notes: "タグ"), client: client
+      ).call
+    end
+
+    assert_includes error.message, "長すぎて"
   end
 
   test "an answer that is not JSON is reported as a retryable failure" do

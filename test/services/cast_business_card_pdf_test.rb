@@ -41,5 +41,4 @@ class CastBusinessCardPdfTest < ActiveSupport::TestCase
 
     assert_nil renderer.card_display_name(cast)
   end
-
 end

@@ -57,7 +57,7 @@ sudo ufw status verbose
 **サーバー側(VPS)**: `/etc/ssh/sshd_config`に以下を追加し、sshdを再起動します。
 
 ```bash
-sudo nano /etc/ssh/sshd_config
+sudo vi /etc/ssh/sshd_config
 ```
 
 ```
@@ -465,6 +465,71 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 7-4. 古着ブランド判定ツールの公開(www.kanabun.tech/vintage)
+
+古着のタグの写真からブランド・製造年代・中古相場の目安を推定するツールを、**https://www.kanabun.tech/vintage** で試験公開します。
+
+`www.kanabun.tech`のDNS・nginx・証明書は**7-2でメールアドレス管理画面のために設定済み**なので、この手順で新しく用意するのは環境変数だけです(nginxの変更もDNSの変更も不要)。
+
+1. AIの判定に使うAPIキーを用意します。既定では**Googleの Gemini API の無料枠**を使う設定にしてあります。
+
+   1. https://aistudio.google.com/ にGoogleアカウントでログイン
+   2. 「Get API key」からAPIキーを発行(無料枠のまま使う場合、支払い情報の登録は不要)
+   3. 同じ画面の「Rate limits」で、**そのキーで無料枠が使えるモデル**と現在の上限(1分あたり・1日あたりの回数)を確認
+
+   > **無料枠の注意**: 無料枠では、送信した内容(写真とメモ)がGoogleのサービス改善に利用され、人によるレビューの対象になることがあります(有料枠では学習に利用されません)。判定ツールの画面にもその旨を明記してあります。機密性のあるものを扱う用途に広げる場合は、有料枠へ切り替えるか、下のClaudeへ切り替えてください。
+
+2. `/etc/systemd/system/ume-puma.service`の`[Service]`セクションに環境変数を追加します(既存の行は消さないこと)。
+
+   ```ini
+   Environment=VINTAGE_HOST=www.kanabun.tech
+   Environment=GEMINI_API_KEY=(AI Studioで発行したAPIキー)
+   ```
+
+   | 環境変数 | 既定値 | 用途 |
+   |---|---|---|
+   | `VINTAGE_HOST` | (未設定=どのドメインでも開く) | 判定ツールを公開するドメイン |
+   | `GEMINI_API_KEY` | - | Gemini APIのキー。未設定でもフォームとガイドは開けるが、判定時にエラーになる |
+   | `GEMINI_MODEL` | `gemini-3.5-flash` | 使うモデル。AI Studioで無料枠の対象が変わったらここだけ差し替える |
+   | `VINTAGE_AI_PROVIDER` | `gemini` | `claude`にするとAnthropicのClaudeで判定する(有料・`ANTHROPIC_API_KEY`が必要) |
+
+   精度を優先したくなったら、`VINTAGE_AI_PROVIDER=claude` と `ANTHROPIC_API_KEY` を設定して再起動するだけで切り替わります(プロンプトも判定結果の見た目も共通です)。Claudeは1回あたり数円〜十数円の従量課金なので、切り替える場合はAnthropicのConsoleで月額上限も設定してください。
+
+3. 反映します。
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl restart ume-puma
+   ```
+
+4. 動作確認します。
+
+   ```bash
+   curl -I https://www.kanabun.tech/vintage        # 200
+   curl -I https://fuzoku-zero.com/vintage         # 404(ポータル側には出さない)
+   ```
+
+   ブラウザで実際に1件判定してみて、結果が返ることまで確認してください(キーの誤りや無料枠の対象外モデルは、この時点で画面にエラーとして出ます)。
+
+`VINTAGE_HOST`を設定すると、判定ツールは**このドメインでしか開けなくなります**(風俗ポータルのドメインに一般向けのツールが並ばないようにするため)。`www.kanabun.tech`は7-2で「`/mailadmin`以外は何も配信しない」ドメインにしてありますが、`VINTAGE_HOST`が同じホストに設定されている場合に限り`/vintage`だけが例外として通ります(`app/middleware/mail_admin_host_middleware.rb`)。ポータルのトップページや`/admin`が`www.kanabun.tech`で開くようになるわけではありません。
+
+告知に使うURLは**www付き**の`https://www.kanabun.tech/vintage`です。`VINTAGE_HOST`に指定したホスト名と完全に一致するホストでしか開かないため、wwwなしの`kanabun.tech/vintage`は404になります(wwwなしでも開きたい場合は、nginx側でwwwへ301リダイレクトするのが簡単です)。
+
+同じドメインで公開している「やどかりペンションHP」(`/pension_basic/`)はnginxが配信している別物なので、この設定の影響を受けません。
+
+**運用上の注意**
+
+* 無料枠には1分あたり・1日あたりの回数制限があります。上限に当たると利用者には「しばらく経ってからお試しください」と表示されます(500エラーにはなりません)。アプリ側でも1つのIPからの連続実行(10秒のクールダウン)と1時間あたりの回数(20回)を制限しています。制限値は`app/models/vintage/identification.rb`の`COOLDOWN`/`WINDOW_LIMIT`です。
+* アップロードされた写真はこのサーバーには保存されず、判定のためにAPIへ渡されるだけです(渡した先での扱いは上の「無料枠の注意」を参照)。
+* **判定1件はAIの応答待ちで20〜30秒かかり、その間Pumaのスレッドを1本占有します。** Pumaは既定で3スレッドしかないため、判定が同時に何件も走るとポータル本体まで応答しなくなります。これを防ぐため、アプリ側で**同時に走る判定を1件に制限**しています(`app/services/vintage_brand_identifier.rb`の`MAX_CONCURRENT`)。あふれた利用者には「混み合っています」と表示され、待ってもらう形になります。
+* 利用が増えて「混み合っています」が頻発するようであれば、unitファイルに`Environment=RAILS_MAX_THREADS=8`を足してスレッドを増やしたうえで、`MAX_CONCURRENT`を2〜3へ上げてください(スレッド数の半分以下に留めるのが目安です)。
+* 表示される中古相場はAIの推定です。買取価格の保証ではない旨を画面にも明記していますが、試験公開の告知でも同様に伝えてください。
+* コーポレートサイト(puremint.jp)の事業内容ページからは、`VINTAGE_HOST`を設定すると自動的に`https://www.kanabun.tech/vintage`への絶対URLでリンクされます(`app/models/corporate/company.rb`の`VINTAGE_TOOL_URL`)。
+
+この設定を行わない場合(環境変数を設定しない場合)は、`/vintage`はどのドメインからでも開けます(開発環境と同じ挙動)。
+
+---
+
 ## 8. メール送信(Postfix)の設定
 
 **Vシリーズはリレーサーバー不要・直接送信可能**です。追加の設定なしで動くはずですが、以下だけ確認してください。
@@ -766,3 +831,34 @@ systemctl status ume-puma nginx postgresql postfix dovecot --no-pager
 | バックアップ一覧 | `cd /home/deploy/ume && RAILS_ENV=production UME_DATABASE_PASSWORD='...' bin/rails backup:list` |
 
 > **注意**: `/home/deploy/ume`で`git clean`は実行しないでください。`vendor/bundle`(インストール済みgemの実体)はGit管理外のディレクトリで、`git clean -fd`のような「作業ツリーを綺麗にする」操作で丸ごと消えてしまいます。消えた場合の復旧は`bin/deploy`(または`bundle install`)の再実行で直ります。
+
+---
+
+## 12-1. 502 Bad Gateway が出たとき
+
+`502 Bad Gateway / nginx` は、**nginxがPuma(アプリ本体)に繋げなかった**ときの表示です。nginx自体は動いているので、原因は必ずPuma側にあります。3サイト(fuzoku-zero.com / kanabun.tech / puremint.jp)すべてが同時に502になるのが特徴です。
+
+まず現在Pumaが生きているかを確認します。
+
+```bash
+curl -I http://127.0.0.1:3000/up                                # 301 が返れば応答している
+curl -I -H "X-Forwarded-Proto: https" http://127.0.0.1:3000/up  # 200 ならDB接続まで正常
+sudo systemctl status ume-puma --no-pager -l
+sudo journalctl -u ume-puma -n 100 --no-pager
+```
+
+1つ目が`301 Moved Permanently`(`location: https://...`)になるのは**正常**です。productionは`force_ssl`が有効なので、http のリクエストはhttpsへリダイレクトされます。**リダイレクトが返ってきている時点でPumaは生きています**。nginx経由と同じ扱いにするヘッダを付けた2つ目が200なら、データベース接続まで含めて正常です(メンテナンスモードの判定でDBを1回引くため、DBが落ちていればここで500になります)。`Connection refused`や無応答ならPumaが落ちています。
+
+**`systemctl restart`の直後、10〜15秒ほど502になるのは正常です**(Pumaが起動しきるまでの間。`journalctl`で`Stopping ...`から`* Listening on http://[::]:3000`までの時間がその窓です)。リロードして直るならこれで、原因を追う必要はありません。
+
+数十秒以上続く場合、よくある原因は次の3つです。いずれも`journalctl`の最後の数十行に理由が出ます。
+
+| 症状(ログに出るもの) | 原因 | 対処 |
+|---|---|---|
+| `Bundler::GemNotFound` で再起動を繰り返す | `git pull`だけして`bundle install`を忘れた | `UME_DATABASE_PASSWORD='...' bin/deploy`を実行(12の表を参照) |
+| `Unknown key name` / `Failed to parse` / そもそも起動しない | `/etc/systemd/system/ume-puma.service`の編集ミス。`Environment=`の行は必ず`[Service]`セクションの中に、`=`の前後に空白を入れずに書く | `sudo systemd-analyze verify /etc/systemd/system/ume-puma.service`で構文を確認し、直したら`sudo systemctl daemon-reload && sudo systemctl restart ume-puma` |
+| `SECRET_KEY_BASE`や`UME_DATABASE_PASSWORD`が無い旨のエラー | unitファイルを編集した際に既存の`Environment=`行を消してしまった | `sudo systemctl show ume-puma -p Environment`で今読み込まれている変数を確認し、不足分を書き戻す |
+
+環境変数を足すときは、**既存の行を消していないか**を`systemctl show`で必ず確認してください(このファイルにはDBのパスワードや暗号化キーが入っており、1行消えるだけでPumaは起動しなくなります)。
+
+なお、`https://fuzoku-zero.com/`が**503**でメンテナンス画面が出る場合は障害ではありません。運営管理画面(`/admin`)で切り替えるメンテナンスモードが有効になっているだけで、Pumaは正常に動いています。

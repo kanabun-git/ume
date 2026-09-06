@@ -33,14 +33,15 @@ class MaintenanceModeMiddleware
   # down.
   PREVIEWABLE_PATH_PATTERN = %r{\A/(shops|casts)/(\d+)(?:/|\z)}
 
-  # PUREMINT_HOST(コーポレートサイト)と MAIL_ADMIN_HOST(メールアドレス管理
-  # 画面)は、たまたま同じアプリに同居しているだけの別サイト
-  # (PuremintHostMiddleware / MailAdminHostMiddleware を参照)。ポータルを
-  # メンテナンスにしたことは、この2サイトについては何も意味しないので、
+  # PUREMINT_HOST(コーポレートサイト)、MAIL_ADMIN_HOST(メールアドレス管理
+  # 画面)、VINTAGE_HOST(古着ブランド判定ツール)は、たまたま同じアプリに
+  # 同居しているだけの別サイト(PuremintHostMiddleware /
+  # MailAdminHostMiddleware / config/routes.rb を参照)。ポータルを
+  # メンテナンスにしたことは、これらのサイトについては何も意味しないので、
   # そのまま動かし続ける -- 運営管理画面でチェックを入れた人は、
   # fuzoku-zero.com を止めるつもりであって、会社のコーポレートサイトまで
   # 落とすつもりではない。
-  SEPARATE_SITE_HOST_ENV_KEYS = %w[PUREMINT_HOST MAIL_ADMIN_HOST].freeze
+  SEPARATE_SITE_HOST_ENV_KEYS = %w[PUREMINT_HOST MAIL_ADMIN_HOST VINTAGE_HOST].freeze
 
   def initialize(app)
     @app = app

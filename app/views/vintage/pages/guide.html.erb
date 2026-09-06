@@ -1,0 +1,41 @@
+<% content_for :title, "年代判定ガイド | 古着ブランド判定ツール" %>
+<% content_for :meta_description, "古着のタグ・縫製・生産国表記から製造年代を絞り込むための手がかりを、共通の見かたとブランド別のタグ変遷にまとめました。" %>
+
+<section class="vintage-section container vintage-section-narrow">
+  <h1>年代判定ガイド</h1>
+  <p>
+    古着の年代は、ブランドロゴではなくタグまわりの仕様から絞り込みます。
+    <%= link_to "判定ツール", vintage_root_path, class: "vintage-link" %>もここに挙げた手がかりを根拠に推定しています。
+  </p>
+
+  <h2>ブランドを問わず効く手がかり</h2>
+  <div class="vintage-cards">
+    <% @common_clues.each do |clue| %>
+      <div class="vintage-card">
+        <h3><%= clue[:title] %></h3>
+        <p><%= clue[:body] %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <h2>ブランド別のタグ変遷</h2>
+  <% @brands.each do |brand| %>
+    <div class="vintage-brand" id="<%= brand[:slug] %>">
+      <h3><%= brand[:name] %></h3>
+      <p><%= brand[:overview] %></p>
+      <table class="vintage-era-table">
+        <tbody>
+          <% brand[:eras].each do |era| %>
+            <tr>
+              <th scope="row"><%= era[:label] %></th>
+              <td><%= era[:clue] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <p class="vintage-note"><%= brand[:authenticity] %></p>
+    </div>
+  <% end %>
+
+  <p><%= link_to "判定ツールを使う →", vintage_root_path, class: "btn" %></p>
+</section>

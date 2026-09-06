@@ -130,6 +130,21 @@ class ShopsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/class="shop-theme-page" style="\s*"/, response.body)
   end
 
+  # クイックメニューは #block-<種類> のアンカーで各ブロックへ飛ばす。
+  # 同じ種類が複数あるとidが重複するので、最初の1つだけに付ける。
+  test "the first block of each type carries the anchor id the quick menu links to" do
+    shop = create_shop
+    shop.shop_page_blocks.destroy_all
+    shop.shop_page_blocks.create!(block_type: :shop_info, position: 0)
+    shop.shop_page_blocks.create!(block_type: :shop_info, position: 1)
+
+    get shop_path(shop)
+
+    assert_response :success
+    assert_select "#block-shop_info", 1
+    assert_select ".obi-block-shop_info", 2
+  end
+
   test "the shop_info block shows the shop's address, phone, and hours" do
     shop = create_shop(address: "テスト住所1-2-3", phone: "0312345678", business_hours: "12:00-24:00")
     shop.shop_page_blocks.destroy_all

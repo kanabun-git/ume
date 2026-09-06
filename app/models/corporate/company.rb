@@ -15,6 +15,13 @@ module Corporate
     CAPITAL = "300万円"
     EMAIL = "info@puremint.jp"
 
+    # 古着ブランド判定ツールの公開URL。VINTAGE_HOSTを設定した本番では
+    # そのドメイン(www.kanabun.tech想定)の絶対URL -- コーポレートサイトは
+    # 別ドメイン(puremint.jp)で動くため、"/vintage" の相対パスでは開けない。
+    # 未設定の開発・テストでは同じアプリの中にあるので相対パスでよい。
+    VINTAGE_TOOL_URL =
+      ENV["VINTAGE_HOST"].present? ? "https://#{ENV["VINTAGE_HOST"]}/vintage" : "/vintage"
+
     BUSINESS_LINES = [
       {
         title: "インターネットポータルサイトの企画・開発・運営",
@@ -45,6 +52,22 @@ module Corporate
         link_label: "やどかりペンションHPを見る",
         inquiry_subject: "やどかりペンションお問い合わせ",
         inquiry_link_label: "やどかりペンションの導入お問い合わせはこちら"
+      },
+      {
+        title: "古着ブランド判定ツール",
+        body: "古着のタグを撮影するだけで、ブランド候補・製造年代・中古相場の目安を" \
+          "AIが推定する無料のWebツールを公開しています。ブランド名が擦れて読めない" \
+          "アイテムや、年代と値段の見当を付けたいときにお使いいただけます。",
+        features: [
+          "タグ・洗濯表示・縫製の写真から、ブランド候補と推定年代を提示",
+          "コンディションとサイズを踏まえた中古相場(販売価格帯)の目安を表示",
+          "ブランド別のタグ変遷をまとめた年代判定ガイドを併設"
+        ],
+        # ルート定義側(config/routes.rbのvintage namespace)と対になっている。
+        # パスやホストを動かすときは上のVINTAGE_TOOL_URLも直すこと
+        # (この定数からはURLヘルパーを呼べないため、URLをそのまま持っている)。
+        url: VINTAGE_TOOL_URL,
+        link_label: "古着ブランド判定ツールを使う"
       }
     ].freeze
   end

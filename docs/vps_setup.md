@@ -471,28 +471,45 @@ systemctl list-timers | grep certbot
 
 `www.kanabun.tech`のDNS・nginx・証明書は**7-2でメールアドレス管理画面のために設定済み**なので、この手順で新しく用意するのは環境変数だけです(nginxの変更もDNSの変更も不要)。
 
-1. `/etc/systemd/system/ume-puma.service`に環境変数を追加します。
+1. AIの判定に使うAPIキーを用意します。既定では**Googleの Gemini API の無料枠**を使う設定にしてあります。
+
+   1. https://aistudio.google.com/ にGoogleアカウントでログイン
+   2. 「Get API key」からAPIキーを発行(無料枠のまま使う場合、支払い情報の登録は不要)
+   3. 同じ画面の「Rate limits」で、**そのキーで無料枠が使えるモデル**と現在の上限(1分あたり・1日あたりの回数)を確認
+
+   > **無料枠の注意**: 無料枠では、送信した内容(写真とメモ)がGoogleのサービス改善に利用され、人によるレビューの対象になることがあります(有料枠では学習に利用されません)。判定ツールの画面にもその旨を明記してあります。機密性のあるものを扱う用途に広げる場合は、有料枠へ切り替えるか、下のClaudeへ切り替えてください。
+
+2. `/etc/systemd/system/ume-puma.service`の`[Service]`セクションに環境変数を追加します(既存の行は消さないこと)。
 
    ```ini
    Environment=VINTAGE_HOST=www.kanabun.tech
-   Environment=ANTHROPIC_API_KEY=(Anthropicのコンソールで発行したAPIキー)
+   Environment=GEMINI_API_KEY=(AI Studioで発行したAPIキー)
    ```
 
-   `ANTHROPIC_API_KEY`はキャストの写メ日記のAI下書きと**同じ環境変数**です。すでに設定済みならそのまま使われます。未設定でもフォームと年代判定ガイドは開けますが、判定を実行するとその旨のエラーが表示されます。
+   | 環境変数 | 既定値 | 用途 |
+   |---|---|---|
+   | `VINTAGE_HOST` | (未設定=どのドメインでも開く) | 判定ツールを公開するドメイン |
+   | `GEMINI_API_KEY` | - | Gemini APIのキー。未設定でもフォームとガイドは開けるが、判定時にエラーになる |
+   | `GEMINI_MODEL` | `gemini-3.5-flash` | 使うモデル。AI Studioで無料枠の対象が変わったらここだけ差し替える |
+   | `VINTAGE_AI_PROVIDER` | `gemini` | `claude`にするとAnthropicのClaudeで判定する(有料・`ANTHROPIC_API_KEY`が必要) |
 
-2. 反映します。
+   精度を優先したくなったら、`VINTAGE_AI_PROVIDER=claude` と `ANTHROPIC_API_KEY` を設定して再起動するだけで切り替わります(プロンプトも判定結果の見た目も共通です)。Claudeは1回あたり数円〜十数円の従量課金なので、切り替える場合はAnthropicのConsoleで月額上限も設定してください。
+
+3. 反映します。
 
    ```bash
    sudo systemctl daemon-reload
    sudo systemctl restart ume-puma
    ```
 
-3. 動作確認します。
+4. 動作確認します。
 
    ```bash
    curl -I https://www.kanabun.tech/vintage        # 200
    curl -I https://fuzoku-zero.com/vintage         # 404(ポータル側には出さない)
    ```
+
+   ブラウザで実際に1件判定してみて、結果が返ることまで確認してください(キーの誤りや無料枠の対象外モデルは、この時点で画面にエラーとして出ます)。
 
 `VINTAGE_HOST`を設定すると、判定ツールは**このドメインでしか開けなくなります**(風俗ポータルのドメインに一般向けのツールが並ばないようにするため)。`www.kanabun.tech`は7-2で「`/mailadmin`以外は何も配信しない」ドメインにしてありますが、`VINTAGE_HOST`が同じホストに設定されている場合に限り`/vintage`だけが例外として通ります(`app/middleware/mail_admin_host_middleware.rb`)。ポータルのトップページや`/admin`が`www.kanabun.tech`で開くようになるわけではありません。
 
@@ -502,8 +519,8 @@ systemctl list-timers | grep certbot
 
 **運用上の注意**
 
-* 判定1回ごとにAnthropicのAPI利用料が発生します。1つのIPからの連続実行(10秒のクールダウン)と1時間あたりの回数(20回)を制限していますが、試験公開の間はAnthropicのコンソールで利用量に上限を設定しておくことを勧めます。制限値は`app/models/vintage/identification.rb`の`COOLDOWN`/`WINDOW_LIMIT`です。
-* アップロードされた写真はサーバーに保存されず、判定のためにAPIへ渡されるだけです。
+* 無料枠には1分あたり・1日あたりの回数制限があります。上限に当たると利用者には「しばらく経ってからお試しください」と表示されます(500エラーにはなりません)。アプリ側でも1つのIPからの連続実行(10秒のクールダウン)と1時間あたりの回数(20回)を制限しています。制限値は`app/models/vintage/identification.rb`の`COOLDOWN`/`WINDOW_LIMIT`です。
+* アップロードされた写真はこのサーバーには保存されず、判定のためにAPIへ渡されるだけです(渡した先での扱いは上の「無料枠の注意」を参照)。
 * 表示される中古相場はAIの推定です。買取価格の保証ではない旨を画面にも明記していますが、試験公開の告知でも同様に伝えてください。
 * コーポレートサイト(puremint.jp)の事業内容ページからは、`VINTAGE_HOST`を設定すると自動的に`https://www.kanabun.tech/vintage`への絶対URLでリンクされます(`app/models/corporate/company.rb`の`VINTAGE_TOOL_URL`)。
 

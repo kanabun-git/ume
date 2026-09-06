@@ -1,19 +1,41 @@
 # 古着の写真(タグ・ラベル・全体)と、利用者が読み取った文字情報から、
-# ブランド候補と年代の目安をClaudeに推定させる。
+# ブランド候補・年代の目安・中古相場をAIに推定させる。
+#
+# どのAIに聞くかは VINTAGE_AI_PROVIDER で切り替える。既定は無料枠のある
+# Gemini で、精度を優先したいときは claude を選ぶ -- プロンプトと結果の
+# 解釈はここに集約してあるので、切り替えても判定の中身は変わらない。
 #
 # 結果はあくまで参考情報で、真贋や買取価格を保証するものではない --
 # その但し書きは画面側(app/views/vintage)にも必ず出している。
 class VintageBrandIdentifier
   class IdentificationError < StandardError; end
 
-  MODEL = "claude-opus-5"
-  # Opus 5は`thinking`を省略しても適応的思考が有効で、その思考トークンも
-  # max_tokensの枠を使う。2,000だと回答のJSONが途中で切れて解釈に失敗する
-  # ことがあるため、余裕を持たせたうえでeffortを下げて費用を抑えている
-  # (判定は「タグの手がかりを根拠に推定する」作業で、深い推論より
-  # 参考情報の読み取りが効くため)。
-  MAX_TOKENS = 8_000
-  EFFORT = :low
+  PROVIDERS = {
+    "gemini" => -> { GeminiProvider.new },
+    "claude" => -> { ClaudeProvider.new }
+  }.freeze
+  DEFAULT_PROVIDER = "gemini".freeze
+
+  def self.provider_name
+    name = ENV["VINTAGE_AI_PROVIDER"].presence || DEFAULT_PROVIDER
+    PROVIDERS.key?(name) ? name : DEFAULT_PROVIDER
+  end
+
+  def self.build_provider
+    PROVIDERS.fetch(provider_name).call
+  end
+
+  # 写真の送り先は利用者にとって重要な情報なので、画面に出す文言も
+  # プロバイダの選択と同じ場所に置いておく(view側で分岐させない)。
+  def self.privacy_notice
+    if provider_name == "gemini"
+      "アップロードされた写真はこのサーバーには保存しません。判定のためGoogleのGemini APIへ送信します。" \
+        "無料枠での利用中は、送信内容がGoogleのサービス改善(人によるレビューを含む)に利用されることがあります。"
+    else
+      "アップロードされた写真はこのサーバーには保存しません。判定のためAnthropicのClaude APIへ送信します" \
+        "(送信内容がAIの学習に利用されることはありません)。"
+    end
+  end
 
   SYSTEM_PROMPT = <<~PROMPT.freeze
     あなたは古着(ヴィンテージ古着)の買い付け・査定を長年行ってきた鑑定者です。
@@ -72,63 +94,28 @@ class VintageBrandIdentifier
   PROMPT
 
   # @param identification [Vintage::Identification] 入力フォーム
-  # @param client [Anthropic::Client, nil] テストから差し替えるためのクライアント
-  def initialize(identification:, client: nil)
+  # @param provider [#configured?, #generate] テストや切り替えのための差し替え口
+  def initialize(identification:, provider: nil)
     @identification = identification
-    @injected_client = client
+    @provider = provider || self.class.build_provider
   end
 
   def call
-    if @injected_client.nil? && api_key.blank?
-      raise IdentificationError, "AI判定が設定されていません。サイト管理者にお問い合わせください。"
-    end
+    raise IdentificationError, @provider.missing_key_message unless @provider.configured?
 
-    message = client.messages.create(
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      output_config: { effort: EFFORT },
-      system_: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: content_blocks }]
+    text = @provider.generate(
+      system_prompt: SYSTEM_PROMPT,
+      user_prompt: user_prompt,
+      images: image_payloads
     )
 
-    if message.stop_reason == :max_tokens
-      Rails.logger.error("VintageBrandIdentifier hit max_tokens (#{MAX_TOKENS})")
-      raise IdentificationError, "判定結果が長すぎて最後まで受け取れませんでした。もう一度お試しください。"
-    end
-
-    Vintage::Result.from_text(response_text(message))
+    Vintage::Result.from_text(text)
   rescue Vintage::Result::ParseError => e
     Rails.logger.error("VintageBrandIdentifier could not parse response: #{e.message}")
     raise IdentificationError, "判定結果をうまく受け取れませんでした。もう一度お試しください。"
-  rescue Anthropic::Errors::APIError => e
-    Rails.logger.error("VintageBrandIdentifier failed: #{e.class}: #{e.message}")
-    raise IdentificationError, "AIとの通信に失敗しました。時間をおいてもう一度お試しください。"
   end
 
   private
-
-  def response_text(message)
-    message.content.select { |block| block.type == :text }.map(&:text).join
-  end
-
-  # 画像は「何枚目か」を示すテキストと交互に並べる。複数枚を渡したとき、
-  # どの写真の話をしているのかが回答の根拠に書けるようにするため。
-  def content_blocks
-    blocks = []
-    image_payloads.each_with_index do |payload, index|
-      blocks << { type: "text", text: "写真#{index + 1}:" }
-      blocks << {
-        type: "image",
-        source: {
-          type: "base64",
-          media_type: payload[:media_type],
-          data: Base64.strict_encode64(payload[:data])
-        }
-      }
-    end
-    blocks << { type: "text", text: user_prompt }
-    blocks
-  end
 
   def user_prompt
     <<~PROMPT
@@ -148,16 +135,8 @@ class VintageBrandIdentifier
   end
 
   # アップロードされたファイルは一度読んだら読み直しになるので、
-  # プロンプトと画像ブロックの両方から使えるよう1度だけ取り出す。
+  # プロンプトと画像の両方から使えるよう1度だけ取り出す。
   def image_payloads
     @image_payloads ||= @identification.image_payloads
-  end
-
-  def client
-    @client ||= @injected_client || Anthropic::Client.new(api_key: api_key)
-  end
-
-  def api_key
-    ENV["ANTHROPIC_API_KEY"]
   end
 end

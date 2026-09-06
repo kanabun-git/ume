@@ -57,7 +57,7 @@ sudo ufw status verbose
 **サーバー側(VPS)**: `/etc/ssh/sshd_config`に以下を追加し、sshdを再起動します。
 
 ```bash
-sudo nano /etc/ssh/sshd_config
+sudo vi /etc/ssh/sshd_config
 ```
 
 ```

@@ -822,12 +822,15 @@ systemctl status ume-puma nginx postgresql postfix dovecot --no-pager
 まず現在Pumaが生きているかを確認します。
 
 ```bash
-curl -I http://127.0.0.1:3000/up      # 200 が返ればPumaは動いている
+curl -I http://127.0.0.1:3000/up                                # 301 が返れば応答している
+curl -I -H "X-Forwarded-Proto: https" http://127.0.0.1:3000/up  # 200 ならDB接続まで正常
 sudo systemctl status ume-puma --no-pager -l
 sudo journalctl -u ume-puma -n 100 --no-pager
 ```
 
-**`systemctl restart`の直後、数秒間だけ502になるのは正常です**(Pumaが起動しきるまでの間)。リロードして直るならこれです。
+1つ目が`301 Moved Permanently`(`location: https://...`)になるのは**正常**です。productionは`force_ssl`が有効なので、http のリクエストはhttpsへリダイレクトされます。**リダイレクトが返ってきている時点でPumaは生きています**。nginx経由と同じ扱いにするヘッダを付けた2つ目が200なら、データベース接続まで含めて正常です(メンテナンスモードの判定でDBを1回引くため、DBが落ちていればここで500になります)。`Connection refused`や無応答ならPumaが落ちています。
+
+**`systemctl restart`の直後、10〜15秒ほど502になるのは正常です**(Pumaが起動しきるまでの間。`journalctl`で`Stopping ...`から`* Listening on http://[::]:3000`までの時間がその窓です)。リロードして直るならこれで、原因を追う必要はありません。
 
 数十秒以上続く場合、よくある原因は次の3つです。いずれも`journalctl`の最後の数十行に理由が出ます。
 

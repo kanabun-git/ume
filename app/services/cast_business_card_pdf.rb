@@ -26,8 +26,8 @@ class CastBusinessCardPdf
       columns: 2,
       rows: 5,
       card_width: 91,
-      card_height: 55,
-    },
+      card_height: 55
+    }
   }.freeze
 
   FONT_PATH = Rails.root.join("vendor/fonts/ipa_gothic/ipag.ttf")
@@ -71,7 +71,7 @@ class CastBusinessCardPdf
     # :bold` in draw_card is Prawn's paragraph-level emphasis (fine to
     # render at regular weight), not a claim that a real bold face exists.
     document.font_families.update("IPAGothic" => {
-      normal: FONT_PATH.to_s, bold: FONT_PATH.to_s, italic: FONT_PATH.to_s, bold_italic: FONT_PATH.to_s,
+      normal: FONT_PATH.to_s, bold: FONT_PATH.to_s, italic: FONT_PATH.to_s, bold_italic: FONT_PATH.to_s
     })
     document.font "IPAGothic"
 

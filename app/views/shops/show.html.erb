@@ -52,7 +52,9 @@
   <% next if block.block_type == "present_tickets" && @shop.present_tickets.open_for_entry.none? %>
   <% next if block.block_type == "coupons" && @shop.coupons.active.none? %>
   <% anchor_id = "block-#{block.block_type}" if anchored_block_types.add?(block.block_type) %>
-  <div class="obi-block obi-block-<%= block.block_type %><%= " no-header" if block.hide_header? %>" <%= "id=\"#{anchor_id}\"".html_safe if anchor_id %>>
+  <%# id属性は tag.attributes に組み立てさせる。文字列をhtml_safeで通すと
+      block_typeがそのままHTMLに出る(brakemanのXSS警告)ため。 %>
+  <div class="obi-block obi-block-<%= block.block_type %><%= " no-header" if block.hide_header? %>" <%= tag.attributes(id: anchor_id) if anchor_id %>>
     <% unless block.hide_header? %>
       <div class="obi-header"><%= block.label %></div>
     <% end %>

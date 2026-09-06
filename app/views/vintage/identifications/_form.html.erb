@@ -9,8 +9,10 @@
 <%= form_with model: identification, url: vintage_identifications_path, scope: :vintage_identification, local: true, class: "form vintage-form", multipart: true do |f| %>
   <label>タグ・アイテムの写真(<%= Vintage::Identification::MAX_IMAGES %>枚まで)</label>
   <p class="vintage-field-hint">
-    首元のブランドタグ、洗濯表示、ユニオンチケット、袖口や裾の縫い目、アイテム全体 --
-    この順で撮ると判定の精度が上がります。文字がはっきり読める明るさで撮影してください。
+    ブランドタグ、品質表示・洗濯表示、縫い目、アイテム全体 -- この順で撮ると判定の精度が上がります。
+    文字がはっきり読める明るさで撮影してください。下着・インナーの場合は、サイズ表記(B70・C75など)と
+    品質表示タグが読めるように撮ってください。
+    <strong>着用した状態ではなく、商品単体を平置きで撮影してください</strong>(写真は判定のため外部のAIへ送信されます)。
   </p>
   <%= f.file_field :images, multiple: true, accept: Vintage::Identification::PERMITTED_IMAGE_TYPES.join(",") %>
 

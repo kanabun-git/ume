@@ -72,6 +72,33 @@ module Vintage
       assert_nil Vintage::Result.from_text({ market_price: { low: 0, high: "-" } }.to_json).market_price
     end
 
+    test "reads the original retail price and the brand's target age range" do
+      result = Vintage::Result.from_text({
+        brand_candidates: [{ name: "ワコール", confidence: "high" }],
+        target_age: "30代〜50代",
+        target_age_reason: "百貨店の価格帯で、サポート性を重視した設計のため",
+        original_price: { low: 8_000, high: 14_000, note: "現在の定価。ブラジャー単品を想定" },
+        market_price: { low: 1_500, high: 3_000 }
+      }.to_json)
+
+      assert_equal "30代〜50代", result.target_age
+      assert_includes result.target_age_reason, "百貨店"
+      assert_equal "8,000円 〜 14,000円", result.original_price.range_label
+      assert_equal "1,500円 〜 3,000円", result.market_price.range_label
+    end
+
+    test "the two prices are independent -- one can be unknown without hiding the other" do
+      result = Vintage::Result.from_text({
+        brand_candidates: [{ name: "Champion", confidence: "high" }],
+        original_price: nil,
+        market_price: { low: 12_000, high: 25_000 }
+      }.to_json)
+
+      assert_nil result.original_price
+      assert result.market_price.present?
+      assert_nil result.target_age
+    end
+
     test "the search keyword drops the Japanese reading so it works in a marketplace search" do
       result = Vintage::Result.from_text({
         item_type: "スウェット",

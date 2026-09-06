@@ -26,6 +26,9 @@ module Vintage
       clues: ["赤タブが大文字のE"],
       authenticity_notes: ["ボタン裏の刻印を確認"],
       next_checks: ["内側の紙パッチ"],
+      target_age: "20代〜40代",
+      target_age_reason: "定番のワークウェアで、年齢層を問わず穿かれているため",
+      original_price: { low: 12_000, high: 15_000, note: "当時の定価" },
       market_price: {
         low: 60_000, high: 120_000, note: "国内の古着屋での販売価格帯",
         factors: ["サイズ", "リペアの有無"]
@@ -68,6 +71,23 @@ module Vintage
       assert_select ".vintage-price-search a[href*=?]", "mercari"
       # 買取額との取り違えは、相場を出す以上いちばん避けたい誤解。
       assert_select ".vintage-price", /買い取ってもらう金額はこれより低くなります/
+    end
+
+    test "the judgement shows the brand's target age range and the original retail price" do
+      post_identification(notes: "赤タブが大文字のE") do
+        assert_response :success
+      end
+
+      assert_select ".vintage-result-label", text: "想定年齢層"
+      assert_select ".vintage-price-secondary .vintage-price-range", "12,000円 〜 15,000円"
+      # 想定年齢層が着用者の年齢と取り違えられないよう、画面で断っておく。
+      assert_select ".vintage-price-secondary", /この品を着ていた人のことではありません/
+    end
+
+    test "underwear is one of the item types the form offers" do
+      get vintage_root_path
+
+      assert_select "select#vintage_identification_item_type option", text: "下着・インナー"
     end
 
     test "no price section when the answer carries no amount" do

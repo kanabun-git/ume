@@ -812,3 +812,31 @@ systemctl status ume-puma nginx postgresql postfix dovecot --no-pager
 | バックアップ一覧 | `cd /home/deploy/ume && RAILS_ENV=production UME_DATABASE_PASSWORD='...' bin/rails backup:list` |
 
 > **注意**: `/home/deploy/ume`で`git clean`は実行しないでください。`vendor/bundle`(インストール済みgemの実体)はGit管理外のディレクトリで、`git clean -fd`のような「作業ツリーを綺麗にする」操作で丸ごと消えてしまいます。消えた場合の復旧は`bin/deploy`(または`bundle install`)の再実行で直ります。
+
+---
+
+## 12-1. 502 Bad Gateway が出たとき
+
+`502 Bad Gateway / nginx` は、**nginxがPuma(アプリ本体)に繋げなかった**ときの表示です。nginx自体は動いているので、原因は必ずPuma側にあります。3サイト(fuzoku-zero.com / kanabun.tech / puremint.jp)すべてが同時に502になるのが特徴です。
+
+まず現在Pumaが生きているかを確認します。
+
+```bash
+curl -I http://127.0.0.1:3000/up      # 200 が返ればPumaは動いている
+sudo systemctl status ume-puma --no-pager -l
+sudo journalctl -u ume-puma -n 100 --no-pager
+```
+
+**`systemctl restart`の直後、数秒間だけ502になるのは正常です**(Pumaが起動しきるまでの間)。リロードして直るならこれです。
+
+数十秒以上続く場合、よくある原因は次の3つです。いずれも`journalctl`の最後の数十行に理由が出ます。
+
+| 症状(ログに出るもの) | 原因 | 対処 |
+|---|---|---|
+| `Bundler::GemNotFound` で再起動を繰り返す | `git pull`だけして`bundle install`を忘れた | `UME_DATABASE_PASSWORD='...' bin/deploy`を実行(12の表を参照) |
+| `Unknown key name` / `Failed to parse` / そもそも起動しない | `/etc/systemd/system/ume-puma.service`の編集ミス。`Environment=`の行は必ず`[Service]`セクションの中に、`=`の前後に空白を入れずに書く | `sudo systemd-analyze verify /etc/systemd/system/ume-puma.service`で構文を確認し、直したら`sudo systemctl daemon-reload && sudo systemctl restart ume-puma` |
+| `SECRET_KEY_BASE`や`UME_DATABASE_PASSWORD`が無い旨のエラー | unitファイルを編集した際に既存の`Environment=`行を消してしまった | `sudo systemctl show ume-puma -p Environment`で今読み込まれている変数を確認し、不足分を書き戻す |
+
+環境変数を足すときは、**既存の行を消していないか**を`systemctl show`で必ず確認してください(このファイルにはDBのパスワードや暗号化キーが入っており、1行消えるだけでPumaは起動しなくなります)。
+
+なお、`https://fuzoku-zero.com/`が**503**でメンテナンス画面が出る場合は障害ではありません。運営管理画面(`/admin`)で切り替えるメンテナンスモードが有効になっているだけで、Pumaは正常に動いています。

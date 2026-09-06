@@ -155,7 +155,31 @@ class MaintenanceModeTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the vintage tool keeps running while the portal is in maintenance" do
+    with_vintage_host("tool.example.test") do
+      with_maintenance_mode_on do
+        host! "tool.example.test"
+
+        get "/vintage"
+        assert_response :success
+
+        get "/vintage/guide"
+        assert_response :success
+      end
+    end
+  end
+
   private
+
+  def with_vintage_host(host)
+    original = ENV["VINTAGE_HOST"]
+    ENV["VINTAGE_HOST"] = host
+    Rails.application.reload_routes!
+    yield
+  ensure
+    ENV["VINTAGE_HOST"] = original
+    Rails.application.reload_routes!
+  end
 
   def with_maintenance_mode_on
     SiteSetting.instance.update!(maintenance_mode: true)

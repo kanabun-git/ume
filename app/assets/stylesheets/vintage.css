@@ -1,0 +1,135 @@
+/*
+ * 古着ブランド判定ツール (/vintage) のスタイル。corporate.cssと同じ考え方で
+ * body.vintage-siteの下だけに効くようにしてあるので、同じapplication.cssの
+ * バンドルに入っていてもポータル本体やコーポレートサイトには影響しない。
+ */
+
+body.vintage-site {
+  /* 古着屋の紙タグ・生成りの生地をイメージした色。 */
+  --vtg-ink: #2b2620;
+  --vtg-muted: #6f6459;
+  --vtg-primary: #8a5a2b;
+  --vtg-primary-dark: #63401d;
+  --vtg-bg: #faf6ef;
+  --vtg-panel: #fffdf9;
+  --vtg-border: #e0d6c6;
+  background: var(--vtg-bg);
+  color: var(--vtg-ink);
+}
+
+body.vintage-site a { color: var(--vtg-primary-dark); }
+
+.vintage-header { background: var(--vtg-panel); border-bottom: 1px solid var(--vtg-border); }
+.vintage-header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; row-gap: 10px; padding: 16px;
+}
+.vintage-logo { display: flex; align-items: center; gap: 10px; color: var(--vtg-ink); }
+.vintage-logo:hover { text-decoration: none; }
+.vintage-logo-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--vtg-primary); color: #fff; font-weight: bold;
+}
+.vintage-logo-text { font-weight: bold; letter-spacing: .04em; }
+.vintage-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+.vintage-nav a { color: var(--vtg-ink); font-size: .92rem; }
+.vintage-nav a:hover { color: var(--vtg-primary); text-decoration: none; }
+
+.vintage-hero {
+  background: linear-gradient(180deg, #f3ead9, var(--vtg-bg));
+  border-bottom: 1px solid var(--vtg-border);
+  padding: 48px 16px; text-align: center;
+}
+.vintage-hero h1 { margin: 0 0 12px; font-size: 1.6rem; }
+.vintage-hero-lead { margin: 0 auto; max-width: 640px; color: var(--vtg-muted); }
+
+.vintage-main { padding-bottom: 40px; }
+.vintage-section { padding: 36px 16px; }
+.vintage-section-narrow { max-width: 720px; }
+.vintage-section h1 { font-size: 1.5rem; margin-top: 0; }
+.vintage-section h2 { font-size: 1.15rem; margin: 28px 0 8px; color: var(--vtg-primary-dark); }
+
+body.vintage-site form.form input[type=file],
+body.vintage-site form.form select,
+body.vintage-site form.form textarea {
+  background: var(--vtg-panel); border: 1px solid var(--vtg-border); border-radius: 6px;
+  padding: 8px 10px; width: 100%; max-width: 100%; font-size: .95rem;
+}
+/* リンクとしての.btn(a要素)は、上のa側の文字色指定に負けて
+   茶色の地に茶文字になってしまうので、ここで白へ戻す。 */
+body.vintage-site .btn, body.vintage-site a.btn { background: var(--vtg-primary); color: #fff; }
+body.vintage-site .btn:hover, body.vintage-site a.btn:hover { background: var(--vtg-primary-dark); }
+.vintage-field-hint { color: var(--vtg-muted); font-size: .85rem; margin: 4px 0 6px; }
+.vintage-note { color: var(--vtg-muted); font-size: .85rem; }
+.vintage-link { color: var(--vtg-primary-dark); font-weight: bold; }
+
+.vintage-result-summary {
+  background: var(--vtg-panel); border-left: 4px solid var(--vtg-primary);
+  padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 0 0 20px;
+}
+.vintage-result-facts { display: grid; gap: 8px; margin-bottom: 8px; }
+.vintage-result-facts > div { display: flex; gap: 12px; align-items: baseline; }
+.vintage-result-label {
+  min-width: 88px; color: var(--vtg-muted); font-size: .8rem; font-weight: bold;
+}
+.vintage-result-empty {
+  background: var(--vtg-panel); border: 1px dashed var(--vtg-border);
+  border-radius: 8px; padding: 16px;
+}
+
+.vintage-candidates { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.vintage-candidate {
+  border: 1px solid var(--vtg-border); border-radius: 8px;
+  background: var(--vtg-panel); padding: 16px;
+}
+.vintage-candidate-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;
+}
+.vintage-candidate-name { font-weight: bold; font-size: 1.05rem; }
+.vintage-candidate p { margin: 0 0 8px; color: var(--vtg-muted); }
+.vintage-candidate p:last-child { margin-bottom: 0; }
+.vintage-confidence {
+  font-size: .75rem; border-radius: 12px; padding: 2px 10px; border: 1px solid var(--vtg-border);
+  color: var(--vtg-muted); background: #fff;
+}
+.vintage-confidence-high { color: #1a7a3f; border-color: #b7e4c7; background: #e6f6ec; }
+.vintage-confidence-medium { color: #8a5a2b; border-color: #e3cfae; background: #f8efe0; }
+.vintage-confidence-low { color: #8a4a4a; border-color: #eccccc; background: #f9eded; }
+
+.vintage-list { padding-left: 1.2em; color: var(--vtg-muted); }
+.vintage-list li { margin-bottom: 6px; }
+
+.vintage-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.vintage-card {
+  border: 1px solid var(--vtg-border); border-radius: 8px; background: var(--vtg-panel); padding: 16px;
+}
+.vintage-card h3 { margin: 0 0 6px; font-size: 1rem; color: var(--vtg-primary-dark); }
+.vintage-card p { margin: 0; color: var(--vtg-muted); font-size: .9rem; }
+
+.vintage-brand {
+  border-top: 1px solid var(--vtg-border); padding-top: 20px; margin-top: 24px;
+  /* アンカーで飛んだときに見出しがヘッダーの下に隠れないように。 */
+  scroll-margin-top: 20px;
+}
+.vintage-brand h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.vintage-brand > p { color: var(--vtg-muted); }
+.vintage-era-table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+.vintage-era-table th, .vintage-era-table td {
+  text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--vtg-border);
+  vertical-align: top; font-size: .9rem;
+}
+.vintage-era-table th { width: 200px; white-space: nowrap; color: var(--vtg-primary-dark); }
+
+.vintage-footer {
+  border-top: 1px solid var(--vtg-border); padding: 24px 16px;
+  color: var(--vtg-muted); font-size: .85rem; text-align: center;
+}
+.vintage-footer-note { margin: 0 auto 8px; max-width: 720px; }
+.vintage-footer-copyright { margin: 0; }
+
+@media (max-width: 640px) {
+  .vintage-era-table th { width: auto; white-space: normal; }
+  .vintage-era-table th, .vintage-era-table td { display: block; border-bottom: none; padding: 4px 0; }
+  .vintage-era-table tr { display: block; border-bottom: 1px solid var(--vtg-border); padding: 8px 0; }
+}

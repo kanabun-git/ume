@@ -1,0 +1,28 @@
+<% if identification.errors.any? %>
+  <div class="errors">
+    <ul>
+      <% identification.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: identification, url: vintage_identifications_path, scope: :vintage_identification, local: true, class: "form vintage-form", multipart: true do |f| %>
+  <label>タグ・アイテムの写真(<%= Vintage::Identification::MAX_IMAGES %>枚まで)</label>
+  <p class="vintage-field-hint">
+    首元のブランドタグ、洗濯表示、ユニオンチケット、袖口や裾の縫い目、アイテム全体 --
+    この順で撮ると判定の精度が上がります。文字がはっきり読める明るさで撮影してください。
+  </p>
+  <%= f.file_field :images, multiple: true, accept: Vintage::Identification::PERMITTED_IMAGE_TYPES.join(",") %>
+
+  <label>アイテムの種類(任意)</label>
+  <%= f.select :item_type, Vintage::Identification::ITEM_TYPES, { include_blank: "選択してください" } %>
+
+  <label>タグに書かれている内容・気づいた点(任意)</label>
+  <p class="vintage-field-hint">
+    例:「タグに MADE IN USA と RN 番号あり」「袖の縫い目が1本」「50/50 の表記」など。
+    写真が無くても、この欄だけで判定を試すことができます。
+  </p>
+  <%= f.text_area :notes, rows: 5, maxlength: Vintage::Identification::MAX_NOTES_LENGTH %>
+
+  <%= f.submit "判定する", class: "btn", data: { turbo_submits_with: "判定中..." } %>
+<% end %>

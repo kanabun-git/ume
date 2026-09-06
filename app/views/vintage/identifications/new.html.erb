@@ -1,0 +1,26 @@
+<% content_for :title, "古着ブランド判定ツール" %>
+
+<section class="vintage-hero">
+  <div class="container">
+    <h1>古着ブランド判定ツール</h1>
+    <p class="vintage-hero-lead">
+      タグの写真をアップロードすると、ブランドの候補と製造年代の目安をAIが推定します。
+      ブランド名が擦れて読めないアイテムや、年代を絞り込みたいときにお使いください。
+    </p>
+  </div>
+</section>
+
+<section class="vintage-section container vintage-section-narrow">
+  <%= render "form", identification: @identification %>
+</section>
+
+<section class="vintage-section container vintage-section-narrow">
+  <h2>判定の見かた</h2>
+  <p>
+    このツールは、ブランドロゴそのものよりも「タグまわりの情報」を根拠に判定します。
+    どんな手がかりで年代が絞り込めるのかは<%= link_to "年代判定ガイド", vintage_guide_path, class: "vintage-link" %>にまとめています。
+  </p>
+  <p class="vintage-note">
+    アップロードされた写真は判定のためにその場で使うだけで、サーバーには保存しません。
+  </p>
+</section>

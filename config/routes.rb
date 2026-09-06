@@ -58,6 +58,18 @@ Rails.application.routes.draw do
     corporate_routes.call("corporate")
   end
 
+  # --- 古着ブランド判定ツール (/vintage) ---
+  # 写真とタグのメモからブランド・年代を推定する、ログイン不要の公開ツール。
+  # ポータル本体ともコーポレートサイトとも独立していて、DBにも何も持たない
+  # (Vintage::Identificationのクラスコメント参照)。コーポレートサイトの
+  # 事業内容ページからは絶対パス "/vintage" で導線を張っているので、
+  # ここのpathを変えるときはCorporate::Company::BUSINESS_LINESも直すこと。
+  namespace :vintage do
+    root to: "identifications#new"
+    resources :identifications, only: [:create]
+    get "guide", to: "pages#guide", as: :guide
+  end
+
   # Age-gate / region-picker splash page shown before the region-scoped
   # TOP page (see HomeController#index below).
   root "top#index"

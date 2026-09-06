@@ -1,0 +1,87 @@
+<% content_for :title, "判定結果 | 古着ブランド判定ツール" %>
+
+<section class="vintage-section container vintage-section-narrow">
+  <h1>判定結果</h1>
+
+  <% if @result.empty? %>
+    <div class="vintage-result-empty">
+      <p>いただいた情報だけではブランド・年代を推定できませんでした。</p>
+      <% if @result.next_checks.any? %>
+        <p>次の箇所を撮影して、もう一度お試しください。</p>
+        <ul>
+          <% @result.next_checks.each do |check| %><li><%= check %></li><% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% else %>
+    <% if @result.summary.present? %>
+      <p class="vintage-result-summary"><%= @result.summary %></p>
+    <% end %>
+
+    <div class="vintage-result-facts">
+      <% if @result.item_type.present? %>
+        <div><span class="vintage-result-label">アイテム</span><span><%= @result.item_type %></span></div>
+      <% end %>
+      <% if @result.era.present? %>
+        <div><span class="vintage-result-label">推定年代</span><span><%= @result.era %></span></div>
+      <% end %>
+      <% if @result.origin.present? %>
+        <div><span class="vintage-result-label">生産国</span><span><%= @result.origin %></span></div>
+      <% end %>
+    </div>
+
+    <% if @result.brand_candidates.any? %>
+      <h2>ブランド候補</h2>
+      <ol class="vintage-candidates">
+        <% @result.brand_candidates.each do |candidate| %>
+          <li class="vintage-candidate">
+            <div class="vintage-candidate-head">
+              <span class="vintage-candidate-name"><%= candidate.name %></span>
+              <span class="vintage-confidence vintage-confidence-<%= candidate.confidence || "unknown" %>">
+                確度: <%= candidate.confidence_label %>
+              </span>
+            </div>
+            <% if candidate.reason.present? %>
+              <p><%= candidate.reason %></p>
+            <% end %>
+            <% if candidate.guide_slug.present? %>
+              <p><%= link_to "このブランドのタグ変遷を見る →", vintage_guide_path(anchor: candidate.guide_slug), class: "vintage-link" %></p>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+
+    <% if @result.era_reason.present? %>
+      <h2>年代の根拠</h2>
+      <p><%= @result.era_reason %></p>
+    <% end %>
+
+    <% if @result.clues.any? %>
+      <h2>読み取れた手がかり</h2>
+      <ul class="vintage-list">
+        <% @result.clues.each do |clue| %><li><%= clue %></li><% end %>
+      </ul>
+    <% end %>
+
+    <% if @result.authenticity_notes.any? %>
+      <h2>確認しておきたい点</h2>
+      <ul class="vintage-list">
+        <% @result.authenticity_notes.each do |note| %><li><%= note %></li><% end %>
+      </ul>
+    <% end %>
+
+    <% if @result.next_checks.any? %>
+      <h2>さらに絞り込むには</h2>
+      <ul class="vintage-list">
+        <% @result.next_checks.each do |check| %><li><%= check %></li><% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <p class="vintage-note">
+    判定結果はAIによる推定です。真贋・年代・価値を保証するものではありません。
+  </p>
+
+  <p><%= link_to "別のアイテムを判定する →", vintage_root_path, class: "btn" %></p>
+</section>

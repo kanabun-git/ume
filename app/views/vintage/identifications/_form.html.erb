@@ -36,4 +36,5 @@
   <%= f.text_area :notes, rows: 5, maxlength: Vintage::Identification::MAX_NOTES_LENGTH %>
 
   <%= f.submit "判定する", class: "btn", data: { turbo_submits_with: "判定中..." } %>
+  <p class="vintage-field-hint">判定には20〜30秒ほどかかります。ボタンは一度だけ押して、そのままお待ちください。</p>
 <% end %>

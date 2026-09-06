@@ -94,6 +94,49 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
     assert_includes provider.user_prompt, "写真: 2枚"
   end
 
+  test "only one judgement runs at a time, so a slow AI cannot take the whole site down" do
+    # Pumaは3スレッドしかなく、判定は20〜30秒かかる。同時実行を絞れていないと
+    # 判定だけでスレッドを使い切り、ポータル本体まで応答しなくなる。
+    started = Queue.new
+    release = Queue.new
+    blocking = Class.new do
+      def initialize(started, release)
+        @started = started
+        @release = release
+      end
+
+      def configured? = true
+      def missing_key_message = ""
+
+      def generate(**)
+        @started << :running
+        @release.pop
+        { brand_candidates: [] }.to_json
+      end
+    end.new(started, release)
+
+    slow = Thread.new { identify(blocking, notes: "1件目") }
+    started.pop # 1件目がAIの応答待ちに入るまで待つ
+
+    error = assert_raises(VintageBrandIdentifier::IdentificationError) do
+      identify(FakeProvider.new(text: RESPONSE), notes: "2件目")
+    end
+    assert_includes error.message, "混み合っています"
+
+    release << :done
+    slow.join
+    # 1件目が終われば枠は返る。
+    assert identify(FakeProvider.new(text: RESPONSE), notes: "3件目")
+  end
+
+  test "a failed judgement still gives the slot back" do
+    assert_raises(VintageBrandIdentifier::IdentificationError) do
+      identify(FakeProvider.new(text: "JSONではない"), notes: "失敗する判定")
+    end
+
+    assert identify(FakeProvider.new(text: RESPONSE), notes: "次の判定")
+  end
+
   test "an answer that is not JSON is reported as a retryable failure" do
     error = assert_raises(VintageBrandIdentifier::IdentificationError) do
       identify(FakeProvider.new(text: "すみません、判定できませんでした。"), notes: "タグ")

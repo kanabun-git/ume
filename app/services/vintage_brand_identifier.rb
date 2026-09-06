@@ -10,6 +10,17 @@
 class VintageBrandIdentifier
   class IdentificationError < StandardError; end
 
+  # 判定1件はAIの応答待ちで20〜30秒かかり、その間Pumaのスレッドを1本
+  # 占有する。Pumaは既定で3スレッドしかないので、判定が同時に何件も走ると
+  # ポータル本体・コーポレートサイトまで巻き込んで応答しなくなる。
+  # 同時に走る判定の数をここで絞り、あふれた分は待ってもらう。
+  #
+  # Pumaをクラスタモードで動かす場合はワーカーごとの上限になるが、
+  # 「1ワーカーのスレッドを判定で埋め尽くさない」という目的は変わらない。
+  MAX_CONCURRENT = 1
+  SLOTS = Concurrent::Semaphore.new(MAX_CONCURRENT)
+  BUSY_MESSAGE = "いま判定が混み合っています。30秒ほど待ってから、もう一度お試しください。".freeze
+
   PROVIDERS = {
     "gemini" => -> { GeminiProvider.new },
     "claude" => -> { ClaudeProvider.new }
@@ -103,11 +114,13 @@ class VintageBrandIdentifier
   def call
     raise IdentificationError, @provider.missing_key_message unless @provider.configured?
 
-    text = @provider.generate(
-      system_prompt: SYSTEM_PROMPT,
-      user_prompt: user_prompt,
-      images: image_payloads
-    )
+    text = with_slot do
+      @provider.generate(
+        system_prompt: SYSTEM_PROMPT,
+        user_prompt: user_prompt,
+        images: image_payloads
+      )
+    end
 
     Vintage::Result.from_text(text)
   rescue Vintage::Result::ParseError => e
@@ -116,6 +129,18 @@ class VintageBrandIdentifier
   end
 
   private
+
+  # 空きが無ければ待たせずに断る。待たせるとそのリクエストが結局
+  # スレッドを掴んだままになり、守りたかったものが守れない。
+  def with_slot
+    raise IdentificationError, BUSY_MESSAGE unless SLOTS.try_acquire
+
+    begin
+      yield
+    ensure
+      SLOTS.release
+    end
+  end
 
   def user_prompt
     <<~PROMPT

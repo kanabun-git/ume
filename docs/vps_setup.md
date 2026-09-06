@@ -521,6 +521,8 @@ systemctl list-timers | grep certbot
 
 * 無料枠には1分あたり・1日あたりの回数制限があります。上限に当たると利用者には「しばらく経ってからお試しください」と表示されます(500エラーにはなりません)。アプリ側でも1つのIPからの連続実行(10秒のクールダウン)と1時間あたりの回数(20回)を制限しています。制限値は`app/models/vintage/identification.rb`の`COOLDOWN`/`WINDOW_LIMIT`です。
 * アップロードされた写真はこのサーバーには保存されず、判定のためにAPIへ渡されるだけです(渡した先での扱いは上の「無料枠の注意」を参照)。
+* **判定1件はAIの応答待ちで20〜30秒かかり、その間Pumaのスレッドを1本占有します。** Pumaは既定で3スレッドしかないため、判定が同時に何件も走るとポータル本体まで応答しなくなります。これを防ぐため、アプリ側で**同時に走る判定を1件に制限**しています(`app/services/vintage_brand_identifier.rb`の`MAX_CONCURRENT`)。あふれた利用者には「混み合っています」と表示され、待ってもらう形になります。
+* 利用が増えて「混み合っています」が頻発するようであれば、unitファイルに`Environment=RAILS_MAX_THREADS=8`を足してスレッドを増やしたうえで、`MAX_CONCURRENT`を2〜3へ上げてください(スレッド数の半分以下に留めるのが目安です)。
 * 表示される中古相場はAIの推定です。買取価格の保証ではない旨を画面にも明記していますが、試験公開の告知でも同様に伝えてください。
 * コーポレートサイト(puremint.jp)の事業内容ページからは、`VINTAGE_HOST`を設定すると自動的に`https://www.kanabun.tech/vintage`への絶対URLでリンクされます(`app/models/corporate/company.rb`の`VINTAGE_TOOL_URL`)。
 

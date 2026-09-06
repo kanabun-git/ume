@@ -28,6 +28,9 @@
       <% if @result.origin.present? %>
         <div><span class="vintage-result-label">生産国</span><span><%= @result.origin %></span></div>
       <% end %>
+      <% if @result.target_gender.present? %>
+        <div><span class="vintage-result-label">対象</span><span><%= @result.target_gender %></span></div>
+      <% end %>
       <% if @result.target_age.present? %>
         <div><span class="vintage-result-label">想定年齢層</span><span><%= @result.target_age %></span></div>
       <% end %>
@@ -66,7 +69,7 @@
           <p class="vintage-price-note">想定年齢層の根拠: <%= @result.target_age_reason %></p>
         <% end %>
         <p class="vintage-note">
-          想定年齢層は<strong>そのブランドが購買層として想定している年齢</strong>で、この品を着ていた人のことではありません。
+          対象・想定年齢層は<strong>そのブランドが購買層として想定している区分</strong>で、この品を着ていた人のことではありません。
         </p>
       </div>
     <% end %>

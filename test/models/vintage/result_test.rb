@@ -75,12 +75,14 @@ module Vintage
     test "reads the original retail price and the brand's target age range" do
       result = Vintage::Result.from_text({
         brand_candidates: [{ name: "ワコール", confidence: "high" }],
+        target_gender: "レディース",
         target_age: "30代〜50代",
         target_age_reason: "百貨店の価格帯で、サポート性を重視した設計のため",
         original_price: { low: 8_000, high: 14_000, note: "現在の定価。ブラジャー単品を想定" },
         market_price: { low: 1_500, high: 3_000 }
       }.to_json)
 
+      assert_equal "レディース", result.target_gender
       assert_equal "30代〜50代", result.target_age
       assert_includes result.target_age_reason, "百貨店"
       assert_equal "8,000円 〜 14,000円", result.original_price.range_label

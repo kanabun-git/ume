@@ -27,9 +27,9 @@ module Vintage
       end
     end
 
-    # 中古相場の目安。金額は日本円の整数で持ち、片方しか答えが無い場合
-    # (「10,000円以上」など)も落とさずに表示できるようにしてある。
-    MarketPrice = Struct.new(:low, :high, :note, :factors, keyword_init: true) do
+    # 金額の範囲(中古相場・新品時の定価)。日本円の整数で持ち、片方しか
+    # 答えが無い場合(「10,000円以上」など)も落とさずに表示できるようにしてある。
+    PriceRange = Struct.new(:low, :high, :note, :factors, keyword_init: true) do
       def range_label
         return "#{number_with_delimiter(low)}円 〜 #{number_with_delimiter(high)}円" if low && high
         return "#{number_with_delimiter(low)}円 〜" if low
@@ -50,7 +50,8 @@ module Vintage
     end
 
     attr_reader :item_type, :brand_candidates, :era, :era_reason, :origin,
-                :clues, :authenticity_notes, :next_checks, :summary, :market_price
+                :clues, :authenticity_notes, :next_checks, :summary,
+                :market_price, :original_price, :target_age, :target_age_reason
 
     def self.from_text(text)
       raise ParseError, "回答が空でした。" if text.blank?
@@ -77,11 +78,14 @@ module Vintage
       @era_reason = presence_of(payload["era_reason"])
       @origin = presence_of(payload["origin"])
       @summary = presence_of(payload["summary"])
+      @target_age = presence_of(payload["target_age"])
+      @target_age_reason = presence_of(payload["target_age_reason"])
       @clues = string_list(payload["clues"])
       @authenticity_notes = string_list(payload["authenticity_notes"])
       @next_checks = string_list(payload["next_checks"])
       @brand_candidates = build_candidates(payload["brand_candidates"])
-      @market_price = build_market_price(payload["market_price"])
+      @market_price = build_price(payload["market_price"])
+      @original_price = build_price(payload["original_price"])
     end
 
     # 相場の実売価格を利用者が自分で確かめられるよう、検索に使える語を組み立てる。
@@ -103,10 +107,10 @@ module Vintage
 
     private
 
-    def build_market_price(raw)
+    def build_price(raw)
       return nil unless raw.is_a?(Hash)
 
-      price = MarketPrice.new(
+      price = PriceRange.new(
         low: yen(raw["low"]),
         high: yen(raw["high"]),
         note: presence_of(raw["note"]),

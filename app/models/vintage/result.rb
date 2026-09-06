@@ -27,8 +27,30 @@ module Vintage
       end
     end
 
+    # 中古相場の目安。金額は日本円の整数で持ち、片方しか答えが無い場合
+    # (「10,000円以上」など)も落とさずに表示できるようにしてある。
+    MarketPrice = Struct.new(:low, :high, :note, :factors, keyword_init: true) do
+      def range_label
+        return "#{number_with_delimiter(low)}円 〜 #{number_with_delimiter(high)}円" if low && high
+        return "#{number_with_delimiter(low)}円 〜" if low
+        return "〜 #{number_with_delimiter(high)}円" if high
+
+        nil
+      end
+
+      def present?
+        range_label.present?
+      end
+
+      private
+
+      def number_with_delimiter(value)
+        ActiveSupport::NumberHelper.number_to_delimited(value)
+      end
+    end
+
     attr_reader :item_type, :brand_candidates, :era, :era_reason, :origin,
-                :clues, :authenticity_notes, :next_checks, :summary
+                :clues, :authenticity_notes, :next_checks, :summary, :market_price
 
     def self.from_text(text)
       raise ParseError, "回答が空でした。" if text.blank?
@@ -59,6 +81,18 @@ module Vintage
       @authenticity_notes = string_list(payload["authenticity_notes"])
       @next_checks = string_list(payload["next_checks"])
       @brand_candidates = build_candidates(payload["brand_candidates"])
+      @market_price = build_market_price(payload["market_price"])
+    end
+
+    # 相場の実売価格を利用者が自分で確かめられるよう、検索に使える語を組み立てる。
+    # AIの見積もりだけを鵜呑みにさせないための導線なので、ブランドが特定
+    # できていないときは何も返さない。
+    def market_search_keyword
+      brand = brand_candidates.first&.name
+      return nil if brand.blank?
+
+      # 「Levi's(リーバイス)」のような表記から、検索に効く英字部分だけを取る。
+      [brand.split("(").first.to_s.strip, item_type].compact_blank.join(" ")
     end
 
     # 写真もメモも手がかりにならず、ブランドも年代も出せなかった場合。
@@ -68,6 +102,28 @@ module Vintage
     end
 
     private
+
+    def build_market_price(raw)
+      return nil unless raw.is_a?(Hash)
+
+      price = MarketPrice.new(
+        low: yen(raw["low"]),
+        high: yen(raw["high"]),
+        note: presence_of(raw["note"]),
+        factors: string_list(raw["factors"])
+      )
+      price.present? ? price : nil
+    end
+
+    # 金額は数値で返すよう指示しているが、"8,000円" や "8,000〜15,000円" の
+    # ような文字列で返ってくることもある。最初に現れた数字だけを拾うことで、
+    # 後者を「80,001,5000円」のような桁違いの値にしてしまわないようにする。
+    def yen(value)
+      case value
+      when Numeric then value.to_i.positive? ? value.to_i : nil
+      when String then value[/[0-9][0-9,]*/]&.delete(",")&.to_i
+      end
+    end
 
     def build_candidates(raw)
       Array(raw).filter_map do |candidate|

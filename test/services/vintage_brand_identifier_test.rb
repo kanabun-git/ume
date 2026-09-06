@@ -37,6 +37,7 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
     clues: ["袖口がシングルステッチ", "脇にVガゼット"],
     authenticity_notes: ["刺繍タグの糸のほつれ方を確認"],
     next_checks: ["洗濯表示の裏面"],
+    market_price: { low: 12_000, high: 25_000, note: "国内のフリマ相場", factors: ["サイズ", "プリントの状態"] },
     summary: "チャンピオンのリバースウィーブ、80年代後半の個体と見られます。"
   }.to_json
 
@@ -54,6 +55,7 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
     assert_equal "champion", result.brand_candidates.first.guide_slug
     assert_nil result.brand_candidates.second.guide_slug
     assert_equal ["袖口がシングルステッチ", "脇にVガゼット"], result.clues
+    assert_equal "12,000円 〜 25,000円", result.market_price.range_label
     assert_not result.empty?
   end
 
@@ -83,6 +85,19 @@ class VintageBrandIdentifierTest < ActiveSupport::TestCase
     assert_equal "写真1:", content.first[:text]
     assert_includes content.last[:text], "ニット"
     assert_includes content.last[:text], "写真: 2枚"
+  end
+
+  test "the visitor's condition and size reach the prompt, since the price hangs on them" do
+    identification = Vintage::Identification.new(
+      notes: "トリコタグ", condition: "やや傷や汚れあり", size_note: "タグ表記L 肩幅50cm"
+    )
+    client = FakeClient.new(text: RESPONSE)
+
+    VintageBrandIdentifier.new(identification: identification, client: client).call
+
+    prompt = client.last_params[:messages].first[:content].last[:text]
+    assert_includes prompt, "コンディション: やや傷や汚れあり"
+    assert_includes prompt, "サイズ: タグ表記L 肩幅50cm"
   end
 
   test "the prompt carries the same era clues the guide page shows" do

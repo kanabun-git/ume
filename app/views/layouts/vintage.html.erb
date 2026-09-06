@@ -5,7 +5,7 @@
     <title><%= page_title %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="<%= content_for(:meta_description) || "古着のタグの写真から、ブランドと製造年代の目安をAIが推定する無料ツールです。" %>">
+    <meta name="description" content="<%= content_for(:meta_description) || "古着のタグの写真から、ブランド・製造年代・中古相場の目安をAIが推定する無料ツールです。" %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
@@ -38,8 +38,8 @@
     <footer class="vintage-footer">
       <div class="container">
         <p class="vintage-footer-note">
-          判定結果はAIによる推定です。ブランドの真贋、製造年代、価値を保証するものではありません。
-          高額な取引の前には必ず専門店での鑑定をご利用ください。
+          判定結果・相場価格はAIによる推定です。ブランドの真贋、製造年代、取引価格を保証するものではありません。
+          高額な取引の前には必ず専門店での鑑定と、実際の出品価格の確認をご利用ください。
         </p>
         <p class="vintage-footer-copyright">&copy; <%= Date.current.year %> <%= Corporate::Company::NAME_EN %></p>
       </div>

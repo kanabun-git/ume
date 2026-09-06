@@ -19,6 +19,18 @@ module Vintage
       "デニム・パンツ", "ジャケット・アウター", "ニット", "帽子・小物", "その他"
     ].freeze
 
+    # 中古相場は状態で大きく変わるので、フリマアプリの出品と同じ粒度で
+    # 利用者に選んでもらう(未選択なら「並」相当として推定させる)。
+    CONDITIONS = [
+      "未使用・未使用に近い",
+      "目立った傷や汚れなし",
+      "やや傷や汚れあり",
+      "傷や汚れあり",
+      "全体的に状態が悪い(ダメージ・リペアあり)"
+    ].freeze
+
+    MAX_SIZE_NOTE_LENGTH = 100
+
     # AIへの問い合わせは1件ごとに費用と待ち時間が発生するので、
     # Corporate::Inquiryの単発クールダウンに加えて時間あたりの上限も設ける。
     # 判定は何枚か撮り直して試すものなので、クールダウン自体は短くしてある。
@@ -28,10 +40,14 @@ module Vintage
 
     attribute :notes, :string
     attribute :item_type, :string
+    attribute :condition, :string
+    attribute :size_note, :string
     attr_accessor :images, :ip_address
 
     validates :item_type, inclusion: { in: ITEM_TYPES, allow_blank: true }
+    validates :condition, inclusion: { in: CONDITIONS, allow_blank: true }
     validates :notes, length: { maximum: MAX_NOTES_LENGTH }
+    validates :size_note, length: { maximum: MAX_SIZE_NOTE_LENGTH }
     validate :images_present_or_notes
     validate :images_within_limits
     validate :rate_limit

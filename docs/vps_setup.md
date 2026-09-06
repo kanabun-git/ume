@@ -465,6 +465,52 @@ systemctl list-timers | grep certbot
 
 ---
 
+## 7-4. 古着ブランド判定ツールの公開(www.kanabun.tech/vintage)
+
+古着のタグの写真からブランド・製造年代・中古相場の目安を推定するツールを、**https://www.kanabun.tech/vintage** で試験公開します。
+
+`www.kanabun.tech`のDNS・nginx・証明書は**7-2でメールアドレス管理画面のために設定済み**なので、この手順で新しく用意するのは環境変数だけです(nginxの変更もDNSの変更も不要)。
+
+1. `/etc/systemd/system/ume-puma.service`に環境変数を追加します。
+
+   ```ini
+   Environment=VINTAGE_HOST=www.kanabun.tech
+   Environment=ANTHROPIC_API_KEY=(Anthropicのコンソールで発行したAPIキー)
+   ```
+
+   `ANTHROPIC_API_KEY`はキャストの写メ日記のAI下書きと**同じ環境変数**です。すでに設定済みならそのまま使われます。未設定でもフォームと年代判定ガイドは開けますが、判定を実行するとその旨のエラーが表示されます。
+
+2. 反映します。
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl restart ume-puma
+   ```
+
+3. 動作確認します。
+
+   ```bash
+   curl -I https://www.kanabun.tech/vintage        # 200
+   curl -I https://fuzoku-zero.com/vintage         # 404(ポータル側には出さない)
+   ```
+
+`VINTAGE_HOST`を設定すると、判定ツールは**このドメインでしか開けなくなります**(風俗ポータルのドメインに一般向けのツールが並ばないようにするため)。`www.kanabun.tech`は7-2で「`/mailadmin`以外は何も配信しない」ドメインにしてありますが、`VINTAGE_HOST`が同じホストに設定されている場合に限り`/vintage`だけが例外として通ります(`app/middleware/mail_admin_host_middleware.rb`)。ポータルのトップページや`/admin`が`www.kanabun.tech`で開くようになるわけではありません。
+
+告知に使うURLは**www付き**の`https://www.kanabun.tech/vintage`です。`VINTAGE_HOST`に指定したホスト名と完全に一致するホストでしか開かないため、wwwなしの`kanabun.tech/vintage`は404になります(wwwなしでも開きたい場合は、nginx側でwwwへ301リダイレクトするのが簡単です)。
+
+同じドメインで公開している「やどかりペンションHP」(`/pension_basic/`)はnginxが配信している別物なので、この設定の影響を受けません。
+
+**運用上の注意**
+
+* 判定1回ごとにAnthropicのAPI利用料が発生します。1つのIPからの連続実行(10秒のクールダウン)と1時間あたりの回数(20回)を制限していますが、試験公開の間はAnthropicのコンソールで利用量に上限を設定しておくことを勧めます。制限値は`app/models/vintage/identification.rb`の`COOLDOWN`/`WINDOW_LIMIT`です。
+* アップロードされた写真はサーバーに保存されず、判定のためにAPIへ渡されるだけです。
+* 表示される中古相場はAIの推定です。買取価格の保証ではない旨を画面にも明記していますが、試験公開の告知でも同様に伝えてください。
+* コーポレートサイト(puremint.jp)の事業内容ページからは、`VINTAGE_HOST`を設定すると自動的に`https://www.kanabun.tech/vintage`への絶対URLでリンクされます(`app/models/corporate/company.rb`の`VINTAGE_TOOL_URL`)。
+
+この設定を行わない場合(環境変数を設定しない場合)は、`/vintage`はどのドメインからでも開けます(開発環境と同じ挙動)。
+
+---
+
 ## 8. メール送信(Postfix)の設定
 
 **Vシリーズはリレーサーバー不要・直接送信可能**です。追加の設定なしで動くはずですが、以下だけ確認してください。

@@ -45,6 +45,47 @@ module Vintage
       assert_equal "the-north-face", result.brand_candidates.first.guide_slug
     end
 
+    test "reads the market price range, however the numbers are written" do
+      result = Vintage::Result.from_text({
+        brand_candidates: [{ name: "Levi's", confidence: "high" }],
+        market_price: { low: 8000, high: "15,000円", note: "国内のフリマ相場", factors: ["サイズ"] }
+      }.to_json)
+
+      assert_equal 8_000, result.market_price.low
+      assert_equal 15_000, result.market_price.high
+      assert_equal "8,000円 〜 15,000円", result.market_price.range_label
+      assert_equal ["サイズ"], result.market_price.factors
+    end
+
+    test "a range written into one field is read as its first number, not as its digits glued together" do
+      result = Vintage::Result.from_text(
+        { market_price: { low: "8,000〜15,000円" } }.to_json
+      )
+
+      assert_equal 8_000, result.market_price.low
+      assert_equal "8,000円 〜", result.market_price.range_label
+    end
+
+    test "no price is shown when the answer has no usable amount" do
+      assert_nil Vintage::Result.from_text({ market_price: nil }.to_json).market_price
+      assert_nil Vintage::Result.from_text({ market_price: { note: "特定できず" } }.to_json).market_price
+      assert_nil Vintage::Result.from_text({ market_price: { low: 0, high: "-" } }.to_json).market_price
+    end
+
+    test "the search keyword drops the Japanese reading so it works in a marketplace search" do
+      result = Vintage::Result.from_text({
+        item_type: "スウェット",
+        brand_candidates: [{ name: "Champion(チャンピオン)", confidence: "high" }]
+      }.to_json)
+
+      assert_equal "Champion スウェット", result.market_search_keyword
+    end
+
+    test "no search keyword when no brand could be named" do
+      assert_nil Vintage::Result.from_text({ item_type: "スウェット", brand_candidates: [] }.to_json)
+        .market_search_keyword
+    end
+
     test "a non-JSON answer raises rather than half-rendering" do
       assert_raises(Vintage::Result::ParseError) { Vintage::Result.from_text("判定できませんでした") }
       assert_raises(Vintage::Result::ParseError) { Vintage::Result.from_text("") }

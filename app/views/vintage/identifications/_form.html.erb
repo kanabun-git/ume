@@ -17,6 +17,17 @@
   <label>アイテムの種類(任意)</label>
   <%= f.select :item_type, Vintage::Identification::ITEM_TYPES, { include_blank: "選択してください" } %>
 
+  <label>コンディション(任意)</label>
+  <p class="vintage-field-hint">
+    中古相場の目安は、ここで選んだ状態を前提に見積もります。未選択の場合は
+    「目立った傷や汚れなし」相当として計算します。
+  </p>
+  <%= f.select :condition, Vintage::Identification::CONDITIONS, { include_blank: "選択してください" } %>
+
+  <label>サイズ表記・実寸(任意)</label>
+  <p class="vintage-field-hint">例:「タグ表記M」「肩幅48cm 身幅55cm」。大きいサイズほど相場が上がる品もあります。</p>
+  <%= f.text_field :size_note, maxlength: Vintage::Identification::MAX_SIZE_NOTE_LENGTH %>
+
   <label>タグに書かれている内容・気づいた点(任意)</label>
   <p class="vintage-field-hint">
     例:「タグに MADE IN USA と RN 番号あり」「袖の縫い目が1本」「50/50 の表記」など。

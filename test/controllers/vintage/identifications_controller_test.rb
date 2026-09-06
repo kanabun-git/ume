@@ -26,6 +26,10 @@ module Vintage
       clues: ["赤タブが大文字のE"],
       authenticity_notes: ["ボタン裏の刻印を確認"],
       next_checks: ["内側の紙パッチ"],
+      market_price: {
+        low: 60_000, high: 120_000, note: "国内の古着屋での販売価格帯",
+        factors: ["サイズ", "リペアの有無"]
+      },
       summary: "リーバイスのBIG E期のデニムジャケットと見られます。"
     }.to_json
 
@@ -52,6 +56,54 @@ module Vintage
       assert_select ".vintage-result-summary", /BIG E期/
       # 結果からガイドの該当ブランドへ飛べること。
       assert_select "a[href=?]", "#{vintage_guide_path}#levis"
+    end
+
+    test "the judgement shows the market price range and a way to check real listings" do
+      post_identification(notes: "赤タブが大文字のE") do
+        assert_response :success
+      end
+
+      assert_select ".vintage-price-range", "60,000円 〜 120,000円"
+      assert_select ".vintage-price", /国内の古着屋での販売価格帯/
+      assert_select ".vintage-price-search a[href*=?]", "mercari"
+      # 買取額との取り違えは、相場を出す以上いちばん避けたい誤解。
+      assert_select ".vintage-price", /買い取ってもらう金額はこれより低くなります/
+    end
+
+    test "no price section when the answer carries no amount" do
+      stub_identifier(FakeIdentifier.new(result: result_from(EMPTY_RESULT_JSON))) do
+        post vintage_identifications_path, params: { vintage_identification: { notes: "タグ無し" } }
+      end
+
+      assert_response :success
+      assert_select ".vintage-price", false
+    end
+
+    test "the condition and size the visitor picked reach the identifier" do
+      identification = nil
+      capture = ->(id) { identification = id }
+      stub_identifier(FakeIdentifier.new(result: result_from(RESULT_JSON)), capture: capture) do
+        post vintage_identifications_path, params: { vintage_identification: {
+          notes: "赤タブ", condition: "やや傷や汚れあり", size_note: "W34 L32"
+        } }
+      end
+
+      assert_response :success
+      assert_equal "やや傷や汚れあり", identification.condition
+      assert_equal "W34 L32", identification.size_note
+    end
+
+    test "a made-up condition is rejected rather than passed through to the AI" do
+      called = false
+      capture = ->(_id) { called = true }
+      stub_identifier(FakeIdentifier.new(result: result_from(RESULT_JSON)), capture: capture) do
+        post vintage_identifications_path, params: { vintage_identification: {
+          notes: "赤タブ", condition: "新品同様(自由入力)"
+        } }
+      end
+
+      assert_response :unprocessable_entity
+      assert_not called
     end
 
     test "photos are handed to the identifier" do

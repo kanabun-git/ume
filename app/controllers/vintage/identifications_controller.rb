@@ -27,7 +27,7 @@ module Vintage
     private
 
     def identification_params
-      params.require(:vintage_identification).permit(:notes, :item_type, images: [])
+      params.require(:vintage_identification).permit(:notes, :item_type, :condition, :size_note, images: [])
     end
   end
 end

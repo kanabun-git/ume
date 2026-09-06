@@ -20,6 +20,13 @@ class MailAdminHostMiddleware
     /up
   ].freeze
 
+  # www.kanabun.tech には古着ブランド判定ツール(/vintage)も載せている。
+  # このミドルウェアはそのホストで /mailadmin 以外を全て404にするので、
+  # 判定ツールのパスだけ通し穴を開ける。開けるのはVINTAGE_HOSTがその
+  # ホストに設定されているときだけで、ルーティング側(config/routes.rb)でも
+  # 同じホストでしか解決しないため、他のドメインに漏れることはない。
+  VINTAGE_PATH_PREFIX = "/vintage".freeze
+
   def initialize(app)
     @app = app
   end
@@ -27,7 +34,7 @@ class MailAdminHostMiddleware
   def call(env)
     request = ActionDispatch::Request.new(env)
 
-    return not_found if mail_admin_host?(request) && !allowed_path?(request.path)
+    return not_found if mail_admin_host?(request) && !allowed_path?(request)
 
     @app.call(env)
   end
@@ -38,8 +45,19 @@ class MailAdminHostMiddleware
     ENV["MAIL_ADMIN_HOST"].present? && request.host == ENV["MAIL_ADMIN_HOST"]
   end
 
-  def allowed_path?(path)
-    ALLOWED_PATH_PREFIXES.any? { |prefix| path == prefix || path.start_with?("#{prefix}/") }
+  def allowed_path?(request)
+    path = request.path
+
+    ALLOWED_PATH_PREFIXES.any? { |prefix| prefixed?(path, prefix) } ||
+      (vintage_host?(request) && prefixed?(path, VINTAGE_PATH_PREFIX))
+  end
+
+  def vintage_host?(request)
+    ENV["VINTAGE_HOST"].present? && request.host == ENV["VINTAGE_HOST"]
+  end
+
+  def prefixed?(path, prefix)
+    path == prefix || path.start_with?("#{prefix}/")
   end
 
   def not_found

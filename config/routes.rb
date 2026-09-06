@@ -59,15 +59,32 @@ Rails.application.routes.draw do
   end
 
   # --- 古着ブランド判定ツール (/vintage) ---
-  # 写真とタグのメモからブランド・年代を推定する、ログイン不要の公開ツール。
-  # ポータル本体ともコーポレートサイトとも独立していて、DBにも何も持たない
-  # (Vintage::Identificationのクラスコメント参照)。コーポレートサイトの
-  # 事業内容ページからは絶対パス "/vintage" で導線を張っているので、
-  # ここのpathを変えるときはCorporate::Company::BUSINESS_LINESも直すこと。
-  namespace :vintage do
-    root to: "identifications#new"
-    resources :identifications, only: [:create]
-    get "guide", to: "pages#guide", as: :guide
+  # 写真とタグのメモからブランド・年代・中古相場を推定する、ログイン不要の
+  # 公開ツール。ポータル本体ともコーポレートサイトとも独立していて、DBにも
+  # 何も持たない(Vintage::Identificationのクラスコメント参照)。
+  #
+  # VINTAGE_HOSTを設定すると(本番では www.kanabun.tech を想定)、そのドメイン
+  # でしか開けなくなる -- 他のサイトと同じ仕組み(CAST_PORTAL_HOST /
+  # MAIL_ADMIN_HOST / PUREMINT_HOSTのconstraints参照)。風俗ポータルの
+  # ドメインに一般向けのツールが並んでしまうのを避けるためで、開発・テストでは
+  # ホスト名を用意しなくても触れるよう制約を外す。
+  #
+  # 公開先のドメインが www.kanabun.tech の場合、そのホストは MAIL_ADMIN_HOST
+  # でもある(メールアドレス管理画面と同居する)。MailAdminHostMiddlewareが
+  # そのホストで /mailadmin 以外を全て404にするので、あちらにも
+  # このパスの通し穴が要る -- 変更するときは両方セットで直すこと。
+  vintage_routes = lambda do
+    namespace :vintage do
+      root to: "identifications#new"
+      resources :identifications, only: [:create]
+      get "guide", to: "pages#guide", as: :guide
+    end
+  end
+
+  if ENV["VINTAGE_HOST"].present?
+    constraints(host: ENV["VINTAGE_HOST"]) { vintage_routes.call }
+  else
+    vintage_routes.call
   end
 
   # Age-gate / region-picker splash page shown before the region-scoped

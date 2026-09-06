@@ -97,6 +97,18 @@ body.vintage-site .btn:hover, body.vintage-site a.btn:hover { background: var(--
 .vintage-confidence-medium { color: #8a5a2b; border-color: #e3cfae; background: #f8efe0; }
 .vintage-confidence-low { color: #8a4a4a; border-color: #eccccc; background: #f9eded; }
 
+.vintage-price {
+  border: 1px solid var(--vtg-border); border-radius: 8px;
+  background: var(--vtg-panel); padding: 16px;
+}
+.vintage-price-range {
+  margin: 0 0 6px; font-size: 1.45rem; font-weight: bold; color: var(--vtg-primary-dark);
+  letter-spacing: .01em;
+}
+.vintage-price-note { margin: 0 0 8px; color: var(--vtg-muted); }
+.vintage-price .vintage-list { margin: 0 0 10px; }
+.vintage-price-search { margin: 8px 0 0; font-size: .9rem; }
+
 .vintage-list { padding-left: 1.2em; color: var(--vtg-muted); }
 .vintage-list li { margin-bottom: 6px; }
 

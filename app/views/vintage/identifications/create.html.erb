@@ -52,6 +52,35 @@
       </ol>
     <% end %>
 
+    <% if @result.market_price.present? %>
+      <h2>中古相場の目安</h2>
+      <div class="vintage-price">
+        <p class="vintage-price-range"><%= @result.market_price.range_label %></p>
+        <% if @result.market_price.note.present? %>
+          <p class="vintage-price-note"><%= @result.market_price.note %></p>
+        <% end %>
+        <% if @result.market_price.factors.any? %>
+          <ul class="vintage-list">
+            <% @result.market_price.factors.each do |factor| %><li><%= factor %></li><% end %>
+          </ul>
+        <% end %>
+        <p class="vintage-note">
+          フリマアプリや古着屋で<strong>売られている</strong>価格の目安です(買い取ってもらう金額はこれより低くなります)。
+          状態・サイズ・時期で大きく上下するため、実際の取引の前に必ず現在の出品価格をご確認ください。
+        </p>
+        <% if @result.market_search_keyword.present? %>
+          <p class="vintage-price-search">
+            実際の出品を見る:
+            <%= link_to "メルカリ", "https://jp.mercari.com/search?keyword=#{CGI.escape(@result.market_search_keyword)}",
+                  class: "vintage-link", target: "_blank", rel: "noopener" %>
+            /
+            <%= link_to "ヤフオク", "https://auctions.yahoo.co.jp/search/search?p=#{CGI.escape(@result.market_search_keyword)}",
+                  class: "vintage-link", target: "_blank", rel: "noopener" %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+
     <% if @result.era_reason.present? %>
       <h2>年代の根拠</h2>
       <p><%= @result.era_reason %></p>
@@ -80,7 +109,7 @@
   <% end %>
 
   <p class="vintage-note">
-    判定結果はAIによる推定です。真贋・年代・価値を保証するものではありません。
+    判定結果・相場価格はAIによる推定です。真贋・年代・取引価格を保証するものではありません。
   </p>
 
   <p><%= link_to "別のアイテムを判定する →", vintage_root_path, class: "btn" %></p>
